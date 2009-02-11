@@ -1,0 +1,1 @@
+/home/felipe/.mozilla/firefox/g8bjwhz1.default/gm_scripts/youtube_subtitles_v003_/youtube_subtitles_v003_.user.js
