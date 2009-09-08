@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+
+<bindings id="wikisubsBindings"
+   xmlns="http://www.mozilla.org/xbl"
+   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+   xmlns:xbl="http://www.mozilla.org/xbl">
+
+  <binding id="wikisubs" extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
+      <implementation>
+        <field name="wikisubsUtils">
+            <![CDATA[ ({
+                video : null,
+                subs_menu : null,
+                button : null,
+
+
+                init : function (binding) {
+                    dump("\n--------- wikisubs constructor ---------\n\n");
+                    this.video = binding.parentNode;
+
+                    // XBL doesn't have a good way to inject content into the middle of
+                    // something else, so we'll insert our button via DOM manipulation.
+                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                    this.button = document.createElementNS(xulns, "button");
+                    this.button.setAttribute("class", "wikisubsButton");
+                    this.button.setAttribute("type", "menu");
+
+                    this.subs_menu = document.createElementNS(xulns, "menupopup");
+                    this.button.appendChild(this.subs_menu);
+                    this.button.setAttribute("type", "menu");
+//                    this.button.setAttribute("position", "before_end");
+//                    this.button.setAttribute("dir", "reverse");
+
+                    subs_container = document.createElementNS(xulns, "vbox");
+                    subs_container.setAttribute("class", "subsContainer");
+                    subs_label = document.createElementNS(xulns, "label");
+                    subs_label.setAttribute("class", "subsLabel");
+                    subs_container.appendChild(subs_label);
+                    subs_label.setAttribute("hidden", "true");
+
+                    //Add label where the subtitle will be displayed:
+                    var controls_vbox = document.getAnonymousElementByAttribute(binding, "class", "controlBar").parentNode;
+                    controls_vbox.parentNode.insertBefore(subs_container, controls_vbox);
+
+                    //Add subs button:
+                    var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
+                    muteButton.parentNode.insertBefore(this.button, muteButton);
+
+                    //I am leaving the following line commented out so that people in the mozilla mailing list
+                    // can easily see the button even when no subs are available... 
+                    //It will be uncommented in the future :-)
+
+                    //button is hidden while we dont have a list of available subs:
+                    //this.button.setAttribute("hidden", "true");
+
+                    var self = this;
+                    self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
+
+                    dump("--- wikisubs initialized ---\n");
+                },
+
+                videoChildInserted : function(event) {
+                    //this is an experiment. I am trying to implement behaviour proposed by Silvia Pfeiffer
+                    //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
+                    //TODO: verify whether the node is an itext
+
+                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                    var item = document.createElementNS(xulns, "menuitem");
+                    item.setAttribute("label",event.target.id + "-" + event.target.cat + "-" + event.target.lang);
+                    item.setAttribute("url",event.target.src);
+                    this.subs_menu.appendChild(item);
+
+                    this.button.setAttribute("hidden", "false");
+                    alert(event);
+                }
+            }) ]]>
+        </field>
+
+        <constructor>
+            <![CDATA[
+                this.wikisubsUtils.init(this);
+            ]]>
+        </constructor>
+      </implementation>
+
+      <resources>
+        <stylesheet src="chrome://wikisubs/skin/wikisubs.css"/>
+      </resources>
+
+  </binding>
+</bindings>
+

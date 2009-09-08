@@ -1,0 +1,31 @@
+.wikisubsButton {
+    -moz-user-focus: none;
+    background: url(chrome://wikisubs/skin/subtitlesButton.png) no-repeat center;
+    /* Remove the native button appearance and styling */
+    -moz-appearance: none;
+    margin: 0px;
+    padding: 0px;
+    min-height: 28px;
+    min-width: 28px;
+    border: none;
+}
+
+.wikisubsButton * {
+    -moz-appearance: none !important;
+    //list-style-image: none !important;
+}
+
+.subsContainer {
+    position: absolute;
+    text-align:center;
+    width:100%;
+}
+
+.subsLabel {
+    position:relative;
+    bottom: 80px;
+    padding:10px;
+    background:gray;
+    color:white;
+    opacity:0.8;
+}
