@@ -1,6 +1,7 @@
 #!/usr/bin/perl -w
 # Please send any comments, bug reports or new ideas to timo.lindfors@iki.fi
 # Please see http://iki.fi/lindi/usb/usbsnoop.txt for usage instructions.
+# 2009-09-07/lucasvr: using mnemonics from libusb-1.0 when possible && URB_FUNCTION_ABORT_PIPE
 # 2009-03-27/jucablues: Ported to libusb-1.0 (due to prior limit of 32kb in isoch transfers)
 # 2007-11-25/lindi: URB_FUNCTION_CLEAR_FEATURE_TO_ENDPOINT
 # 2006-01-07/lindi: ignore "non printable" URBs
@@ -113,6 +114,29 @@ sub process_urb {
     if ($text =~ m/DescriptorType *= 0([^ ]+)/) {
 	$DescriptorType = $1;
 	chomp($DescriptorType);
+	if ($DescriptorType =~ m/0000001/) {
+		$DescriptorType = "LIBUSB_DT_DEVICE";
+	} elsif ($DescriptorType =~ m/0000002/) {
+		$DescriptorType = "LIBUSB_DT_CONFIG";
+	} elsif ($DescriptorType =~ m/0000003/) {
+		$DescriptorType = "LIBUSB_DT_STRING";
+	} elsif ($DescriptorType =~ m/0000004/) {
+		$DescriptorType = "LIBUSB_DT_INTERFACE";
+	} elsif ($DescriptorType =~ m/0000005/) {
+		$DescriptorType = "LIBUSB_DT_ENDPOINT";
+	} elsif ($DescriptorType =~ m/0000021/) {
+		$DescriptorType = "LIBUSB_DT_HID";
+	} elsif ($DescriptorType =~ m/0000022/) {
+		$DescriptorType = "LIBUSB_DT_REPORT";
+	} elsif ($DescriptorType =~ m/0000023/) {
+		$DescriptorType = "LIBUSB_DT_PHYSICAL";
+	} elsif ($DescriptorType =~ m/0000029/) {
+		$DescriptorType = "LIBUSB_DT_HUB";
+	} else {
+		my $foo = "0x";
+		$foo .= $DescriptorType;
+		$DescriptorType = $foo;
+	}
     }
     if ($text =~ m/Index *= 0([a-f0-9]+)/) {
 	$Index = $1;
@@ -157,12 +181,12 @@ sub process_urb {
 	}
     }
     if ($text =~ m/URB_FUNCTION_GET_DESCRIPTOR_FROM_DEVICE/) {
-	print "ret = libusb_get_descriptor(devh, 0x$DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
+	print "ret = libusb_get_descriptor(devh, $DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
 	print "printf(\"$urbnumber get descriptor returned %d, bytes: \\n \", ret);\n";
 	print "print_bytes(buf, ret);\n";
 	print "printf(\"\\n\");\n";
     } elsif ($text =~ m/URB_FUNCTION_GET_DESCRIPTOR_FROM_INTERFACE/) {
-	printf "ret = libusb_get_descriptor(devh, 0x$DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
+	printf "ret = libusb_get_descriptor(devh, $DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
 	print "printf(\"$urbnumber get descriptor returned %d, bytes: \\n \", ret);\n";
 	print "print_bytes(buf, ret);\n";
 	print "printf(\"\\n\");\n";
@@ -287,13 +311,7 @@ sub process_urb {
 		print "ret = libusb_control_transfer(devh, $requesttype, LIBUSB_REQUEST_CLEAR_FEATURE, $FeatureSelector, 0, buf, 0, 1000);\n";
 		print "printf(\"$urbnumber clear feature request returned %d\\n\", ret);\n";
     } elsif ($text =~ m/URB_FUNCTION_ABORT_PIPE/) {
-	# TODO: implement
-
-	#	my $requesttype = "LIBUSB_REQUEST_TYPE_STANDARD + LIBUSB_RECIPIENT_ENDPOINT";
-	#	print "ret = libusb_control_transfer(devh, $requesttype, LIBUSB_REQUEST_CLEAR_FEATURE, $FeatureSelector, 0, buf, 0, 1000);\n";
-	#	print "printf(\"$urbnumber clear feature request returned %d\\n\", ret);\n";
-
-		print "printf(\"$urbnumber testing abort pipe implementation :P\\n\");\n";
+		print "libusb_cancel_transfer(transfer);\n";
     } elsif ($text =~ m/URB_FUNCTION_RESET_PIPE/) {
 	# TODO: implement
 	print "printf(\"$urbnumber reset pipe not implemented yet :(\\n\");\n";
