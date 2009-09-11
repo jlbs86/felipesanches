@@ -10,7 +10,7 @@
         <field name="wikisubsUtils">
             <![CDATA[ ({
                 video : null,
-                subs_menu : null,
+                subtitlesMenu : null,
                 button : null,
 
 
@@ -22,14 +22,14 @@
                     // something else, so we'll insert our button via DOM manipulation.
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     this.button = document.createElementNS(xulns, "button");
-                    this.button.setAttribute("class", "wikisubsButton");
+                    this.button.setAttribute("class", "subtitlesButton");
                     this.button.setAttribute("type", "menu");
 
-                    this.subs_menu = document.createElementNS(xulns, "menupopup");
-                    this.button.appendChild(this.subs_menu);
+                    this.subtitlesMenu = document.createElementNS(xulns, "menupopup");
+                    this.button.appendChild(this.subtitlesMenu);
                     this.button.setAttribute("type", "menu");
-//                    this.button.setAttribute("position", "before_end");
-//                    this.button.setAttribute("dir", "reverse");
+                    this.button.setAttribute("position", "before_end");
+                    this.button.setAttribute("dir", "reverse");
 
                     subs_container = document.createElementNS(xulns, "vbox");
                     subs_container.setAttribute("class", "subsContainer");
@@ -68,7 +68,7 @@
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label",event.target.id + "-" + event.target.cat + "-" + event.target.lang);
                     item.setAttribute("url",event.target.src);
-                    this.subs_menu.appendChild(item);
+                    this.subtitlesMenu.appendChild(item);
 
                     this.button.setAttribute("hidden", "false");
                     alert(event);

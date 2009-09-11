@@ -1,4 +1,4 @@
-.wikisubsButton {
+.subtitlesButton {
     -moz-user-focus: none;
     background: url(chrome://wikisubs/skin/subtitlesButton.png) no-repeat center;
     /* Remove the native button appearance and styling */
@@ -10,22 +10,28 @@
     border: none;
 }
 
-.wikisubsButton * {
+.subtitlesButton * {
     -moz-appearance: none !important;
-    //list-style-image: none !important;
 }
 
-.subsContainer {
-    position: absolute;
-    text-align:center;
-    width:100%;
+.subtitlesButton menuitem:hover {
+    background-color: rgba(60,60,60, 1) !important;
 }
 
-.subsLabel {
-    position:relative;
-    bottom: 80px;
-    padding:10px;
-    background:gray;
-    color:white;
-    opacity:0.8;
+.subtitlesButton menuitem {
+    background-color: rgba(100,100,100, 1) !important;
+    border: 1px solid rgba(200,200,200, 1);
+    color: rgba(255,255,128, 1);
+    padding: 4px;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
+
+.subtitlesLabel {
+    padding-bottom: 12px;
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    color: rgba(255,255,128, 1);
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
