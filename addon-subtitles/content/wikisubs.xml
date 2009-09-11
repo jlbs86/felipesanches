@@ -12,49 +12,118 @@
                 video : null,
                 subtitlesMenu : null,
                 button : null,
+                current_subtitle : null,
 
+                test_subtitles : function(){
+                  this.addSubtitle({"lang":"Português", "raw" : "0:00:03.000,0:00:05.000\nEste é um exemplo inventado de closed captioning\n\n0:00:05.100,0:00:07.000\napenas para testar a ferramenta\n\n0:00:07.100,0:00:10.000\ne para mostrar que é possível\n\n0:00:10.100,0:00:13.000\nter múltiplas legendas alternativas\n\n0:00:13.100,0:00:14.000\npara um mesmo vídeo\n\n0:00:14.100,0:00:16.000\no resto do texto desta legenda é idêntico \n\n0:00:20.000,0:00:22.000\nao da legenda Default\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n"});
+
+                  this.addSubtitle({"lang":"English","raw":"0:00:03.000,0:00:05.000\nOne more example\n\n0:00:05.100,0:00:07.000\njust for testin\n\n0:00:07.100,0:00:10.000\nand to show it's possible\n\n0:00:10.100,0:00:13.000\nto have multiple, alternative subs\n\n0:00:13.100,0:00:14.000\nto the same video content\n\n0:00:14.100,0:00:16.000\n Cool, isn't it?! \n\n0:00:20.000,0:00:22.000\nayeah...\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n"});
+                },
+
+                toMilliSeconds: function (s){
+                  var timeparts = s.split('.');
+                  var epoch = 'Jan 01, 1970';
+                  var millisecondsEpoch = Date.parse(epoch);
+                  var timestamp = epoch+' '+timeparts[0];
+                  var milliseconds = Date.parse(timestamp) - millisecondsEpoch + parseInt(timeparts[1]);
+                  return milliseconds;
+                },
+
+                parse_SRT : function (text){
+                  var pairs = text.split("\n\n");
+                  var content = [];
+                  for (var i=0; i<pairs.length; i++){
+                    var pair = pairs[i].split("\n");
+                    var timeinterval = pair[0].split(',');
+                    var start = this.toMilliSeconds(timeinterval[0]);
+                    var end = this.toMilliSeconds(timeinterval[1]);
+                    content.push({'start':start, 'end':end, 'text':pair[1]});
+                  }
+                  return content;
+                },
+
+                parse_content : function (sub){
+                   //TODO: detect subtitles format and delegate to the appropriate parser.
+                  sub["content"] = this.parse_SRT(sub["raw"]);
+                },
+
+                addSubtitle : function (sub){
+                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                    var item = document.createElementNS(xulns, "menuitem");
+                    item.setAttribute("label", sub["lang"]);
+                    var self = this;
+                    item.addEventListener("click", function(e) {self.parse_content(sub); self.current_subtitle = sub;}, false);
+                    this.subtitlesMenu.appendChild(item);
+                    this.subtitlesButton.setAttribute("hidden", "false");
+                },
+
+                displaySubtitles : function(){
+                  var currentTime = Math.round(this.video.currentTime * 1000); // in ms
+                  if (this.current_subtitle == null) return;
+
+                  var text = '';
+                  var subs = this.current_subtitle["content"];
+                  for (i=0; i < subs.length; i++){
+                    if ((currentTime >= subs[i].start) && (currentTime < subs[i].end)){
+                      text = subs[i]["text"];
+                      break;
+                    }
+                  }
+                  this.subtitlesLabel.setAttribute("value", text);                    
+                },
 
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
                     this.video = binding.parentNode;
 
                     // XBL doesn't have a good way to inject content into the middle of
-                    // something else, so we'll insert our button via DOM manipulation.
+                    // something else, so we'll insert our content via DOM manipulation.
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-                    this.button = document.createElementNS(xulns, "button");
-                    this.button.setAttribute("class", "subtitlesButton");
-                    this.button.setAttribute("type", "menu");
+                    this.subtitlesButton = document.createElementNS(xulns, "button");
+                    this.subtitlesButton.setAttribute("class", "subtitlesButton");
+                    this.subtitlesButton.setAttribute("type", "menu");
 
                     this.subtitlesMenu = document.createElementNS(xulns, "menupopup");
-                    this.button.appendChild(this.subtitlesMenu);
-                    this.button.setAttribute("type", "menu");
-                    this.button.setAttribute("position", "before_end");
-                    this.button.setAttribute("dir", "reverse");
+                    this.subtitlesButton.appendChild(this.subtitlesMenu);
+                    this.subtitlesButton.setAttribute("type", "menu");
+                    this.subtitlesButton.setAttribute("position", "before_end");
+                    this.subtitlesButton.setAttribute("dir", "reverse");
 
-                    subs_container = document.createElementNS(xulns, "vbox");
-                    subs_container.setAttribute("class", "subsContainer");
-                    subs_label = document.createElementNS(xulns, "label");
-                    subs_label.setAttribute("class", "subsLabel");
-                    subs_container.appendChild(subs_label);
-                    subs_label.setAttribute("hidden", "true");
+                    subtitlesHbox = document.createElementNS(xulns, "hbox");
+
+                    spacer1 = document.createElementNS(xulns, "spacer");
+                    spacer1.setAttribute("flex", "1");
+                    this.subtitlesLabel = document.createElementNS(xulns, "label");
+                    this.subtitlesLabel.setAttribute("class", "subtitlesLabel");
+                    spacer2 = document.createElementNS(xulns, "spacer");
+                    spacer2.setAttribute("flex", "1");
+
+                    subtitlesHbox.setAttribute("class", "subsContainer");
+                    subtitlesHbox.appendChild(spacer1);
+                    subtitlesHbox.appendChild(this.subtitlesLabel);
+                    subtitlesHbox.appendChild(spacer2);
+
+                    var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
 
                     //Add label where the subtitle will be displayed:
-                    var controls_vbox = document.getAnonymousElementByAttribute(binding, "class", "controlBar").parentNode;
-                    controls_vbox.parentNode.insertBefore(subs_container, controls_vbox);
+                    controlBar.parentNode.insertBefore(subtitlesHbox, controlBar);
 
                     //Add subs button:
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
-                    muteButton.parentNode.insertBefore(this.button, muteButton);
+                    muteButton.parentNode.insertBefore(this.subtitlesButton, muteButton);
 
                     //I am leaving the following line commented out so that people in the mozilla mailing list
                     // can easily see the button even when no subs are available... 
                     //It will be uncommented in the future :-)
 
                     //button is hidden while we dont have a list of available subs:
-                    //this.button.setAttribute("hidden", "true");
+                    //this.subtitlesButton.setAttribute("hidden", "true");
+
+                    this.test_subtitles();
 
                     var self = this;
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
+                    self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
 
                     dump("--- wikisubs initialized ---\n");
                 },
@@ -64,13 +133,11 @@
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
                     //TODO: verify whether the node is an itext
 
-                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
-                    var item = document.createElementNS(xulns, "menuitem");
-                    item.setAttribute("label",event.target.id + "-" + event.target.cat + "-" + event.target.lang);
-                    item.setAttribute("url",event.target.src);
-                    this.subtitlesMenu.appendChild(item);
+                    this.addSubtitle({"title": event.target.id + "-" + event.target.cat + "-" + event.target.lang,
+                      "lang": event.target.lang,
+                       "url": event.target.src});
 
-                    this.button.setAttribute("hidden", "false");
+                    this.subtitlesButton.setAttribute("hidden", "false");
                     alert(event);
                 }
             }) ]]>
