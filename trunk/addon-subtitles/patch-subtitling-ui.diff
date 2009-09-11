@@ -1,0 +1,281 @@
+diff -r 3ca4641f5db1 toolkit/content/widgets/videocontrols.xml
+--- a/toolkit/content/widgets/videocontrols.xml	Tue Sep 08 18:28:52 2009 -0700
++++ b/toolkit/content/widgets/videocontrols.xml	Thu Sep 10 03:29:47 2009 -0300
+@@ -200,6 +200,11 @@
+ 
+             <vbox>
+                 <spacer flex="1"/>
++                <hbox class="subtitlesBox">
++                    <spacer flex="1"/>
++                    <label class="subtitlesLabel" value=""/>
++                    <spacer flex="1"/>
++                </hbox>
+                 <hbox class="controlBar" hidden="true">
+                     <button class="playButton"
+                             playlabel="&playButton.playLabel;"
+@@ -213,6 +218,9 @@
+                     <vbox class="durationBox">
+                         <label class="durationLabel" role="presentation"/>
+                     </vbox>
++                    <button class="subtitlesButton" type="menu" hidden="true">
++                        <menupopup class="subtitlesMenu"  position="before_end" dir="reverse"/>
++                    </button>
+                     <button class="muteButton"
+                             mutelabel="&muteButton.muteLabel;"
+                             unmutelabel="&muteButton.unmuteLabel;"/>
+@@ -421,6 +429,9 @@
+                         this.statusIcon.setAttribute("type", "throbber");
+                         this.setupStatusFader();
+                     }
++
++                    this.subtitle_list = [];
++                    this.current_subtitle = -1;
+                 },
+ 
+                 get dynamicControls() {
+@@ -512,6 +523,8 @@
+                         case "timeupdate":
+                             var currentTime = Math.round(this.video.currentTime * 1000); // in ms
+                             var duration = Math.round(this.video.duration * 1000); // in ms
++
++                            this.displaySubtitles(currentTime);
+ 
+                             // If playing/seeking after the video ended, we won't get a "play"
+                             // event, so update the button state here.
+@@ -941,6 +954,77 @@
+                         dump("videoctl: " + msg + "\n");
+                 },
+ 
++                toMilliSeconds: function (s){
++                  var timeparts = s.split('.');
++                  var epoch = 'Jan 01, 1970';
++                  var millisecondsEpoch = Date.parse(epoch);
++                  var timestamp = epoch+' '+timeparts[0];
++                  var milliseconds = Date.parse(timestamp) - millisecondsEpoch + parseInt(timeparts[1]);
++                  return milliseconds;
++                },
++
++                parse_SRT : function (text){
++                  var pairs = text.split("\n\n");
++                  var subs = {"content": []};
++                  for (var i=0; i<pairs.length; i++){
++                    var pair = pairs[i].split("\n");
++                    var timeinterval = pair[0].split(',');
++                    var start = this.toMilliSeconds(timeinterval[0]);
++                    var end = this.toMilliSeconds(timeinterval[1]);
++                    subs["content"].push({'start':start, 'end':end, 'text':pair[1]});
++                  }
++                  return subs;
++                },
++
++                addSubtitle : function (sub){
++                    var length = this.subtitle_list.length;
++                    this.subtitle_list.push(sub);
++                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
++                    var item = document.createElementNS(xulns, "menuitem");
++                    item.setAttribute("label", sub["lang"]);
++                    item.setAttribute("url", sub["url"]);
++                    item.setAttribute("content", sub["content"]);
++                    var self = this;
++                    item.addEventListener("click", function(e) {self.current_subtitle = length}, false);
++                    this.subtitlesMenu.appendChild(item);
++                    this.subtitlesButton.setAttribute("hidden", "false");
++                },
++
++                removeSubtitle : function (url){
++                    for (sub in this.subtitle_list){
++                      if (this.subtitle_list[sub]["url"]=="url"){
++                        this.subtitle_list.remove(sub);
++                        break;
++                      }
++                    }
++                },
++
++                displaySubtitles : function(timestamp){
++                  if (this.current_subtitle == -1) return;
++
++                  var text = '';
++                  var subs = this.subtitle_list[this.current_subtitle]["content"];
++                  for (i=0; i < subs.length; i++){
++                    if ((timestamp >= subs[i].start) && (timestamp < subs[i].end)){
++                      text = subs[i]["text"];
++                      break;
++                    }
++                  }
++                  this.subtitlesLabel.setAttribute("value", text);                    
++                },
++
++                test_subtitles : function(){
++                  var sub = this.parse_SRT("0:00:03.000,0:00:05.000\nEste é um exemplo inventado de closed captioning\n\n0:00:05.100,0:00:07.000\napenas para testar a ferramenta\n\n0:00:07.100,0:00:10.000\ne para mostrar que é possível\n\n0:00:10.100,0:00:13.000\nter múltiplas legendas alternativas\n\n0:00:13.100,0:00:14.000\npara um mesmo vídeo\n\n0:00:14.100,0:00:16.000\no resto do texto desta legenda é idêntico \n\n0:00:20.000,0:00:22.000\nao da legenda Default\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n");
++                  sub["url"] = "portuguese.example/123";
++                  sub["lang"] = "Português";
++                  this.addSubtitle(sub);
++
++                  sub = this.parse_SRT("0:00:03.000,0:00:05.000\nOne more example\n\n0:00:05.100,0:00:07.000\njust for testin\n\n0:00:07.100,0:00:10.000\nand to show it's possible\n\n0:00:10.100,0:00:13.000\nto have multiple, alternative subs\n\n0:00:13.100,0:00:14.000\nto the same video content\n\n0:00:14.100,0:00:16.000\n Cool, isn't it?! \n\n0:00:20.000,0:00:22.000\nayeah...\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n");
++                  sub["url"] = "english.example/123";
++                  sub["lang"] = "English";
++                  this.addSubtitle(sub);
++                },
++
+                 init : function (binding) {
+                     this.video = binding.parentNode;
+                     this.videocontrols = binding;
+@@ -960,7 +1044,9 @@
+                     this.scrubber      = document.getAnonymousElementByAttribute(binding, "class", "scrubber");
+                     this.scrubberThumb = document.getAnonymousElementByAttribute(this.scrubber, "class", "scale-thumb");
+                     this.durationLabel = document.getAnonymousElementByAttribute(binding, "class", "durationLabel");
+-
++                    this.subtitlesLabel    = document.getAnonymousElementByAttribute(binding, "class", "subtitlesLabel");
++                    this.subtitlesButton    = document.getAnonymousElementByAttribute(binding, "class", "subtitlesButton");
++                    this.subtitlesMenu    = document.getAnonymousElementByAttribute(binding, "class", "subtitlesMenu");
+                     this.setupInitialState();
+ 
+                     // videocontrols.css hides the control bar by default, because if script
+@@ -999,6 +1085,7 @@
+                     // Make the <video> element keyboard accessible.
+                     this.video.setAttribute("tabindex", 0);
+                     this.video.addEventListener("keypress", function (e) { self.keyHandler(e) }, false);
++                    this.test_subtitles();
+ 
+                     this.log("--- videocontrols initialized ---");
+                 }
+diff -r 3ca4641f5db1 toolkit/themes/pinstripe/global/jar.mn
+--- a/toolkit/themes/pinstripe/global/jar.mn	Tue Sep 08 18:28:52 2009 -0700
++++ b/toolkit/themes/pinstripe/global/jar.mn	Thu Sep 10 03:29:47 2009 -0300
+@@ -130,6 +130,7 @@ toolkit.jar:
+ +  skin/classic/global/media/unmuteButton.png                         (media/unmuteButton.png)
+ +  skin/classic/global/media/scrubberThumb.png                        (media/scrubberThumb.png)
+ +  skin/classic/global/media/scrubberThumbWide.png                    (media/scrubberThumbWide.png)
+++  skin/classic/global/media/subtitlesButton.png                      (media/subtitlesButton.png)
+ +  skin/classic/global/media/error.png                                (media/error.png)
+ +  skin/classic/global/media/throbber.png                             (media/throbber.png)
+ +  skin/classic/global/media/volumeThumb.png                          (media/volumeThumb.png)
+diff -r 3ca4641f5db1 toolkit/themes/pinstripe/global/media/videocontrols.css
+--- a/toolkit/themes/pinstripe/global/media/videocontrols.css	Tue Sep 08 18:28:52 2009 -0700
++++ b/toolkit/themes/pinstripe/global/media/videocontrols.css	Thu Sep 10 03:29:47 2009 -0300
+@@ -31,6 +31,36 @@
+ }
+ .muteButton[muted="true"] {
+     background: url(chrome://global/skin/media/unmuteButton.png) no-repeat center;
++}
++
++.subtitlesButton {
++    -moz-user-focus: none;
++    background: url(chrome://global/skin/media/subtitlesButton.png) no-repeat center;
++    /* Remove the native button appearance and styling */
++    -moz-appearance: none;
++    margin: 0px;
++    padding: 0px;
++    min-height: 28px;
++    min-width: 33px;
++    border: none;
++}
++
++.subtitlesButton * {
++    -moz-appearance: none !important;
++}
++
++.subtitlesButton menuitem:hover {
++    background-color: rgba(60,60,60, 1) !important;
++}
++
++.subtitlesButton menuitem {
++    background-color: rgba(100,100,100, 1) !important;
++    border: 1px solid rgba(200,200,200, 1);
++    color: rgba(255,255,128, 1);
++    padding: 4px;
++    font-size: 11px;
++    font-family: Arial, sans-serif;
++    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+ }
+ 
+ .volumeStack {
+@@ -76,6 +106,14 @@
+     color: rgba(255,255,255,0.75);
+     font-size: 11px;
+     font-family: Helvetica, sans-serif;
++}
++
++.subtitlesLabel {
++    padding-bottom: 12px;
++    font-size: 13px;
++    font-family: Arial, sans-serif;
++    color: rgba(255,255,128, 1);
++    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+ }
+ 
+ .backgroundBar {
+diff -r 3ca4641f5db1 toolkit/themes/winstripe/global/jar.mn
+--- a/toolkit/themes/winstripe/global/jar.mn	Tue Sep 08 18:28:52 2009 -0700
++++ b/toolkit/themes/winstripe/global/jar.mn	Thu Sep 10 03:29:47 2009 -0300
+@@ -136,6 +136,7 @@ toolkit.jar:
+         skin/classic/global/media/unmuteButton.png               (media/unmuteButton.png)
+         skin/classic/global/media/scrubberThumb.png              (media/scrubberThumb.png)
+         skin/classic/global/media/scrubberThumbWide.png          (media/scrubberThumbWide.png)
++        skin/classic/global/media/subtitlesButton.png            (media/subtitlesButton.png)
+         skin/classic/global/media/throbber.png                   (media/throbber.png)
+         skin/classic/global/media/volumeThumb.png                (media/volumeThumb.png)
+         skin/classic/global/media/error.png                      (media/error.png)
+@@ -297,6 +298,7 @@ toolkit.jar:
+         skin/classic/aero/global/media/unmuteButton.png                  (media/unmuteButton.png)
+         skin/classic/aero/global/media/scrubberThumb.png                 (media/scrubberThumb.png)
+         skin/classic/aero/global/media/scrubberThumbWide.png             (media/scrubberThumbWide.png)
++        skin/classic/aero/global/media/subtitlesButton.png               (media/subtitlesButton.png)
+         skin/classic/aero/global/media/throbber.png                      (media/throbber.png)
+         skin/classic/aero/global/media/volumeThumb.png                   (media/volumeThumb.png)
+         skin/classic/aero/global/media/error.png                         (media/error.png)
+diff -r 3ca4641f5db1 toolkit/themes/winstripe/global/media/videocontrols.css
+--- a/toolkit/themes/winstripe/global/media/videocontrols.css	Tue Sep 08 18:28:52 2009 -0700
++++ b/toolkit/themes/winstripe/global/media/videocontrols.css	Thu Sep 10 03:29:47 2009 -0300
+@@ -35,6 +35,36 @@
+     background: url(chrome://global/skin/media/unmuteButton.png) no-repeat center;
+ }
+ 
++.subtitlesButton {
++    -moz-user-focus: none;
++    background: url(chrome://global/skin/media/subtitlesButton.png) no-repeat center;
++    /* Remove the native button appearance and styling */
++    -moz-appearance: none;
++    margin: 0px;
++    padding: 0px;
++    min-height: 28px;
++    min-width: 33px;
++    border: none;
++}
++
++.subtitlesButton * {
++    -moz-appearance: none !important;
++}
++
++.subtitlesButton menuitem:hover {
++    background-color: rgba(60,60,60, 1) !important;
++}
++
++.subtitlesButton menuitem {
++    background-color: rgba(100,100,100, 1) !important;
++    border: 1px solid rgba(200,200,200, 1);
++    color: rgba(255,255,128, 1);
++    padding: 4px;
++    font-size: 11px;
++    font-family: Arial, sans-serif;
++    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
++}
++
+ .volumeStack {
+     width: 28px;
+     height: 70px;
+@@ -79,6 +109,14 @@
+     color: rgba(255,255,255,0.75);
+     font-size: 11px;
+     font-family: Arial, sans-serif;
++}
++
++.subtitlesLabel {
++    padding-bottom: 12px;
++    font-size: 13px;
++    font-family: Arial, sans-serif;
++    color: rgba(255,255,128, 1);
++    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+ }
+ 
+ .backgroundBar {
