@@ -1,0 +1,463 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448"
+   height="1052.3622"
+   id="svg2"
+   sodipodi:version="0.32"
+   inkscape:version="0.46+devel"
+   version="1.0"
+   sodipodi:docname="cromos-A.svg"
+   inkscape:output_extension="org.inkscape.output.svg.inkscape">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective2490"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4991"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath4997">
+      <rect
+         style="opacity:1;fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none"
+         id="rect4999"
+         width="219.68504"
+         height="173.62204"
+         x="-81.033363"
+         y="-15.820439"
+         transform="matrix(0,1,-1,0,0,0)" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5045"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5051">
+      <rect
+         y="-15.820439"
+         x="159.91173"
+         height="173.62204"
+         width="219.68504"
+         id="rect5053"
+         style="opacity:1;fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5099"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5105">
+      <rect
+         style="opacity:1;fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none"
+         id="rect5107"
+         width="219.68504"
+         height="173.62204"
+         x="400.85678"
+         y="-15.820439" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5165"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5453"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5687"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5693">
+      <rect
+         y="248.03139"
+         x="503.14969"
+         height="173.62204"
+         width="219.68504"
+         id="rect5695"
+         style="fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5745"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5799"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective5853"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5859">
+      <rect
+         style="fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none"
+         id="rect5861"
+         width="219.68504"
+         height="173.62204"
+         x="21.259708"
+         y="822.04742" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5907"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5913">
+      <rect
+         y="822.04742"
+         x="262.20477"
+         height="173.62204"
+         width="219.68504"
+         id="rect5915"
+         style="fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective5961"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath5967">
+      <rect
+         style="fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none"
+         id="rect5969"
+         width="219.68504"
+         height="173.62204"
+         x="503.14984"
+         y="822.04742" />
+    </clipPath>
+    <inkscape:perspective
+       id="perspective6650"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective6815"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath6829">
+      <rect
+         y="439.37009"
+         x="503.14981"
+         height="364.961"
+         width="219.685"
+         id="rect6831"
+         style="opacity:1;fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none" />
+    </clipPath>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#c8daff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="1"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.56729519"
+     inkscape:cx="372.04724"
+     inkscape:cy="526.18109"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     units="cm"
+     inkscape:window-width="1439"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="25" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g5109"
+       transform="translate(102.29295,72.513158)">
+      <rect
+         y="-24.678707"
+         x="-91.663284"
+         height="191.33858"
+         width="240.94489"
+         id="rect3981"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <image
+         y="-133.36926"
+         x="-250.74443"
+         id="image4993"
+         height="292.6694"
+         width="294.68384"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-01.png"
+         xlink:href="/home/felipe/Desktop/album/cromo-01.png"
+         transform="matrix(0,-1,1,0,0,0)"
+         clip-path="url(#clipPath4997)" />
+    </g>
+    <g
+       id="g5113"
+       transform="translate(102.29295,72.513158)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect4118"
+         width="240.94489"
+         height="191.33858"
+         x="149.2818"
+         y="-24.678707" />
+      <image
+         y="-36.951416"
+         x="142.79564"
+         id="image5047"
+         height="226.99644"
+         width="247.27283"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-02.jpg"
+         xlink:href="/home/felipe/Desktop/album/cromo-02.jpg"
+         clip-path="url(#clipPath5051)" />
+    </g>
+    <g
+       id="g5117"
+       transform="translate(102.29295,72.513158)">
+      <rect
+         y="-24.678707"
+         x="390.22687"
+         height="191.33858"
+         width="240.94489"
+         id="rect4158"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <image
+         y="-31.299757"
+         x="363.43832"
+         id="image5101"
+         height="190.02553"
+         width="324.27563"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-03.jpg"
+         xlink:href="/home/felipe/Desktop/album/cromo-03.jpg"
+         clip-path="url(#clipPath5105)" />
+    </g>
+    <rect
+       y="621.85052"
+       x="10.629818"
+       height="191.33858"
+       width="240.94489"
+       id="rect3937"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       y="430.51181"
+       x="10.629757"
+       height="191.33858"
+       width="240.94489"
+       id="rect3957"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       y="239.17313"
+       x="10.629627"
+       height="191.33858"
+       width="240.94489"
+       id="rect3989"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       id="rect4094"
+       width="240.94489"
+       height="191.33858"
+       x="251.57491"
+       y="621.85052" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       id="rect4110"
+       width="240.94489"
+       height="191.33858"
+       x="251.57484"
+       y="430.51181" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+       id="rect4126"
+       width="240.94489"
+       height="191.33858"
+       x="251.57471"
+       y="239.17313" />
+    <rect
+       y="248.03162"
+       x="21.259695"
+       height="556.29901"
+       width="460.63"
+       id="rect5286"
+       style="fill:#000000;fill-opacity:0.50196078;fill-rule:evenodd;stroke:none" />
+    <g
+       id="g8860">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect3949"
+         width="240.94489"
+         height="191.33858"
+         x="10.629787"
+         y="813.18921" />
+      <image
+         clip-path="url(#clipPath5859)"
+         xlink:href="/home/felipe/Desktop/album/cromo-08.jpg"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-08.jpg"
+         width="259.36374"
+         height="225.64645"
+         id="image5855"
+         x="15.54537"
+         y="801.66321" />
+    </g>
+    <g
+       id="g8840">
+      <rect
+         y="813.18921"
+         x="251.57487"
+         height="191.33858"
+         width="240.94489"
+         id="rect4102"
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none" />
+      <image
+         clip-path="url(#clipPath5913)"
+         xlink:href="/home/felipe/Desktop/album/cromo-09.jpg"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-09.jpg"
+         width="267.12589"
+         height="190.32719"
+         id="image5909"
+         x="253.08948"
+         y="820.32153" />
+    </g>
+    <g
+       id="g6833">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect4150"
+         width="240.94489"
+         height="191.33858"
+         x="492.5199"
+         y="430.51181" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect4134"
+         width="240.94489"
+         height="191.33858"
+         x="492.51996"
+         y="621.85052" />
+      <image
+         clip-path="url(#clipPath6829)"
+         xlink:href="cromo-X02.png"
+         sodipodi:absref="/home/felipe/Área de Trabalho/album/cromo-X02.png"
+         width="291.42957"
+         height="370.71295"
+         id="image6652"
+         x="492.21747"
+         y="435.55368" />
+    </g>
+    <g
+       id="g8820">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect4142"
+         width="240.94489"
+         height="191.33858"
+         x="492.51993"
+         y="813.18921" />
+      <image
+         clip-path="url(#clipPath5967)"
+         xlink:href="/home/felipe/Desktop/album/cromo-10.jpg"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-10.jpg"
+         width="242.82765"
+         height="223.40143"
+         id="image5963"
+         x="501.00558"
+         y="776.44885" />
+    </g>
+    <g
+       id="g5697">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:none"
+         id="rect4166"
+         width="240.94489"
+         height="191.33858"
+         x="492.51978"
+         y="239.17313" />
+      <image
+         clip-path="url(#clipPath5693)"
+         xlink:href="/home/felipe/Desktop/album/cromo-05.jpg"
+         sodipodi:absref="/home/felipe/Desktop/album/cromo-05.jpg"
+         width="275.69122"
+         height="175.89099"
+         id="image5455"
+         x="467.86984"
+         y="246.36108" />
+    </g>
+  </g>
+</svg>
