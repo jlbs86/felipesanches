@@ -7,3 +7,4 @@ overlay chrome://browser/content/browser.xul chrome://wikisubs/content/overlay.x
 # into the global namespace via an override...
 #
 override chrome://global/content/wikisubs.xml content/wikisubs.xml
+override chrome://global/content/annotations.xml content/annotations.xml
