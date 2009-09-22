@@ -1,0 +1,34 @@
+window {
+	background: #0D0D5A;
+}
+
+svg-shape {
+	-moz-binding: url("annotations.xml#annotation");
+	-moz-user-focus: normal;
+	stroke-width: 4px;
+	font-family: Lucida Grande,Geneva,Verdana,Arial,Helvetica,sans-serif;
+	font-style: bold;
+	font-variant: normal;
+	line-height: normal;
+        font-size: 32px;
+}
+
+svg-shape .svg-shape-text {
+	fill: white;
+}
+
+svg-shape .svg-shape-path {
+	fill: gray;
+  stroke: black;
+}
+
+svg-shape .svg-shape-rect {
+	fill: red;
+	stroke: white;
+}
+
+svg-shape:focus .svg-shape-rect {
+	fill: green;
+	stroke: white;
+}
+
