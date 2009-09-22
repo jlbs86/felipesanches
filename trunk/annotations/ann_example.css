@@ -2,7 +2,7 @@ window {
 	background: #0D0D5A;
 }
 
-svg-shape {
+annotation {
 	-moz-binding: url("annotations.xml#annotation");
 	-moz-user-focus: normal;
 	stroke-width: 4px;
@@ -13,21 +13,21 @@ svg-shape {
         font-size: 32px;
 }
 
-svg-shape .svg-shape-text {
+annotation .svg-shape-text {
 	fill: white;
 }
 
-svg-shape .svg-shape-path {
+annotation .svg-shape-path {
 	fill: gray;
   stroke: black;
 }
 
-svg-shape .svg-shape-rect {
+annotation .svg-shape-rect {
 	fill: red;
 	stroke: white;
 }
 
-svg-shape:focus .svg-shape-rect {
+annotation:focus .svg-shape-rect {
 	fill: green;
 	stroke: white;
 }
