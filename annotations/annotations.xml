@@ -59,8 +59,6 @@
 
 	var my_this = this;
 	
-	this.svg_shape_loaded = false;
-
 	this.svg_shape_box = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-box");
 	this.rect = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-rect");
 	this.text = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-text");
@@ -74,11 +72,7 @@
 			<method name="doLayout">
 				<body>
 	<![CDATA[
-	
-	//if (this.svg_shape_loaded) return;
-	
-	this.svg_shape_loaded = true;
-	
+
 	var box_w = this.boxObject.width;
 	var box_h = this.boxObject.height;
 	var cx = box_w / 2;
@@ -100,7 +94,9 @@
     px = this.getAttribute("px")*box_w/100;
 		py = this.getAttribute("py")*box_h/100;
 
-
+  	var text_w = this.text.getComputedTextLength();	
+    var text_h = document.defaultView.getComputedStyle(this.text, "").getPropertyCSSValue("font-size").getFloatValue(CSSPrimitiveValue.CSS_PX);
+    
     base_coords = function(point, p0, length){
       if (point > p0 + length/2){
         base0 = 4*length/6;
@@ -109,7 +105,6 @@
         base0 = 1*length/6;
         base1 = 2*length/6;
       }
-//alert("point:"+point+" p0:"+p0+" +length:"+length+" b0:"+base0+" b1:"+base1);
       return [base0, base1];
     }
 
@@ -171,6 +166,9 @@
     description += "z";
 
 		this.path.setAttribute("d", description);
+		this.text.setAttribute("x", x + w/2 - text_w/2);
+		this.text.setAttribute("y", y + h/2); // -text_h/2 ?
+
 		this.rect.setAttribute("style", "display: none");
 
   } else if (this.type == "highlight"){
@@ -187,16 +185,8 @@
 		this.rect.setAttribute("rx", this.svg_shape_corner);
 		this.rect.setAttribute("ry", this.svg_shape_corner);
 	}
-	  	
-	
-	this.text.setAttribute("x", cx);
-	this.text.setAttribute("y", cy - stroke_w);
-		
-  	this.setText(this.getAttribute("label"));
 
-	//Not used but useful to know
-	//var text_w = this.text.getComputedTextLength();	
-  	//var text_h = document.defaultView.getComputedStyle(this.text, "").getPropertyCSSValue("font-size").getFloatValue(CSSPrimitiveValue.CSS_PX);
+	this.setText(this.getAttribute("label"));
 
 	]]>
 				</body>
@@ -238,7 +228,7 @@
 					<svg:g>
 						<svg:rect anonid="svg-shape-rect" class="svg-shape-rect" x="2" y="2" width="10" height="10" rx="8" ry="8"/>
 						<svg:path anonid="svg-shape-path" class="svg-shape-path"/>
-						<svg:text anonid="svg-shape-text" x="16" y="0" class="svg-shape-text">Text</svg:text>
+						<svg:text anonid="svg-shape-text" x="0" y="0" class="svg-shape-text">Text</svg:text>
 					</svg:g>
 				</svg:svg>
 			</xul:hbox>

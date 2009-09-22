@@ -28,7 +28,7 @@ function on_load(evt){
 	]]>
 </script>
 	<stack flex="1">
-			<svg-shape flex="1" id="balloon" type="balloon" x="30" y="30" w="30" h="20" px="10" py="20" label="teste" />
+			<annotation flex="1" id="balloon" type="balloon" x="30" y="30" w="30" h="20" px="10" py="20" label="teste" />
 	</stack>
 
 </window>
