@@ -9,6 +9,7 @@
       <implementation>
         <field name="wikisubsUtils">
             <![CDATA[ ({
+                svgcanvas : null,
                 video : null,
                 subtitlesMenu : null,
                 button : null,
@@ -72,9 +73,30 @@
                   this.subtitlesLabel.setAttribute("value", text);                    
                 },
 
+                svgSetXYWH : function (el, x, y, w, h) {
+                // convenience function to set X, Y, width, and height attributes
+
+                    el.setAttribute("x", x);
+                    el.setAttribute("y", y);
+                    el.setAttribute("width", w);
+                    el.setAttribute("height", h);
+                },
+
+                addBalloon : function(binding){
+                  
+                  var ann = document.createElement("annotation");
+                  ann.setAttribute("type", "baloon");
+                  ann.setDimensions(0,0,30,80);
+                  ann.setPointer(40,20);
+
+                  svgcanvas = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
+                  svgcanvas.appendChild(ann);
+                },
+
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
                     this.video = binding.parentNode;
+                    this.addBalloon(binding);
 
                     // XBL doesn't have a good way to inject content into the middle of
                     // something else, so we'll insert our content via DOM manipulation.

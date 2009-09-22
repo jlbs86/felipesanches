@@ -3,3 +3,7 @@
 video > xul|videocontrols {
     -moz-binding: url("chrome://global/content/wikisubs.xml#wikisubs");
 }
+
+annotation {
+    -moz-binding: url("chrome://global/content/annotations.xml#annotation");
+}
