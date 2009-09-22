@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="ann_example.css" type="text/css"?>
+<window title="Test"
+	orient="horizontal"
+	xmlns:html="http://www.w3.org/1999/xhtml" 
+	xmlns:svg="http://www.w3.org/2000/svg" 
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="on_load();"
+>
+<script>
+	<![CDATA[
+	
+function move(evt){
+  var balloon = document.getElementById("balloon");
+  var x = Math.ceil(evt.clientX*100/balloon.boxObject.width);
+  var y = Math.ceil(evt.clientY*100/balloon.boxObject.height);
+  balloon.setPointer(x, y);
+  balloon.setText("X:"+x +" Y:"+ y);
+
+}
+
+function on_load(evt){
+  window.onmousemove = move;
+  //  window.addEventListener("mousemove", move, true);
+}
+
+	]]>
+</script>
+	<stack flex="1">
+			<svg-shape flex="1" id="balloon" type="balloon" x="30" y="30" w="30" h="20" px="10" py="20" label="teste" />
+	</stack>
+
+</window>
+
