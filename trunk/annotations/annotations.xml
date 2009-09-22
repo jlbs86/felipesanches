@@ -218,9 +218,31 @@
 	]]>
 				</body>
 			</method>
+      <method name="setDimensions">
+				<parameter name="x" />
+				<parameter name="y" /> 
+				<parameter name="w" /> 
+				<parameter name="h" /> 
+				<body>
+	<![CDATA[
+	
+	if (!x) x = 0;
+	if (!y) y = x;
+	if (!w) w = 100;
+	if (!h) h = w;
+
+	this.setAttribute("x", x);
+	this.setAttribute("y", y);
+	this.setAttribute("w", w);
+	this.setAttribute("h", h);
+  this.doLayout();
+
+	]]>
+				</body>
+			</method>
 		</implementation>
 		<resources>
-			<stylesheet src="svg-shape.css" />
+			<stylesheet src="ann_example.css" />
 		</resources>
 		<content>
 			<xul:hbox class="box-inherit" xbl:inherits="align,dir,pack,orient" align="center" pack="center" flex="1">
