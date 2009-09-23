@@ -41,7 +41,8 @@
 			</property>
 			<constructor>
 	<![CDATA[
-	
+	this.is_ready = true;
+
 	const STROKE_WIDTH = 4;
 	const CORNER_RADIUS = 0;
 	
@@ -64,8 +65,9 @@
 	this.text = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-text");
 	this.path = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-path");
 	
-	my_func = function myFunction(){ my_this.doLayout();}
-	window.addEventListener("load", my_func, true);
+//	my_func = function myFunction(){ my_this.doLayout();}
+	//window.addEventListener("load", my_func, true);
+
 
 	]]>
 			</constructor>
@@ -73,8 +75,12 @@
 				<body>
 	<![CDATA[
 
-	var box_w = this.boxObject.width;
-	var box_h = this.boxObject.height;
+  if(!this.is_ready) return;
+
+ 	var box_w = this.boxObject.width;
+  var box_h = this.boxObject.height;
+
+ 
 	var cx = box_w / 2;
 	var cy = box_h / 2;
 			
@@ -195,7 +201,7 @@
 				<parameter name="text" /> 
 				<body>
 	<![CDATA[
-	
+
 	if (!text) text = "";
 	this.text.firstChild.nodeValue = text;
 

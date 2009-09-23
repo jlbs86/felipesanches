@@ -3,13 +3,15 @@
 <bindings id="wikisubsBindings"
    xmlns="http://www.mozilla.org/xbl"
    xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-   xmlns:xbl="http://www.mozilla.org/xbl">
+   xmlns:xbl="http://www.mozilla.org/xbl"
+	 xmlns:svg="http://www.w3.org/2000/svg" 
+   xmlns:html="http://www.w3.org/1999/xhtml" 
+>
 
   <binding id="wikisubs" extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
       <implementation>
         <field name="wikisubsUtils">
             <![CDATA[ ({
-                svgcanvas : null,
                 video : null,
                 subtitlesMenu : null,
                 button : null,
@@ -73,30 +75,31 @@
                   this.subtitlesLabel.setAttribute("value", text);                    
                 },
 
-                svgSetXYWH : function (el, x, y, w, h) {
-                // convenience function to set X, Y, width, and height attributes
+                addBalloon : function(x,y,w,h,px,py, text){
+                    var balloon = document.createElement("annotation");
+                    balloon.setAttribute("id", "myballoon");
+                    this.annotations_overlay.appendChild(balloon);
+                    document.addBinding(balloon, "chrome://global/content/annotations.xml#annotation");
 
-                    el.setAttribute("x", x);
-                    el.setAttribute("y", y);
-                    el.setAttribute("width", w);
-                    el.setAttribute("height", h);
-                },
+//                     balloon.setDimensions(20,20,50,40);
+ 
+                    update_balloon = function(evt){
+//                        if(!balloon.boxObject) return;
 
-                addBalloon : function(binding){
-                  
-                  var ann = document.createElement("annotation");
-                  ann.setAttribute("type", "baloon");
-                  ann.setDimensions(0,0,30,80);
-                  ann.setPointer(40,20);
+                      var x = Math.ceil(evt.clientX*100/balloon.boxObject.width);
+                      var y = Math.ceil(evt.clientY*100/balloon.boxObject.height);
 
-                  svgcanvas = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
-                  svgcanvas.appendChild(ann);
+                      balloon.setDimensions(20,20,50,40);
+                      balloon.setPointer(x, y);
+                      balloon.setText("X:"+x +" Y:"+ y);
+                    }
+
+                  window.onmousemove = update_balloon;
                 },
 
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
                     this.video = binding.parentNode;
-                    this.addBalloon(binding);
 
                     // XBL doesn't have a good way to inject content into the middle of
                     // something else, so we'll insert our content via DOM manipulation.
@@ -139,9 +142,17 @@
                     //It will be uncommented in the future :-)
 
                     //button is hidden while we dont have a list of available subs:
-                    //this.subtitlesButton.setAttribute("hidden", "true");
+                    this.subtitlesButton.setAttribute("hidden", "true");
 
                     this.test_subtitles();
+
+                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                    statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
+                    this.annotations_overlay = document.createElementNS(xulns, "stack");
+                    this.annotations_overlay.setAttribute("flex", "1");
+                    statusOverlay.parentNode.insertBefore(this.annotations_overlay, statusOverlay);
+
+                    this.addBalloon(0,0,10,10,20,30,"testing");
 
                     var self = this;
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
@@ -175,7 +186,7 @@
       <resources>
         <stylesheet src="chrome://wikisubs/skin/wikisubs.css"/>
       </resources>
-
   </binding>
+
 </bindings>
 
