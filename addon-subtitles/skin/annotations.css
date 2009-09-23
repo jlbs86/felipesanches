@@ -3,6 +3,7 @@ window {
 }
 
 annotation {
+  -moz-binding: url("chrome://global/content/annotations.xml#annotation");
 	-moz-user-focus: normal;
 	stroke-width: 4px;
 	font-family: Lucida Grande,Geneva,Verdana,Arial,Helvetica,sans-serif;
