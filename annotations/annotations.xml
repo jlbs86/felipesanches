@@ -112,58 +112,66 @@
         return x + "," + y + " ";
     }
 
-    //begin drawing the balloon at the top left corner
-    description = "M " + coord(x,y);
+    var rx = 3*box_h/100;
+    var ry = rx;
 
+    //begin drawing the balloon at the top left corner
+    description = "M " + coord(x,y+ry);
+
+    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+rx) + " " + y +" L ";
     //top side of the balloon
     if (py<y &&
         ( (px-(x+w)) < (y-py) ) &&
         ( (x-px) < (y-py) )){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(px, x, w);
-        description += coord(x+base[0],y);
+        base = base_coords(px, x+rx, w-2*rx);
+        description += coord(x+rx+base[0],y);
         description += coord(px,py);
-        description += coord(x+base[1],y);
+        description += coord(x+rx+base[1],y);
     }
-    description += coord(x+w,y);
+    description += coord(x+w-rx,y);
 
     //right side of the balloon
+    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+w) + " " + (y+ry) +" L ";
     if (px>x+w &&
         ((py-(y+h)) < (px-(x+w))) &&
         ((y-py)<(px-(x+w)))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(py, y, h);
-        description += coord(x+w,y+base[0]);
+        base = base_coords(py, y+ry, h-2*ry);
+        description += coord(x+w,y+ry+base[0]);
         description += coord(px,py);
-        description += coord(x+w,y+base[1]);
+        description += coord(x+w,y+ry+base[1]);
     }
-    description += coord(x+w,y+h);
+    description += coord(x+w,y+h-ry);
 
     //bottom side of the balloon
+    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+w-rx) + " " + (y+h) +" L ";
     if (py>y+h &&
         ((x-px) < (py-(y+h))) &&
         ((px-(x+w))<(py-(y+h)))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(px, x, w);
-        description += coord(x+base[1],y+h);
+        base = base_coords(px, x+rx, w-2*rx);
+        description += coord(x+rx+base[1],y+h);
         description += coord(px,py);
-        description += coord(x+base[0],y+h);
+        description += coord(x+rx+base[0],y+h);
     }
-    description += coord(x,y+h);
+    description += coord(x+rx,y+h);
 
     //left side of the balloon
+    description += " A "+rx+" "+ry+" 0 0 1 "+ x + " " + (y+h-ry) +" L ";
     if (px<x &&
         ((py-(y+h)) < (x-px)) &&
         ((y-py)<(x-px))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(py, y, h);
-        description += coord(x,y+base[1]);
+        base = base_coords(py, y+ry, h-2*ry);
+        description += coord(x,y+ry+base[1]);
         description += coord(px,py);
-        description += coord(x,y+base[0]);
+        description += coord(x,y+ry+base[0]);
     }
+    description += coord(x,y+ry);
 
     //close the path:
-    description += "z";
+    description += " z";
 
 		this.path.setAttribute("d", description);
 		this.text.setAttribute("x", x + w/2 - text_w/2);
@@ -242,7 +250,7 @@
 			</method>
 		</implementation>
 		<resources>
-			<stylesheet src="ann_example.css" />
+			<stylesheet src="chrome://wikisubs/skin/annotations.css"/>
 		</resources>
 		<content>
 			<xul:hbox class="box-inherit" xbl:inherits="align,dir,pack,orient" align="center" pack="center" flex="1">
