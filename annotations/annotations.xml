@@ -99,11 +99,11 @@
     
     base_coords = function(point, p0, length){
       if (point > p0 + length/2){
-        base0 = 4*length/6;
-        base1 = 5*length/6;
+        base0 = p0 + 4*length/6;
+        base1 = p0 + 5*length/6;
       }else{
-        base0 = 1*length/6;
-        base1 = 2*length/6;
+        base0 = p0 + 1*length/6;
+        base1 = p0 + 2*length/6;
       }
       return [base0, base1];
     }
@@ -125,9 +125,9 @@
         ( (x-px) < (y-py) )){
         //if arrow is rendered at this side of the balloon:
         base = base_coords(px, x+rx, w-2*rx);
-        description += coord(x+rx+base[0],y);
+        description += coord(base[0], y);
         description += coord(px,py);
-        description += coord(x+rx+base[1],y);
+        description += coord(base[1], y);
     }
     description += coord(x+w-rx,y);
 
@@ -138,9 +138,9 @@
         ((y-py)<(px-(x+w)))){
         //if arrow is rendered at this side of the balloon:
         base = base_coords(py, y+ry, h-2*ry);
-        description += coord(x+w,y+ry+base[0]);
+        description += coord(x+w, base[0]);
         description += coord(px,py);
-        description += coord(x+w,y+ry+base[1]);
+        description += coord(x+w, base[1]);
     }
     description += coord(x+w,y+h-ry);
 
@@ -151,9 +151,9 @@
         ((px-(x+w))<(py-(y+h)))){
         //if arrow is rendered at this side of the balloon:
         base = base_coords(px, x+rx, w-2*rx);
-        description += coord(x+rx+base[1],y+h);
+        description += coord(base[1], y+h);
         description += coord(px,py);
-        description += coord(x+rx+base[0],y+h);
+        description += coord(base[0], y+h);
     }
     description += coord(x+rx,y+h);
 
@@ -164,9 +164,9 @@
         ((y-py)<(x-px))){
         //if arrow is rendered at this side of the balloon:
         base = base_coords(py, y+ry, h-2*ry);
-        description += coord(x,y+ry+base[1]);
+        description += coord(x, base[1]);
         description += coord(px,py);
-        description += coord(x,y+ry+base[0]);
+        description += coord(x, base[0]);
     }
     description += coord(x,y+ry);
 
