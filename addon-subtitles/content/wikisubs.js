@@ -50,6 +50,48 @@ var Wikisubs = {
         if (!sss.sheetRegistered(sheetURI, sss.AGENT_SHEET))
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
     },
+
+    eventListener : function(evt){
+      var url = evt.target.getAttribute("url");
+
+      alert("recebi um pedido: "+url);
+
+      var register_new_sub = function(text){
+        srt = text.split("<text xml:space=\"preserve\">")
+        if (srt.length == 1) return; //failed to load subtitle
+        srt = srt[1].split("</text>")
+        if (srt.length == 1) return; //failed to load subtitle
+        alert("legenda:\n" + srt[0]);
+        evt.target.addSubtitle({"lang":"Português", "raw" : srt[0]});
+      }
+        
+      this.sendRequest("POST", "http://www.wstr.org/subs/index.php?title=Special:Export/Subtitles/URL/"+url, "", register_new_sub);
+
+    },
+
+    sendRequest : function(method, url, data, callback) {
+
+     	var xhr = new XMLHttpRequest();
+	    var ajaxDataReader = function () {
+		    if (xhr.readyState == 4) {// only if "OK"
+			    alert(xhr.responseText);
+          callback(xhr.responseText);
+		    }
+	    }
+
+	    xhr.onreadystatechange = ajaxDataReader;
+	    try {
+	        xhr.open(method,url, true);
+	        xhr.send(data);
+        }
+	    catch(e){
+		    alert("bad request");
+	    }
+
+    }
 }
 
 window.addEventListener("load", function() { Wikisubs.init(); }, false);
+//window.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false);
+document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.eventListener(e); }, false, true);
+

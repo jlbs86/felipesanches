@@ -47,6 +47,13 @@
 
                 parse_content : function (sub){
                    //TODO: detect subtitles format and delegate to the appropriate parser.
+                    
+                  var evt = document.createEvent("Events");
+                  evt.initEvent("WikiSubsLoadSub", true, false);
+                  this.ajax_element.setAttribute("url", "http://www.gpopai.usp.br/subs/FISL10-Zuardi.ogg");
+                  this.ajax_element.dispatchEvent(evt);
+
+
                   sub["content"] = this.parse_SRT(sub["raw"]);
                 },
 
@@ -86,8 +93,11 @@
                     update_balloon = function(evt){
 //                        if(!balloon.boxObject) return;
 
-                      var x = Math.ceil(evt.clientX*100/balloon.boxObject.width);
-                      var y = Math.ceil(evt.clientY*100/balloon.boxObject.height);
+  //                    var x = Math.ceil(evt.clientX*100/balloon.firstChild.boxObject.width);
+//                      var y = Math.ceil(evt.clientY*100/balloon.firstChild.boxObject.height);
+
+  var x = evt.clientX;
+  var y = evt.clientY;
 
                       balloon.setDimensions(20,20,50,40);
                       balloon.setPointer(x, y);
@@ -100,6 +110,9 @@
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
                     this.video = binding.parentNode;
+
+                    this.ajax_element = document.createElement("WikiSubsAjaxElement");
+                    document.documentElement.appendChild(this.ajax_element);
 
                     // XBL doesn't have a good way to inject content into the middle of
                     // something else, so we'll insert our content via DOM manipulation.

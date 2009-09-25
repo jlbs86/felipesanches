@@ -76,9 +76,9 @@
 	<![CDATA[
 
   if(!this.is_ready) return;
-
- 	var box_w = this.boxObject.width;
-  var box_h = this.boxObject.height;
+this.box = document.getAnonymousElementByAttribute(this, "class", "box-inherit");
+ 	var box_w = this.box.boxObject.width;
+  var box_h = this.box.boxObject.height;
 
  
 	var cx = box_w / 2;
@@ -251,6 +251,9 @@
 			<stylesheet src="chrome://wikisubs/skin/annotations.css"/>
 		</resources>
 		<content>
+<xul:stack>
+			<xul:hbox class="box-inherit" xbl:inherits="align,dir,pack,orient" align="center" pack="center" flex="1">
+			</xul:hbox>
 			<xul:hbox class="box-inherit" xbl:inherits="align,dir,pack,orient" align="center" pack="center" flex="1">
 				<svg:svg anonid="svg-shape-box" width="10px" height="10px">
 					<svg:g>
@@ -260,6 +263,7 @@
 					</svg:g>
 				</svg:svg>
 			</xul:hbox>
+</xul:stack>
 		</content>
 	</binding>
 </bindings>
