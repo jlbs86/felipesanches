@@ -51,30 +51,44 @@ var Wikisubs = {
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
     },
 
-    eventListener : function(evt){
-      var url = evt.target.getAttribute("url");
+    loadMediawikiPage : function(servername, pagename, callback){
+      //servername = "http://www.wstr.org/subs/"
 
-      alert("recebi um pedido: "+url);
+      var parse_response = function(text){
+        //this could be better:
+        var content = text.split("<text xml:space=\"preserve\">")
+        if (content.length == 1) return; //failed to load
+        content = content[1].split("</text>")
+        if (content.length == 1) return; //failed to load
+        content = content[0];
 
-      var register_new_sub = function(text){
-        srt = text.split("<text xml:space=\"preserve\">")
-        if (srt.length == 1) return; //failed to load subtitle
-        srt = srt[1].split("</text>")
-        if (srt.length == 1) return; //failed to load subtitle
-        alert("legenda:\n" + srt[0]);
-        evt.target.addSubtitle({"lang":"Português", "raw" : srt[0]});
+        alert("content:\n" + content);
+        callback(content);
       }
         
-      this.sendRequest("POST", "http://www.wstr.org/subs/index.php?title=Special:Export/Subtitles/URL/"+url, "", register_new_sub);
+      this.sendRequest("POST", servername + "index.php?title=Special:Export/Subtitles/URL/" + pagename, "", parse_response);
 
+    },
+
+    loadSubList: function(evt){
+      alert("loadSubList");
+    },
+
+    loadSub: function(evt){
+      var url = evt.target.getAttribute("url");
+      var set_current_subtitle = function(sub){
+        //blah
+      }
+
+      this.loadMediawikiPage("http://www.wstr.org/subs/", url, set_current_subtitle);
     },
 
     sendRequest : function(method, url, data, callback) {
 
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
-		    if (xhr.readyState == 4) {// only if "OK"
-			    alert(xhr.responseText);
+		    if (xhr.readyState == 4) {
+			    //alert(xhr.responseText);
           callback(xhr.responseText);
 		    }
 	    }
@@ -92,6 +106,6 @@ var Wikisubs = {
 }
 
 window.addEventListener("load", function() { Wikisubs.init(); }, false);
-//window.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false);
-document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.eventListener(e); }, false, true);
+document.addEventListener("WikiSubsLoadSubList", function(e) { Wikisubs.loadSubList(e); }, false, true);
+document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false, true);
 
