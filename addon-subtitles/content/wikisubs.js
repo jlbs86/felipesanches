@@ -82,14 +82,11 @@ var Wikisubs = {
           var string = lines[i].split("[[")[1];
           string = string.split("]]")[0];
           string = string.split("|");
-          var src = string[0].trim();
+          var pagename = string[0].trim();
           var title = string[1].trim();
 
-alert(src);
-alert(title);
-
           itext_node = document.createElement("itext");
-          itext_node.setAttribute("src", src);
+          itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?title=Special:Export/" + pagename);
           itext_node.setAttribute("id", title);
           //itext_node.setAttribute("cat", "");
 //          itext_node.setAttribute("lang", lang);
@@ -104,21 +101,18 @@ alert(title);
 
     loadSub: function(evt){
       var set_current_subtitle = function(subtitle_raw){
-//        evt.target.innerHTML  = subtitle_raw;
-//        var response_evt = document.createEvent("Events");
-//        response_evt.initEvent("updatesubs", true, false);
-//        evt.target.dispatchEvent(response_evt);
-
-          var video = evt.target.parentNode;
-          video.setSubtitle(subtitle_raw);
-
+          alert("subtitle_raw:\n\n"+subtitle_raw);
+          var itext = evt.target;
+          itext.innerHTML = subtitle_raw;
       }
-
-      var wikipage = evt.target.getAttribute("wikipage");
-      this.loadMediawikiPage("http://www.wstr.org/subs/", wikipage, set_current_subtitle);
+alert("loadsub: evt.target: "+evt.target)
+      var url = evt.target.getAttribute("src");
+      this.sendRequest("GET", url, null, set_current_subtitle);
     },
 
     sendRequest : function(method, url, data, callback) {
+
+      alert("sendRequest url: "+ url);
 
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
