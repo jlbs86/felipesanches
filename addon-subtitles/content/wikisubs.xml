@@ -17,12 +17,6 @@
                 button : null,
                 current_subtitle : null,
 
-                test_subtitles : function(){
-                  this.addSubtitle({"lang":"Português", "raw" : "0:00:03.000,0:00:05.000\nEste é um exemplo inventado de closed captioning\n\n0:00:05.100,0:00:07.000\napenas para testar a ferramenta\n\n0:00:07.100,0:00:10.000\ne para mostrar que é possível\n\n0:00:10.100,0:00:13.000\nter múltiplas legendas alternativas\n\n0:00:13.100,0:00:14.000\npara um mesmo vídeo\n\n0:00:14.100,0:00:16.000\no resto do texto desta legenda é idêntico \n\n0:00:20.000,0:00:22.000\nao da legenda Default\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n"});
-
-                  this.addSubtitle({"lang":"English","raw":"0:00:03.000,0:00:05.000\nOne more example\n\n0:00:05.100,0:00:07.000\njust for testin\n\n0:00:07.100,0:00:10.000\nand to show it's possible\n\n0:00:10.100,0:00:13.000\nto have multiple, alternative subs\n\n0:00:13.100,0:00:14.000\nto the same video content\n\n0:00:14.100,0:00:16.000\n Cool, isn't it?! \n\n0:00:20.000,0:00:22.000\nayeah...\n\n0:00:22.000,0:00:24.000\nHappy Hacking!\n\n0:00:24.100,0:00:25.000\nFelipe Sanches\n"});
-                },
-
                 toMilliSeconds: function (s){
                   var timeparts = s.split('.');
                   var epoch = 'Jan 01, 1970';
@@ -45,24 +39,25 @@
                   return content;
                 },
 
+                emit_event : function (eventName, node){
+                  var evt = document.createEvent("Events");
+                  evt.initEvent(eventName, true, false);
+                  node.dispatchEvent(evt);
+                },
+
                 parse_content : function (sub){
                    //TODO: detect subtitles format and delegate to the appropriate parser.
-                    
-                  var evt = document.createEvent("Events");
-                  evt.initEvent("WikiSubsLoadSub", true, false);
-                  this.ajax_element.setAttribute("url", "http://www.gpopai.usp.br/subs/FISL10-Zuardi.ogg");
-                  this.ajax_element.dispatchEvent(evt);
 
-
-                  sub["content"] = this.parse_SRT(sub["raw"]);
+                  this.ajax_element.setAttribute("wikipage", sub["wikipage"]);                    
+                  this.emit_event("WikiSubsLoadSub", this.ajax_element);
                 },
 
                 addSubtitle : function (sub){
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     var item = document.createElementNS(xulns, "menuitem");
-                    item.setAttribute("label", sub["lang"]);
+                    item.setAttribute("label", sub["title"]);
                     var self = this;
-                    item.addEventListener("click", function(e) {self.parse_content(sub); self.current_subtitle = sub;}, false);
+                    item.addEventListener("click", function(e) {self.parse_content(sub);}, false);
                     this.subtitlesMenu.appendChild(item);
                     this.subtitlesButton.setAttribute("hidden", "false");
                 },
@@ -71,7 +66,7 @@
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.current_subtitle == null) return;
 
-                  var text = '';
+                  var text = "";
                   var subs = this.current_subtitle["content"];
                   for (i=0; i < subs.length; i++){
                     if ((currentTime >= subs[i].start) && (currentTime < subs[i].end)){
@@ -79,27 +74,27 @@
                       break;
                     }
                   }
-                  this.subtitlesLabel.setAttribute("value", text);                    
+                  this.subtitlesLabel.setAttribute("value", text);
                 },
 
+                look_for_available_subtitles : function(){
+                    this.emit_event("WikiSubsLoadSubList", this.ajax_element);  
+                },
+
+//This is a test
+//TODO: check whether it is a good thing. Otherwise, remove it.
                 addBalloon : function(x,y,w,h,px,py, text){
                     var balloon = document.createElement("annotation");
                     balloon.setAttribute("id", "myballoon");
                     this.annotations_overlay.appendChild(balloon);
                     document.addBinding(balloon, "chrome://global/content/annotations.xml#annotation");
-
-//                     balloon.setDimensions(20,20,50,40);
  
                     update_balloon = function(evt){
-//                        if(!balloon.boxObject) return;
 
-  //                    var x = Math.ceil(evt.clientX*100/balloon.firstChild.boxObject.width);
-//                      var y = Math.ceil(evt.clientY*100/balloon.firstChild.boxObject.height);
+                    var x = evt.clientX;
+                    var y = evt.clientY;
 
-  var x = evt.clientX;
-  var y = evt.clientY;
-
-                      balloon.setDimensions(20,20,50,40);
+                      balloon.setDimensions(20,70,50,40);
                       balloon.setPointer(x, y);
                       balloon.setText("X:"+x +" Y:"+ y);
                     }
@@ -109,10 +104,11 @@
 
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
+
                     this.video = binding.parentNode;
 
                     this.ajax_element = document.createElement("WikiSubsAjaxElement");
-                    document.documentElement.appendChild(this.ajax_element);
+                    this.video.appendChild(this.ajax_element);
 
                     // XBL doesn't have a good way to inject content into the middle of
                     // something else, so we'll insert our content via DOM manipulation.
@@ -150,16 +146,10 @@
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
                     muteButton.parentNode.insertBefore(this.subtitlesButton, muteButton);
 
-                    //I am leaving the following line commented out so that people in the mozilla mailing list
-                    // can easily see the button even when no subs are available... 
-                    //It will be uncommented in the future :-)
-
-                    //button is hidden while we dont have a list of available subs:
+                    //button is initially hidden while we dont have a list of available subs:
                     this.subtitlesButton.setAttribute("hidden", "true");
 
-                    this.test_subtitles();
-
-                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+//setup annotations overlay:
                     statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
                     this.annotations_overlay = document.createElementNS(xulns, "stack");
                     this.annotations_overlay.setAttribute("flex", "1");
@@ -171,6 +161,11 @@
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
                     self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
 
+                    //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
+
+                    window.setInterval ( function(){ self.look_for_available_subtitles(); } );
+
+                    //self.look_for_available_subtitles();
                     dump("--- wikisubs initialized ---\n");
                 },
 
@@ -179,12 +174,12 @@
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
                     //TODO: verify whether the node is an itext
 
-                    this.addSubtitle({"title": event.target.id + "-" + event.target.cat + "-" + event.target.lang,
+//                    this.addSubtitle({"title": event.target.id + "-" + event.target.cat + "-" + event.target.lang,
+                    this.addSubtitle({"title": event.target.id,
                       "lang": event.target.lang,
                        "url": event.target.src});
 
                     this.subtitlesButton.setAttribute("hidden", "false");
-                    alert(event);
                 }
             }) ]]>
         </field>
