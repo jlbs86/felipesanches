@@ -52,9 +52,11 @@ var Wikisubs = {
     },
 
     loadMediawikiPage : function(servername, pagename, callback){
-      //servername = "http://www.wstr.org/subs/"
 
       var parse_response = function(text){
+//TODO: remove this alert
+//        alert("response:\n" + text);
+
         //this could be better:
         var content = text.split("<text xml:space=\"preserve\">")
         if (content.length == 1) return; //failed to load
@@ -62,25 +64,58 @@ var Wikisubs = {
         if (content.length == 1) return; //failed to load
         content = content[0];
 
-        alert("content:\n" + content);
+//TODO: remove this alert
+//        alert("content:\n" + content);
         callback(content);
       }
         
-      this.sendRequest("POST", servername + "index.php?title=Special:Export/Subtitles/URL/" + pagename, "", parse_response);
-
+      this.sendRequest("POST", servername + "index.php?title=Special:Export/" + pagename, null, parse_response);
     },
 
     loadSubList: function(evt){
-      alert("loadSubList");
+      var video = evt.target.parentNode;
+
+      var parse_sub_list = function(data){
+        var lines = data.split("\n");
+        for (i in lines){
+          //TODO try: catch:
+          var string = lines[i].split("[[")[1];
+          string = string.split("]]")[0];
+          string = string.split("|");
+          var src = string[0].trim();
+          var title = string[1].trim();
+
+alert(src);
+alert(title);
+
+          itext_node = document.createElement("itext");
+          itext_node.setAttribute("src", src);
+          itext_node.setAttribute("id", title);
+          //itext_node.setAttribute("cat", "");
+//          itext_node.setAttribute("lang", lang);
+          video.appendChild(itext_node);
+        }
+      }
+
+      var src = video.getElementsByTagName("source")[0].src;  //todo: improve it
+
+      this.loadMediawikiPage("http://www.wstr.org/subs/", "Subtitles/URL/" + src, parse_sub_list);
     },
 
     loadSub: function(evt){
-      var url = evt.target.getAttribute("url");
-      var set_current_subtitle = function(sub){
-        //blah
+      var set_current_subtitle = function(subtitle_raw){
+//        evt.target.innerHTML  = subtitle_raw;
+//        var response_evt = document.createEvent("Events");
+//        response_evt.initEvent("updatesubs", true, false);
+//        evt.target.dispatchEvent(response_evt);
+
+          var video = evt.target.parentNode;
+          video.setSubtitle(subtitle_raw);
+
       }
 
-      this.loadMediawikiPage("http://www.wstr.org/subs/", url, set_current_subtitle);
+      var wikipage = evt.target.getAttribute("wikipage");
+      this.loadMediawikiPage("http://www.wstr.org/subs/", wikipage, set_current_subtitle);
     },
 
     sendRequest : function(method, url, data, callback) {
@@ -88,7 +123,6 @@ var Wikisubs = {
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
 		    if (xhr.readyState == 4) {
-			    //alert(xhr.responseText);
           callback(xhr.responseText);
 		    }
 	    }
