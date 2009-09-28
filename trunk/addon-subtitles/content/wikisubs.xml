@@ -47,8 +47,8 @@
 
                 parse_content : function (sub){
                    //TODO: detect subtitles format and delegate to the appropriate parser.
-
-                  this.ajax_element.setAttribute("wikipage", sub["wikipage"]);                    
+alert("sub[\"url\"]: ", sub["url"]);
+                  this.ajax_element.setAttribute("src", sub["url"]);                    
                   this.emit_event("WikiSubsLoadSub", this.ajax_element);
                 },
 
@@ -172,12 +172,12 @@
                 videoChildInserted : function(event) {
                     //this is an experiment. I am trying to implement behaviour proposed by Silvia Pfeiffer
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
-                    //TODO: verify whether the node is an itext
 
-//                    this.addSubtitle({"title": event.target.id + "-" + event.target.cat + "-" + event.target.lang,
+                    if (event.target.tagName != "itext") return;
+
                     this.addSubtitle({"title": event.target.id,
-                      "lang": event.target.lang,
-                       "url": event.target.src});
+                      "lang": event.target.getAttribute("lang"),
+                       "url": event.target.getAttribute("src") });
 
                     this.subtitlesButton.setAttribute("hidden", "false");
                 }
