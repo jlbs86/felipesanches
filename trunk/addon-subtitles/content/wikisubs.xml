@@ -45,10 +45,10 @@
                   node.dispatchEvent(evt);
                 },
 
-                parse_content : function (sub){
-                   //TODO: detect subtitles format and delegate to the appropriate parser.
-alert("sub[\"url\"]: ", sub["url"]);
-                  this.ajax_element.setAttribute("src", sub["url"]);                    
+                fetch : function (sub){
+                  sub["content"] = [];
+                  this.current_subtitle = sub
+                  this.ajax_element.setAttribute("src", sub["url"]); 
                   this.emit_event("WikiSubsLoadSub", this.ajax_element);
                 },
 
@@ -57,7 +57,7 @@ alert("sub[\"url\"]: ", sub["url"]);
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label", sub["title"]);
                     var self = this;
-                    item.addEventListener("click", function(e) {self.parse_content(sub);}, false);
+                    item.addEventListener("click", function(e) {self.fetch(sub);}, false);
                     this.subtitlesMenu.appendChild(item);
                     this.subtitlesButton.setAttribute("hidden", "false");
                 },
@@ -161,11 +161,11 @@ alert("sub[\"url\"]: ", sub["url"]);
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
                     self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
 
-                    //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
 
+//TODO: Why?!
+                    //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
                     window.setInterval ( function(){ self.look_for_available_subtitles(); } );
 
-                    //self.look_for_available_subtitles();
                     dump("--- wikisubs initialized ---\n");
                 },
 
@@ -173,13 +173,16 @@ alert("sub[\"url\"]: ", sub["url"]);
                     //this is an experiment. I am trying to implement behaviour proposed by Silvia Pfeiffer
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
 
-                    if (event.target.tagName != "itext") return;
+                    if (event.target.tagName == "itext"){
+                        this.addSubtitle({"title": event.target.id,
+                          "lang": event.target.getAttribute("lang"),
+                           "url": event.target.getAttribute("src") });
 
-                    this.addSubtitle({"title": event.target.id,
-                      "lang": event.target.getAttribute("lang"),
-                       "url": event.target.getAttribute("src") });
-
-                    this.subtitlesButton.setAttribute("hidden", "false");
+                        this.subtitlesButton.setAttribute("hidden", "false");
+                    } else {
+                        //TODO: should check whether this is our textNode containing subtitles?
+                        this.current_subtitle["content"] = this.parse_SRT(event.target.parentNode.innerHTML);
+                    }
                 }
             }) ]]>
         </field>
