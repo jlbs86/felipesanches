@@ -51,21 +51,19 @@ var Wikisubs = {
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
     },
 
-    loadMediawikiPage : function(servername, pagename, callback){
-
-      var parse_response = function(text){
-//TODO: remove this alert
-//        alert("response:\n" + text);
-
+    get_wiki_content : function(text){
         //this could be better:
         var content = text.split("<text xml:space=\"preserve\">")
         if (content.length == 1) return; //failed to load
         content = content[1].split("</text>")
         if (content.length == 1) return; //failed to load
-        content = content[0];
+        return content[0];
+    },
 
-//TODO: remove this alert
-//        alert("content:\n" + content);
+    loadMediawikiPage : function(servername, pagename, callback){
+      self = this;
+      var parse_response = function(text){
+        content = self.get_wiki_content(text);
         callback(content);
       }
         
@@ -100,19 +98,23 @@ var Wikisubs = {
     },
 
     loadSub: function(evt){
+      self = this;
       var set_current_subtitle = function(subtitle_raw){
-          alert("subtitle_raw:\n\n"+subtitle_raw);
+          subtitle_raw = self.get_wiki_content(subtitle_raw);
+
+          //alert("subtitle_raw:\n\n" + subtitle_raw);
           var itext = evt.target;
-          itext.innerHTML = subtitle_raw;
+          if (itext.childNodes.length == 0){
+            var text = document.createTextNode(subtitle_raw);
+            itext.appendChild(text);
+          }
       }
-alert("loadsub: evt.target: "+evt.target)
+
       var url = evt.target.getAttribute("src");
       this.sendRequest("GET", url, null, set_current_subtitle);
     },
 
     sendRequest : function(method, url, data, callback) {
-
-      alert("sendRequest url: "+ url);
 
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
