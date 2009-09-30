@@ -93,10 +93,16 @@ var Wikisubs = {
       self = this;
       var set_current_subtitle = function(subtitle_raw){
           var itext = evt.target;
-          if (itext.childNodes.length == 0){
-            var text = document.createTextNode(subtitle_raw);
-            itext.appendChild(text);
+          //subtitles might have been updated server-side
+          //so it is better to fetch again.
+
+          //If we already have a subtitle here, remove it before reloading from wiki
+          if (itext.childNodes.length){
+            itext.removeChild(itext.childNodes[0]);
           }
+
+          var text = document.createTextNode(subtitle_raw);
+          itext.appendChild(text);
       }
 
       var url = evt.target.getAttribute("src");
