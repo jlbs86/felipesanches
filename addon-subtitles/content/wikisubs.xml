@@ -16,6 +16,7 @@
                 subtitlesMenu : null,
                 button : null,
                 current_subtitle : null,
+                loading_subtitles : false,
 
                 toMilliSeconds: function (s){
                   var timeparts = s.split('.');
@@ -45,11 +46,13 @@
                   node.dispatchEvent(evt);
                 },
 
-                fetch : function (sub){
+                fetch : function (sub, node){
+                  if (!node) node = this.ajax_element;
+                  this.loading_subtitles = true;
                   sub["content"] = [];
                   this.current_subtitle = sub
                   this.ajax_element.setAttribute("src", sub["url"]); 
-                  this.emit_event("WikiSubsLoadSub", this.ajax_element);
+                  this.emit_event("WikiSubsLoadSub", node);
                 },
 
                 addSubtitle : function (sub){
@@ -57,13 +60,21 @@
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label", sub["title"]);
                     var self = this;
-                    item.addEventListener("click", function(e) {self.fetch(sub);}, false);
+
+                    sub["itext_node"].addEventListener("DOMNodeInserted", function(event) { self.itextChildInserted(event); }, false);
+                    item.addEventListener("click", function(e) {self.fetch(sub, sub["itext_node"]);}, false);
                     this.subtitlesMenu.appendChild(item);
                     this.subtitlesButton.setAttribute("hidden", "false");
                 },
 
                 displaySubtitles : function(){
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
+                  if (this.loading_subtitles == true) {
+                  //TODO: l10n
+                    this.subtitlesLabel.setAttribute("value", "Loading subtitles...");
+                    return;
+                  }
+
                   if (this.current_subtitle == null) return;
 
                   var text = "";
@@ -86,7 +97,7 @@
                 addBalloon : function(x,y,w,h,px,py, text){
                     var balloon = document.createElement("annotation");
                     balloon.setAttribute("id", "myballoon");
-                    this.annotations_overlay.appendChild(balloon);
+                    //this.annotations_overlay.appendChild(balloon);
                     document.addBinding(balloon, "chrome://global/content/annotations.xml#annotation");
  
                     update_balloon = function(evt){
@@ -169,6 +180,11 @@
                     dump("--- wikisubs initialized ---\n");
                 },
 
+                itextChildInserted : function(event) {
+                        this.current_subtitle["content"] = this.parse_SRT(event.target.data);
+                        this.loading_subtitles = false;
+                },
+
                 videoChildInserted : function(event) {
                     //this is an experiment. I am trying to implement behaviour proposed by Silvia Pfeiffer
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
@@ -176,12 +192,10 @@
                     if (event.target.tagName == "itext"){
                         this.addSubtitle({"title": event.target.id,
                           "lang": event.target.getAttribute("lang"),
-                           "url": event.target.getAttribute("src") });
+                           "url": event.target.getAttribute("src"),
+                            "itext_node": event.target });
 
                         this.subtitlesButton.setAttribute("hidden", "false");
-                    } else {
-                        //TODO: should check whether this is our textNode containing subtitles?
-                        this.current_subtitle["content"] = this.parse_SRT(event.target.parentNode.innerHTML);
                     }
                 }
             }) ]]>
