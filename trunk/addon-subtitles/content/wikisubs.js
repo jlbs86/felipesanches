@@ -49,25 +49,17 @@ var Wikisubs = {
                   getService(Ci.nsIStyleSheetService);
         if (!sss.sheetRegistered(sheetURI, sss.AGENT_SHEET))
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
-    },
 
-    get_wiki_content : function(text){
-        //this could be better:
-        var content = text.split("<text xml:space=\"preserve\">")
-        if (content.length == 1) return; //failed to load
-        content = content[1].split("</text>")
-        if (content.length == 1) return; //failed to load
-        return content[0];
+        //this.saveSub("teste", "Testando, 1, 2, 3!");
     },
 
     loadMediawikiPage : function(servername, pagename, callback){
       self = this;
       var parse_response = function(text){
-        content = self.get_wiki_content(text);
-        callback(content);
+        callback(text);
       }
         
-      this.sendRequest("POST", servername + "index.php?title=Special:Export/" + pagename, null, parse_response);
+      this.sendRequest("POST", servername + "index.php?action=raw&title=" + pagename, null, parse_response);
     },
 
     loadSubList: function(evt){
@@ -84,7 +76,7 @@ var Wikisubs = {
           var title = string[1].trim();
 
           itext_node = document.createElement("itext");
-          itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?title=Special:Export/" + pagename);
+          itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + pagename);
           itext_node.setAttribute("id", title);
           //itext_node.setAttribute("cat", "");
 //          itext_node.setAttribute("lang", lang);
@@ -100,9 +92,6 @@ var Wikisubs = {
     loadSub: function(evt){
       self = this;
       var set_current_subtitle = function(subtitle_raw){
-          subtitle_raw = self.get_wiki_content(subtitle_raw);
-
-          //alert("subtitle_raw:\n\n" + subtitle_raw);
           var itext = evt.target;
           if (itext.childNodes.length == 0){
             var text = document.createTextNode(subtitle_raw);
