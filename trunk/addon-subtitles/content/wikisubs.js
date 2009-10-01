@@ -49,31 +49,23 @@ var Wikisubs = {
                   getService(Ci.nsIStyleSheetService);
         if (!sss.sheetRegistered(sheetURI, sss.AGENT_SHEET))
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
-
-        this.saveSub("teste", "Testando, 1, 2, 3!");
     },
 
-
-    saveSub: function(pagename, content){
-
-      mediawiki_server = "http://bighead.poli.usp.br/subs/";
-      pagename = "Teste";
-      content = "Hello%20everyone!";
-      var token = "%2B%5C";
+    saveSub: function(evt){
+      var pagename = evt.target.getAttribute("pagename");
+      var content = evt.target.getAttribute("srt");
+      var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
+      var token = "+\\"; //this token is used for anonymous edits
   
-    var get_edit_token = function(data){
-        alert("get_edit_token():\n\n"+data);
-    }
+      var display_result = function(data){
+          //for debugging purpose only:
+          //alert("result:\n\n"+data);
+      }
 
-//      var url = mediawiki_server + "api.php?action=query&prop=info|revisions&intoken=edit&titles="+pagename;
-      var url = mediawiki_server+"api.php?action=edit&title="+pagename+"&section=0&text="+content+"&token="+token
-      //alert("url:\n\n"+url);
+      var params = "action=edit&title=" + encodeURIComponent(pagename) + "&section=0&text="+encodeURIComponent(content) + "&token=" + encodeURIComponent(token);
 
-      //this.sendRequest("POST", url, null, get_edit_token);
+      this.sendPOSTRequest(mediawiki_server + "api.php", params, display_result);
     },
-
-
-//mediawiki_server+"api.php?action=edit&title="+pagename+"&section=0&text="+content+"&token="+token
 
     loadMediawikiPage : function(servername, pagename, callback){
       self = this;
@@ -81,7 +73,7 @@ var Wikisubs = {
         callback(text);
       }
         
-      this.sendRequest("POST", servername + "index.php?action=raw&title=" + pagename, null, parse_response);
+      this.sendGETRequest(servername + "index.php?action=raw&title=" + pagename, parse_response);
     },
 
     loadSubList: function(evt){
@@ -128,10 +120,10 @@ var Wikisubs = {
       }
 
       var url = evt.target.getAttribute("src");
-      this.sendRequest("GET", url, null, set_current_subtitle);
+      this.sendGETRequest(url, set_current_subtitle);
     },
 
-    sendRequest : function(method, url, data, callback) {
+    sendGETRequest : function(url, callback) {
 
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
@@ -140,19 +132,43 @@ var Wikisubs = {
 		    }
 	    }
 
+      xhr.open('GET', url, true);
+
 	    xhr.onreadystatechange = ajaxDataReader;
 	    try {
-	        xhr.open(method,url, true);
-	        xhr.send(data);
+	        xhr.send(null);
         }
 	    catch(e){
 		    alert("bad request");
 	    }
+    },
 
+    sendPOSTRequest : function(url, params, callback) {
+
+     	var xhr = new XMLHttpRequest();
+	    var ajaxDataReader = function () {
+		    if (xhr.readyState == 4) {
+          callback(xhr.responseText);
+		    }
+	    }
+
+      xhr.open('POST', url, true);
+      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+      xhr.setRequestHeader('Content-length', params.length);
+      xhr.setRequestHeader('Connection', 'close');
+
+	    xhr.onreadystatechange = ajaxDataReader;
+	    try {
+	        xhr.send(params);
+        }
+	    catch(e){
+		    alert("bad request");
+	    }
     }
 }
 
 window.addEventListener("load", function() { Wikisubs.init(); }, false);
 document.addEventListener("WikiSubsLoadSubList", function(e) { Wikisubs.loadSubList(e); }, false, true);
 document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false, true);
+document.addEventListener("WikiSubsSaveSub", function(e) { Wikisubs.saveSub(e); }, false, true);
 

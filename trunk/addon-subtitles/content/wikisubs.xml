@@ -255,11 +255,17 @@
                 },
 
                 saveSubs : function(){
-                    if (this.subtitles_editbox.value != this.original_text){
-                      this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_editbox.value;
-                    }
-//TODO
-alert("encoded SRT:\n\n"+this.encode_SRT(this.current_subtitle["content"]));
+                  if (this.subtitles_editbox.value == this.original_text) return;
+                  this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_editbox.value;
+
+                  //This may seem complicated, but I am doing it in order to
+                  // keep itext attributes compliant to Silvia's spec: 
+                  var pagename = this.current_subtitle["url"].split("title=")[1];
+
+                  var srt = this.encode_SRT(this.current_subtitle["content"]);
+                  this.ajax_element.setAttribute("pagename", pagename);
+                  this.ajax_element.setAttribute("srt", srt);
+                  this.emit_event("WikiSubsSaveSub", this.ajax_element);
                 }
 
             }) ]]>
