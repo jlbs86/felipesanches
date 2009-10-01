@@ -28,6 +28,19 @@
                   return milliseconds;
                 },
 
+                MilliSecondsToString: function(time){
+                  var timeString;
+                  var hours = Math.floor(time / 3600000);
+                  var mins  = Math.floor(time % 3600000 / 60000);
+                  var secs  = Math.floor(time % 60000 / 1000);
+                  var msecs = time%1000;
+                  if (secs < 10) secs = "0" + secs;
+                  if (mins < 10) mins = "0" + mins;
+                  if (msecs < 10) msecs = "0" + msecs;
+                  if (msecs < 100) msecs = "0" + msecs;
+                  return hours + ":" + mins + ":" + secs + "." + msecs;
+                },
+
                 parse_SRT : function (text){
                   var pairs = text.split("\n\n");
                   var content = [];
@@ -39,6 +52,15 @@
                     content.push({'start':start, 'end':end, 'text':pair[1]});
                   }
                   return content;
+                },
+
+                encode_SRT : function (sub){
+                  text = ""
+                  for (i in sub){
+                      text+=this.MilliSecondsToString(sub[i]["start"])+","+this.MilliSecondsToString(sub[i]["end"])+"\n";
+                      text+=sub[i]["text"]+"\n\n";
+                  }
+                  return text;
                 },
 
                 emit_event : function (eventName, node){
@@ -237,6 +259,7 @@
                       this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_editbox.value;
                     }
 //TODO
+alert("encoded SRT:\n\n"+this.encode_SRT(this.current_subtitle["content"]));
                 }
 
             }) ]]>
