@@ -17,6 +17,7 @@
                 button : null,
                 current_subtitle : null,
                 loading_subtitles : false,
+                edit_mode : false,
 
                 toMilliSeconds: function (s){
                   var timeparts = s.split('.');
@@ -71,7 +72,7 @@
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.loading_subtitles == true) {
                   //TODO: l10n
-                    this.subtitlesLabel.setAttribute("value", "Loading subtitles...");
+                    this.subtitles_editbox.setAttribute("value", "Loading subtitles...");
                     return;
                   }
 
@@ -85,7 +86,7 @@
                       break;
                     }
                   }
-                  this.subtitlesLabel.setAttribute("value", text);
+                  this.subtitles_editbox.setAttribute("value", text);
                 },
 
                 look_for_available_subtitles : function(){
@@ -136,17 +137,17 @@
 
                     subtitlesHbox = document.createElementNS(xulns, "hbox");
 
-                    spacer1 = document.createElementNS(xulns, "spacer");
-                    spacer1.setAttribute("flex", "1");
-                    this.subtitlesLabel = document.createElementNS(xulns, "label");
-                    this.subtitlesLabel.setAttribute("class", "subtitlesLabel");
-                    spacer2 = document.createElementNS(xulns, "spacer");
-                    spacer2.setAttribute("flex", "1");
+                    var self = this;
+
+                    this.subtitles_editbox = document.createElementNS(xulns, "textbox");
+                    
+                    this.subtitles_editbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
+                    this.subtitles_editbox.setAttribute("class", "plain subtitles_textbox");
+                    this.subtitles_editbox.setAttribute("multiline", "true");
+                    this.subtitles_editbox.setAttribute("flex", "1");
 
                     subtitlesHbox.setAttribute("class", "subsContainer");
-                    subtitlesHbox.appendChild(spacer1);
-                    subtitlesHbox.appendChild(this.subtitlesLabel);
-                    subtitlesHbox.appendChild(spacer2);
+                    subtitlesHbox.appendChild(this.subtitles_editbox);
 
                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
 
@@ -177,6 +178,19 @@
                     //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
                     window.setInterval ( function(){ self.look_for_available_subtitles(); } );
 
+
+                    //This is a hack. we need a way to inhibit video controls handling of keypress
+                    // events when we are typing text in the subtitles textbox, so that for instance
+                    // typing a spacebar won't trigger togglePause
+                    binding.Utils.original_keyHandler = binding.Utils.keyHandler;
+                    binding.Utils.keyHandler = function(event){
+                      if (self.edit_mode==false){
+                        binding.Utils.original_keyHandler(event);
+                      }else{
+                        self.subtitles_textbox.dispatchEvent(event);
+                      }
+                    };
+
                     dump("--- wikisubs initialized ---\n");
                 },
 
@@ -197,7 +211,13 @@
 
                         this.subtitlesButton.setAttribute("hidden", "false");
                     }
+                },
+
+                enter_edit_mode : function(event){
+                    this.edit_mode = true;
+                    this.video.pause();
                 }
+
             }) ]]>
         </field>
 

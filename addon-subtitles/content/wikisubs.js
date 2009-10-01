@@ -50,8 +50,30 @@ var Wikisubs = {
         if (!sss.sheetRegistered(sheetURI, sss.AGENT_SHEET))
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
 
-        //this.saveSub("teste", "Testando, 1, 2, 3!");
+        this.saveSub("teste", "Testando, 1, 2, 3!");
     },
+
+
+    saveSub: function(pagename, content){
+
+      mediawiki_server = "http://bighead.poli.usp.br/subs/";
+      pagename = "Teste";
+      content = "Hello%20everyone!";
+      var token = "%2B%5C";
+  
+    var get_edit_token = function(data){
+        alert("get_edit_token():\n\n"+data);
+    }
+
+//      var url = mediawiki_server + "api.php?action=query&prop=info|revisions&intoken=edit&titles="+pagename;
+      var url = mediawiki_server+"api.php?action=edit&title="+pagename+"&section=0&text="+content+"&token="+token
+      //alert("url:\n\n"+url);
+
+      //this.sendRequest("POST", url, null, get_edit_token);
+    },
+
+
+//mediawiki_server+"api.php?action=edit&title="+pagename+"&section=0&text="+content+"&token="+token
 
     loadMediawikiPage : function(servername, pagename, callback){
       self = this;
