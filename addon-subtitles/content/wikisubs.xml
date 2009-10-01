@@ -72,7 +72,7 @@
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.loading_subtitles == true) {
                   //TODO: l10n
-                    this.subtitles_editbox.setAttribute("value", "Loading subtitles...");
+                    this.subtitles_editbox.value = "Loading subtitles...";
                     return;
                   }
 
@@ -83,10 +83,11 @@
                   for (i=0; i < subs.length; i++){
                     if ((currentTime >= subs[i].start) && (currentTime < subs[i].end)){
                       text = subs[i]["text"];
+                      this.current_subtitle_index = i;
                       break;
                     }
                   }
-                  this.subtitles_editbox.setAttribute("value", text);
+                  this.subtitles_editbox.value = text;
                 },
 
                 look_for_available_subtitles : function(){
@@ -142,9 +143,21 @@
                     this.subtitles_editbox = document.createElementNS(xulns, "textbox");
                     
                     this.subtitles_editbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
-                    this.subtitles_editbox.setAttribute("class", "plain subtitles_textbox");
+                    this.subtitles_editbox.setAttribute("class", "plain subtitles_editbox");
                     this.subtitles_editbox.setAttribute("multiline", "true");
                     this.subtitles_editbox.setAttribute("flex", "1");
+
+//TODO:
+                    this.subtitles_editbox.addEventListener("change", function(){ self.saveSubs() } , false);
+
+
+//MDC states:    spellcheck   New in Firefox 2.0.0.2
+//                      Type: boolean 
+//                      "If true, spell checking is enabled by default for the text box; if false, spell checking is disabled by default."
+//                      "If not specified, this defaults to false "
+
+//but it seems to be true by default...
+//                    this.subtitles_editbox.spellcheck=false;
 
                     subtitlesHbox.setAttribute("class", "subsContainer");
                     subtitlesHbox.appendChild(this.subtitles_editbox);
@@ -178,17 +191,13 @@
                     //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
                     window.setInterval ( function(){ self.look_for_available_subtitles(); } );
 
-
                     //This is a hack. we need a way to inhibit video controls handling of keypress
                     // events when we are typing text in the subtitles textbox, so that for instance
                     // typing a spacebar won't trigger togglePause
                     binding.Utils.original_keyHandler = binding.Utils.keyHandler;
                     binding.Utils.keyHandler = function(event){
-                      if (self.edit_mode==false){
+                      if (self.edit_mode==false)
                         binding.Utils.original_keyHandler(event);
-                      }else{
-                        self.subtitles_textbox.dispatchEvent(event);
-                      }
                     };
 
                     dump("--- wikisubs initialized ---\n");
@@ -215,7 +224,19 @@
 
                 enter_edit_mode : function(event){
                     this.edit_mode = true;
+                    this.original_text = this.subtitles_editbox.value;
                     this.video.pause();
+                },
+
+                exit_edit_mode : function() {
+                    this.edit_mode=false;
+                },
+
+                saveSubs : function(){
+                    if (this.subtitles_editbox.value != this.original_text){
+                      this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_editbox.value;
+                    }
+//TODO
                 }
 
             }) ]]>
