@@ -261,38 +261,31 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.subtitles_editbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
                     this.subtitles_editbox.setAttribute("class", "plain subtitles_editbox");
                     this.subtitles_editbox.setAttribute("multiline", "true");
-                    this.subtitles_editbox.setAttribute("flex", "1");
+//                    this.subtitles_editbox.setAttribute("flex", "1");
 
                     this.subtitles_editbox.addEventListener("change", function(){ self.saveSubs() } , false);
-
 
 //MDC states:    spellcheck   New in Firefox 2.0.0.2
 //                      Type: boolean 
 //                      "If true, spell checking is enabled by default for the text box; if false, spell checking is disabled by default."
 //                      "If not specified, this defaults to false "
+//                      (but it seems to be true by default...)
 
-//but it seems to be true by default...
 //                    this.subtitles_editbox.spellcheck=false;
 
-//TODO: refactor:
-                    subtitlesHbox = document.createElementNS(xulns, "hbox");
-                    subtitlesHbox.setAttribute("class", "subsContainer");
-                    subtitlesHbox.appendChild(this.subtitles_editbox);
-
+                    //Subtitles will be displayed above the controls:
                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
+                    controlBar.parentNode.insertBefore(this.subtitles_editbox, controlBar);
 
-                    //Add label where the subtitle will be displayed:
-                    controlBar.parentNode.insertBefore(subtitlesHbox, controlBar);
-
-                    //Add subs button:
+                    //Subtitles menu will be near the mute button:
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
                     muteButton.parentNode.insertBefore(this.subtitlesButton, muteButton);
 
-                    //button is initially hidden while we dont have a list of available subs:
+                    //Let it be initially hidden while we dont have a list of available subs:
                     this.subtitlesButton.setAttribute("hidden", "true");
 
 /* Temporarily disabled. Experimental feature.
-//setup annotations overlay:
+            //setup annotations overlay:
                     statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
                     this.annotations_overlay = document.createElementNS(xulns, "stack");
                     this.annotations_overlay.setAttribute("flex", "1");
