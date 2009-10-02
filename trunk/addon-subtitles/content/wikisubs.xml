@@ -83,6 +83,18 @@
                   this.emit_event("WikiSubsLoadSub", node);
                 },
 
+                addMenuLink : function (title, url){
+                    var self=this;
+                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                    var item = document.createElementNS(xulns, "menuitem");
+                    item.setAttribute("label", title);
+                    item.addEventListener("click", function(e) {
+                        self.ajax_element.setAttribute("url", url); 
+                        self.emit_event("WikiSubsOpenTab", self.ajax_element);
+                    }, false);
+                    this.subtitlesMenu.appendChild(item);
+                },
+
                 addSubtitle : function (sub){
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     var item = document.createElementNS(xulns, "menuitem");
@@ -213,6 +225,7 @@
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
                     self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
 
+                    self.addMenuLink("Subtitles wiki page...", "http://www.wstr.org/subs/");
 
 //TODO: Why?!
                     //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
