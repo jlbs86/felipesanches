@@ -132,7 +132,10 @@ var Wikisubs = {
 		    }
 	    }
 
-      xhr.open('GET', url, true);
+      xhr.open("GET", url, true);
+
+      //https://developer.mozilla.org/En/Using_XMLHttpRequest#Bypassing_the_cache
+      xhr.channel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
 
 	    xhr.onreadystatechange = ajaxDataReader;
 	    try {
@@ -152,10 +155,10 @@ var Wikisubs = {
 		    }
 	    }
 
-      xhr.open('POST', url, true);
-      xhr.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
-      xhr.setRequestHeader('Content-length', params.length);
-      xhr.setRequestHeader('Connection', 'close');
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhr.setRequestHeader("Content-length", params.length);
+      xhr.setRequestHeader("Connection", 'close');
 
 	    xhr.onreadystatechange = ajaxDataReader;
 	    try {
