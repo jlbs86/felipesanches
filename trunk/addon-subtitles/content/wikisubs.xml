@@ -182,7 +182,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.loading_subtitles == true) {
                   //TODO: l10n
-                    this.subtitles_editbox.value = "Loading subtitles...";
+                    this.subtitles_textbox.value = "Loading subtitles...";
                     return;
                   }
 
@@ -197,7 +197,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                       break;
                     }
                   }
-                  this.subtitles_editbox.value = text;
+                  this.subtitles_textbox.value = text;
                 },
 
                 /*this will ask the wiki repository for a list of subtitles that match the current video:*/
@@ -255,15 +255,26 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.subtitlesButton.setAttribute("position", "before_end");
                     this.subtitlesButton.setAttribute("dir", "reverse");
 
-                    this.subtitles_editbox = document.createElementNS(xulns, "textbox");
+                    this.subtitles_textbox = document.createElementNS(xulns, "textbox");
+                    this.editor_hbox = document.createElementNS(xulns, "hbox");
+                    this.save_button = document.createElementNS(xulns, "button");
+                    this.save_button.setAttribute("label", "Save");
+                    this.save_button.setAttribute("class", "plain wikisubs_button");
+
+                    this.cancel_button = document.createElementNS(xulns, "button");
+                    this.cancel_button.setAttribute("label", "Cancel");
+                    this.cancel_button.setAttribute("class", "plain wikisubs_button");
+                    this.editor_hbox.appendChild(this.save_button);
+                    this.editor_hbox.appendChild(this.cancel_button);
+                    this.exit_edit_mode();
 
                     var self = this;                    
-                    this.subtitles_editbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
-                    this.subtitles_editbox.setAttribute("class", "plain subtitles_editbox");
-                    this.subtitles_editbox.setAttribute("multiline", "true");
-//                    this.subtitles_editbox.setAttribute("flex", "1");
+                    this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
+                    this.subtitles_textbox.setAttribute("class", "plain subtitles_textbox");
+                    this.subtitles_textbox.setAttribute("multiline", "true");
+//                    this.subtitles_textbox.setAttribute("flex", "1");
 
-                    this.subtitles_editbox.addEventListener("change", function(){ self.saveSubs() } , false);
+                    this.subtitles_textbox.addEventListener("change", function(){ self.saveSubs() } , false);
 
 //MDC states:    spellcheck   New in Firefox 2.0.0.2
 //                      Type: boolean 
@@ -271,11 +282,13 @@ subtitle, and bailing out early if .currentTime is between those two values
 //                      "If not specified, this defaults to false "
 //                      (but it seems to be true by default...)
 
-//                    this.subtitles_editbox.spellcheck=false;
+//                    this.subtitles_textbox.spellcheck=false;
 
                     //Subtitles will be displayed above the controls:
                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
-                    controlBar.parentNode.insertBefore(this.subtitles_editbox, controlBar);
+                    controlBar.parentNode.insertBefore(this.editor_hbox, controlBar);
+                    controlBar.parentNode.insertBefore(this.subtitles_textbox, controlBar);
+
 
                     //Subtitles menu will be near the mute button:
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
@@ -339,19 +352,21 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                 enter_edit_mode : function(event){
                     this.edit_mode = true;
-                    this.original_text = this.subtitles_editbox.value;
+                    this.original_text = this.subtitles_textbox.value;
                     this.video.pause();
-                    this.subtitles_editbox.style.background = "rgba(255,255,128, 0.3)"
+                    this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
+                    this.editor_hbox.setAttribute("hidden", "false");
                 },
 
                 exit_edit_mode : function() {
                     this.edit_mode=false;
-                    this.subtitles_editbox.style.background = "transparent"
+                    this.subtitles_textbox.style.background = "transparent"
+                    this.editor_hbox.setAttribute("hidden", "true");
                 },
 
                 saveSubs : function(){
-                  if (this.subtitles_editbox.value == this.original_text) return;
-                  this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_editbox.value;
+                  if (this.subtitles_textbox.value == this.original_text) return;
+                  this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
 
                   //This may seem complicated, but I am doing it in order to
                   // keep itext attributes compliant to Silvia's spec: 

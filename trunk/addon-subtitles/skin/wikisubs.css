@@ -40,3 +40,18 @@
     color: rgba(255,255,128, 1);
     text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
+
+.wikisubs_button:hover {
+    background-color: rgba(60,60,60, 1) !important;
+}
+
+.wikisubs_button {
+    -moz-appearance: none !important;
+    background-color: rgba(100,100,100, 1) !important;
+    border: 1px solid rgba(200,200,200, 1);
+    color: rgba(255,255,128, 1);
+    padding: 4px;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
