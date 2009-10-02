@@ -8,7 +8,37 @@
    xmlns:html="http://www.w3.org/1999/xhtml" 
 >
 
-  <binding id="wikisubs" extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
+<!--
+/*
+          This XML binding extends the video controls for html5 video and
+           creates a collaborative subtitle user interface. The primary wiki repository is
+           http://www.wstr.org/subs/
+
+          While implementing this, I have noticed that part of the functionality could be incorporated
+           into a future version of Firefox while other things should remain as optional features
+           to be installed in an addon.
+
+          For instance, while the wiki features fit better in an addon, Firefox actually needs a 
+           user interface for subtitles selection and display because some ogg videos might have
+           subtitles embedded in it:
+           
+           https://bugzilla.mozilla.org/show_bug.cgi?id=481529 
+           Bug 481529 -  Support for Kate overlay streams in <video> tag  
+
+           During the development of this addon I have refactored portions of it and I have provided
+           some patches to Firefox. User ogg.k.ogg.k@googlemail.com has merged my patch
+           with his own and we've got a prototype ui for managing subtitles embedded in ogg.
+
+           Here is the bug where the refactored version of this addon has been first published
+           as a patch:
+
+           https://bugzilla.mozilla.org/show_bug.cgi?id=515898
+           Bug 515898 -  implement UI for subtitles on html5 video/audio
+*/
+-->
+
+  <binding id="wikisubs"
+               extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
       <implementation>
         <field name="wikisubsUtils">
             <![CDATA[ ({
@@ -18,6 +48,8 @@
                 current_subtitle : null,
                 loading_subtitles : false,
                 edit_mode : false,
+
+                /* SRT (subtitles file format) parsing and encoding routines: */
 
                 toMilliSeconds: function (s){
                   var timeparts = s.split(',');
@@ -62,12 +94,28 @@
                   text = ""
                   for (i in sub){
                       text+=i+"\n"
-                      text+=this.MilliSecondsToString(sub[i]["start"])+" --> "+this.MilliSecondsToString(sub[i]["end"])+"\n";
+                      text+=this.MilliSecondsToString(sub[i]["start"])
+                      text+=" --> "
+                      text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
                       text+=sub[i]["text"]+"\n\n";
                   }
                   return text;
                 },
 
+/*
+This addon uses XMLHttpRequest to fetch and save content to a subtitles (wiki) repository. 
+
+Gavin Sharp gave me this advice:
+
+Cross-site XMLHttpRequest *in chrome code* works in extensions, but since you're actually
+ extending a content-hosted video control, you're not able to take advantage of it (the security
+ policies of the video-hosting website are in effect).
+
+To work around the issue, you could have your binding generate a custom event when it wants
+ to retrieve data, and have a chrome-hosted listener watch for that event and take care of the
+ request. See https://developer.mozilla.org/en/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
+ for an example.
+*/
                 emit_event : function (eventName, node){
                   var evt = document.createEvent("Events");
                   evt.initEvent(eventName, true, false);
@@ -75,38 +123,61 @@
                 },
 
                 fetch : function (sub, node){
-                  if (!node) node = this.ajax_element;
+                  if (!node) node = this.communication_element;
                   this.loading_subtitles = true;
                   sub["content"] = [];
                   this.current_subtitle = sub
-                  this.ajax_element.setAttribute("src", sub["url"]); 
+                  this.communication_element.setAttribute("src", sub["url"]); 
                   this.emit_event("WikiSubsLoadSub", node);
                 },
 
+                /* This will add an option in the subtitles menu that will open a new tab and let the
+                 user interact directly with the subtitles wiki repository */
                 addMenuLink : function (title, url){
                     var self=this;
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label", title);
                     item.addEventListener("click", function(e) {
-                        self.ajax_element.setAttribute("url", url); 
-                        self.emit_event("WikiSubsOpenTab", self.ajax_element);
+                        self.communication_element.setAttribute("url", url); 
+                        self.emit_event("WikiSubsOpenTab", self.communication_element);
                     }, false);
                     this.subtitlesMenu.appendChild(item);
                 },
 
+/*
+Silvia Pfeiffer is working on video accessibility on Mozilla. She is drafting a proposal to
+W3C and WHATWG to incorporate subtitling/closed captioning markup in the HTML5 spec.
+ Her work suggests that itext DOM nodes could be added as video element child nodes
+ in order to reference external subtitling/closed captining resources.
+
+ I decided to emulate the proposed behaviour in my addon so that it would be easier to refactor it
+in the future in case her proposal gets accepted and incorporated into the standard.
+*/
                 addSubtitle : function (sub){
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label", sub["title"]);
-                    var self = this;
 
+                    var self = this;
                     sub["itext_node"].addEventListener("DOMNodeInserted", function(event) { self.itextChildInserted(event); }, false);
                     item.addEventListener("click", function(e) {self.fetch(sub, sub["itext_node"]);}, false);
                     this.subtitlesMenu.appendChild(item);
                     this.subtitlesButton.setAttribute("hidden", "false");
                 },
 
+/*
+Justin Dolske gave me this advice (but I havent implemented it yet):
+
+This is terribly inefficient. The timeupdate event is dispatched every frame,
+so running code in each event should be avoided as much as possible. Your
+displaySubtitles() is also very inefficient, as it does a linear search though
+the subtitles each time (!) it's called.
+
+I'd suggest doing something like caching the min/max time for the current
+subtitle, and bailing out early if .currentTime is between those two values
+(because you then know the current subtitle doesn't need changed).
+*/
                 displaySubtitles : function(){
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.loading_subtitles == true) {
@@ -129,16 +200,23 @@
                   this.subtitles_editbox.value = text;
                 },
 
+                /*this will ask the wiki repository for a list of subtitles that match the current video:*/
                 look_for_available_subtitles : function(){
-                    this.emit_event("WikiSubsLoadSubList", this.ajax_element);  
+                    this.emit_event("WikiSubsLoadSubList", this.communication_element);  
                 },
 
-//This is a test
+//This is a test. I plan to have an annotation overlay to be rendered
+// using SVG on top of the video.
+// You can see a demo of the balloon XBL at this page:
+// http://www.wstr.org/xbl_example/ann_example.xul
+
 //TODO: check whether it is a good thing. Otherwise, remove it.
                 addBalloon : function(x,y,w,h,px,py, text){
                     var balloon = document.createElement("annotation");
                     balloon.setAttribute("id", "myballoon");
-                    //this.annotations_overlay.appendChild(balloon);
+                    this.annotations_overlay.appendChild(balloon);
+
+                    //For some reason I had to explicitely add the binding to each new balloon:
                     document.addBinding(balloon, "chrome://global/content/annotations.xml#annotation");
  
                     update_balloon = function(evt){
@@ -159,11 +237,13 @@
 
                     this.video = binding.parentNode;
 
-                    this.ajax_element = document.createElement("WikiSubsAjaxElement");
-                    this.video.appendChild(this.ajax_element);
+                    this.communication_element = document.createElement("WikiSubsCommunicationElement");
+                    this.video.appendChild(this.communication_element);
 
                     // XBL doesn't have a good way to inject content into the middle of
                     // something else, so we'll insert our content via DOM manipulation.
+                    //This same user interface is declared statically in the patch I have
+                    // attached to bug #515898 at bugzilla 
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     this.subtitlesButton = document.createElementNS(xulns, "button");
                     this.subtitlesButton.setAttribute("class", "subtitlesButton");
@@ -175,18 +255,14 @@
                     this.subtitlesButton.setAttribute("position", "before_end");
                     this.subtitlesButton.setAttribute("dir", "reverse");
 
-                    subtitlesHbox = document.createElementNS(xulns, "hbox");
-
-                    var self = this;
-
                     this.subtitles_editbox = document.createElementNS(xulns, "textbox");
-                    
+
+                    var self = this;                    
                     this.subtitles_editbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
                     this.subtitles_editbox.setAttribute("class", "plain subtitles_editbox");
                     this.subtitles_editbox.setAttribute("multiline", "true");
                     this.subtitles_editbox.setAttribute("flex", "1");
 
-//TODO:
                     this.subtitles_editbox.addEventListener("change", function(){ self.saveSubs() } , false);
 
 
@@ -198,6 +274,8 @@
 //but it seems to be true by default...
 //                    this.subtitles_editbox.spellcheck=false;
 
+//TODO: refactor:
+                    subtitlesHbox = document.createElementNS(xulns, "hbox");
                     subtitlesHbox.setAttribute("class", "subsContainer");
                     subtitlesHbox.appendChild(this.subtitles_editbox);
 
@@ -213,6 +291,7 @@
                     //button is initially hidden while we dont have a list of available subs:
                     this.subtitlesButton.setAttribute("hidden", "true");
 
+/* Temporarily disabled. Experimental feature.
 //setup annotations overlay:
                     statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
                     this.annotations_overlay = document.createElementNS(xulns, "stack");
@@ -220,8 +299,7 @@
                     statusOverlay.parentNode.insertBefore(this.annotations_overlay, statusOverlay);
 
                     this.addBalloon(0,0,10,10,20,30,"testing");
-
-                    var self = this;
+*/
                     self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
                     self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
 
@@ -253,7 +331,7 @@
                 },
 
                 videoChildInserted : function(event) {
-                    //this is an experiment. I am trying to implement behaviour proposed by Silvia Pfeiffer
+                    //I am trying to implement behaviour proposed by Silvia Pfeiffer
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
 
                     if (event.target.tagName == "itext"){
@@ -287,9 +365,9 @@
                   var pagename = this.current_subtitle["url"].split("title=")[1];
 
                   var srt = this.encode_SRT(this.current_subtitle["content"]);
-                  this.ajax_element.setAttribute("pagename", pagename);
-                  this.ajax_element.setAttribute("srt", srt);
-                  this.emit_event("WikiSubsSaveSub", this.ajax_element);
+                  this.communication_element.setAttribute("pagename", pagename);
+                  this.communication_element.setAttribute("srt", srt);
+                  this.emit_event("WikiSubsSaveSub", this.communication_element);
                 }
 
             }) ]]>
