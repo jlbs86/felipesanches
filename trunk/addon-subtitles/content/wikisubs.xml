@@ -234,7 +234,7 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
-
+                    var self = this;
                     this.video = binding.parentNode;
 
                     this.communication_element = document.createElement("WikiSubsCommunicationElement");
@@ -260,35 +260,33 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.save_button = document.createElementNS(xulns, "button");
                     this.save_button.setAttribute("label", "Save");
                     this.save_button.setAttribute("class", "plain wikisubs_button");
+                    this.save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(); } , false);
 
                     this.cancel_button = document.createElementNS(xulns, "button");
                     this.cancel_button.setAttribute("label", "Cancel");
                     this.cancel_button.setAttribute("class", "plain wikisubs_button");
+                    this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode() } , false);
+
                     this.editor_hbox.appendChild(this.save_button);
                     this.editor_hbox.appendChild(this.cancel_button);
                     this.exit_edit_mode();
 
-                    var self = this;                    
                     this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
                     this.subtitles_textbox.setAttribute("class", "plain subtitles_textbox");
                     this.subtitles_textbox.setAttribute("multiline", "true");
-//                    this.subtitles_textbox.setAttribute("flex", "1");
-
-                    this.subtitles_textbox.addEventListener("change", function(){ self.saveSubs() } , false);
 
 //MDC states:    spellcheck   New in Firefox 2.0.0.2
 //                      Type: boolean 
 //                      "If true, spell checking is enabled by default for the text box; if false, spell checking is disabled by default."
 //                      "If not specified, this defaults to false "
 //                      (but it seems to be true by default...)
-
+//                    this.subtitles_textbox.spellcheck=false;
 //                    this.subtitles_textbox.spellcheck=false;
 
                     //Subtitles will be displayed above the controls:
                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
                     controlBar.parentNode.insertBefore(this.editor_hbox, controlBar);
                     controlBar.parentNode.insertBefore(this.subtitles_textbox, controlBar);
-
 
                     //Subtitles menu will be near the mute button:
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
@@ -362,6 +360,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.edit_mode=false;
                     this.subtitles_textbox.style.background = "transparent"
                     this.editor_hbox.setAttribute("hidden", "true");
+                    this.video.play();
                 },
 
                 saveSubs : function(){
