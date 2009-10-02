@@ -260,16 +260,16 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.save_button = document.createElementNS(xulns, "button");
                     this.save_button.setAttribute("label", "Save");
                     this.save_button.setAttribute("class", "plain wikisubs_button");
-                    this.save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(); } , false);
+                    this.save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(true); } , false);
 
                     this.cancel_button = document.createElementNS(xulns, "button");
                     this.cancel_button.setAttribute("label", "Cancel");
                     this.cancel_button.setAttribute("class", "plain wikisubs_button");
-                    this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode() } , false);
+                    this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
 
                     this.editor_hbox.appendChild(this.save_button);
                     this.editor_hbox.appendChild(this.cancel_button);
-                    this.exit_edit_mode();
+                    this.exit_edit_mode(false);
 
                     this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
                     this.subtitles_textbox.setAttribute("class", "plain subtitles_textbox");
@@ -324,7 +324,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     };
 
                     var playButton = document.getAnonymousElementByAttribute(binding, "class", "playButton");
-                    playButton.addEventListener("click", function(){ if (self.edit_mode) self.exit_edit_mode(); }, false);
+                    playButton.addEventListener("click", function(){ if (self.edit_mode) self.exit_edit_mode(false); }, false);
 
                     dump("--- wikisubs initialized ---\n");
                 },
@@ -356,11 +356,11 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.editor_hbox.setAttribute("hidden", "false");
                 },
 
-                exit_edit_mode : function() {
+                exit_edit_mode : function(resume) {
                     this.edit_mode=false;
                     this.subtitles_textbox.style.background = "transparent"
                     this.editor_hbox.setAttribute("hidden", "true");
-                    this.video.play();
+                    if (resume) this.video.play();
                 },
 
                 saveSubs : function(){
