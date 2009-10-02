@@ -28,7 +28,7 @@
     text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
 
-.subtitles_editbox * {
+.subtitles_textbox * {
     text-align:center;
     padding: 4px;
     padding-bottom: 8px;
