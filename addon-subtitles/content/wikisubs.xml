@@ -93,7 +93,7 @@
                 encode_SRT : function (sub){
                   text = ""
                   for (i in sub){
-                      text+=i+"\n"
+                      text+=(Number(i)+1)+"\n"
                       text+=this.MilliSecondsToString(sub[i]["start"])
                       text+=" --> "
                       text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
