@@ -163,6 +163,11 @@ var Wikisubs = {
 	    catch(e){
 		    alert("bad request");
 	    }
+    },
+
+    openTab : function(evt){
+        var url = evt.target.getAttribute("url");
+        gBrowser.selectedTab = gBrowser.addTab(url);      
     }
 }
 
@@ -170,4 +175,5 @@ window.addEventListener("load", function() { Wikisubs.init(); }, false);
 document.addEventListener("WikiSubsLoadSubList", function(e) { Wikisubs.loadSubList(e); }, false, true);
 document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false, true);
 document.addEventListener("WikiSubsSaveSub", function(e) { Wikisubs.saveSub(e); }, false, true);
+document.addEventListener("WikiSubsOpenTab", function(e) { Wikisubs.openTab(e); }, false, true);
 
