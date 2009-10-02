@@ -20,7 +20,7 @@
                 edit_mode : false,
 
                 toMilliSeconds: function (s){
-                  var timeparts = s.split('.');
+                  var timeparts = s.split(',');
                   var epoch = 'Jan 01, 1970';
                   var millisecondsEpoch = Date.parse(epoch);
                   var timestamp = epoch+' '+timeparts[0];
@@ -38,18 +38,19 @@
                   if (mins < 10) mins = "0" + mins;
                   if (msecs < 10) msecs = "0" + msecs;
                   if (msecs < 100) msecs = "0" + msecs;
-                  return hours + ":" + mins + ":" + secs + "." + msecs;
+                  return hours + ":" + mins + ":" + secs + "," + msecs;
                 },
 
                 parse_SRT : function (text){
-                  var pairs = text.split("\n\n");
+                  var blocks = text.split("\n\n");
                   var content = [];
-                  for (var i=0; i<pairs.length; i++){
-                    var pair = pairs[i].split("\n");
-                    var timeinterval = pair[0].split(',');
+                  for (var i=0; i<blocks.length; i++){
+                    var block = blocks[i].split("\n");
+                    //block[0] is the index. I'll ignore it. Could be used to check validity of the SRT
+                    var timeinterval = block[1].split(' --> ');
                     var start = this.toMilliSeconds(timeinterval[0]);
                     var end = this.toMilliSeconds(timeinterval[1]);
-                    content.push({'start':start, 'end':end, 'text':pair[1]});
+                    content.push({'start':start, 'end':end, 'text':block[2]});
                   }
                   return content;
                 },
@@ -57,7 +58,8 @@
                 encode_SRT : function (sub){
                   text = ""
                   for (i in sub){
-                      text+=this.MilliSecondsToString(sub[i]["start"])+","+this.MilliSecondsToString(sub[i]["end"])+"\n";
+                      text+=i+"\n"
+                      text+=this.MilliSecondsToString(sub[i]["start"])+" --> "+this.MilliSecondsToString(sub[i]["end"])+"\n";
                       text+=sub[i]["text"]+"\n\n";
                   }
                   return text;

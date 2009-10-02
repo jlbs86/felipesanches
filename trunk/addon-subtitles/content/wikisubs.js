@@ -99,7 +99,6 @@ var Wikisubs = {
       }
 
       var src = video.getElementsByTagName("source")[0].src;  //todo: improve it
-
       this.loadMediawikiPage("http://www.wstr.org/subs/", "Subtitles/URL/" + src, parse_sub_list);
     },
 
