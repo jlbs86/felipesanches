@@ -28,14 +28,6 @@
     text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
 
-.subtitlesLabel {
-    padding-bottom: 12px;
-    font-size: 13px;
-    font-family: Arial, sans-serif;
-    color: rgba(255,255,128, 1);
-    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
-}
-
 .subtitles_editbox {
     padding-bottom: 12px;
     font-size: 13px;
