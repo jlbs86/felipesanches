@@ -21,11 +21,13 @@
 
                 toMilliSeconds: function (s){
                   var timeparts = s.split(',');
-                  var epoch = 'Jan 01, 1970';
-                  var millisecondsEpoch = Date.parse(epoch);
-                  var timestamp = epoch+' '+timeparts[0];
-                  var milliseconds = Date.parse(timestamp) - millisecondsEpoch + parseInt(timeparts[1]);
-                  return milliseconds;
+                  msecs = Number(timeparts[1]);
+                  var timeparts = timeparts[0].split(':');
+                  var hours = Number(timeparts[0]);
+                  var mins = Number(timeparts[1]);
+                  var secs = Number(timeparts[2]);
+
+                  return (((hours*60 + mins) * 60) + secs)*1000 + msecs;
                 },
 
                 MilliSecondsToString: function(time){
@@ -36,6 +38,7 @@
                   var msecs = time%1000;
                   if (secs < 10) secs = "0" + secs;
                   if (mins < 10) mins = "0" + mins;
+                  if (hours < 10) hours = "0" + hours;
                   if (msecs < 10) msecs = "0" + msecs;
                   if (msecs < 100) msecs = "0" + msecs;
                   return hours + ":" + mins + ":" + secs + "," + msecs;
