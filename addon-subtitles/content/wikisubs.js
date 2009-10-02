@@ -127,6 +127,7 @@ var Wikisubs = {
      	var xhr = new XMLHttpRequest();
 	    var ajaxDataReader = function () {
 		    if (xhr.readyState == 4) {
+          //alert("sendGETRequest responseText:\n\n" + xhr.responseText);
           callback(xhr.responseText);
 		    }
 	    }
@@ -138,7 +139,7 @@ var Wikisubs = {
 	        xhr.send(null);
         }
 	    catch(e){
-		    alert("bad request");
+		    //alert("bad request");
 	    }
     },
 
@@ -161,7 +162,7 @@ var Wikisubs = {
 	        xhr.send(params);
         }
 	    catch(e){
-		    alert("bad request");
+		    //alert("bad request");
 	    }
     },
 

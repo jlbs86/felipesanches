@@ -227,9 +227,10 @@
 
                     self.addMenuLink("Subtitles wiki page...", "http://www.wstr.org/subs/");
 
-//TODO: Why?!
-                    //self.video.addEventListener("load", function(){ alert("self.video.src: "+self.video.src); self.look_for_available_subtitles(); }, false);
+                    //TODO: Why?!
+                    //self.video.addEventListener("load", function(){ self.look_for_available_subtitles(); }, false);
                     window.setInterval ( function(){ self.look_for_available_subtitles(); } );
+
 
                     //This is a hack. we need a way to inhibit video controls handling of keypress
                     // events when we are typing text in the subtitles textbox, so that for instance
@@ -239,6 +240,9 @@
                       if (self.edit_mode==false)
                         binding.Utils.original_keyHandler(event);
                     };
+
+                    var playButton = document.getAnonymousElementByAttribute(binding, "class", "playButton");
+                    playButton.addEventListener("click", function(){ if (self.edit_mode) self.exit_edit_mode(); }, false);
 
                     dump("--- wikisubs initialized ---\n");
                 },
@@ -266,10 +270,12 @@
                     this.edit_mode = true;
                     this.original_text = this.subtitles_editbox.value;
                     this.video.pause();
+                    this.subtitles_editbox.style.background = "rgba(255,255,128, 0.3)"
                 },
 
                 exit_edit_mode : function() {
                     this.edit_mode=false;
+                    this.subtitles_editbox.style.background = "transparent"
                 },
 
                 saveSubs : function(){
