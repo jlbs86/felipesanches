@@ -131,18 +131,22 @@ To work around the issue, you could have your binding generate a custom event wh
                   this.emit_event("WikiSubsLoadSub", node);
                 },
 
-                /* This will add an option in the subtitles menu that will open a new tab and let the
-                 user interact directly with the subtitles wiki repository */
-                addMenuLink : function (title, url){
-                    var self=this;
+                addMenuCallback : function (title, callback){
                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
                     var item = document.createElementNS(xulns, "menuitem");
                     item.setAttribute("label", title);
-                    item.addEventListener("click", function(e) {
-                        self.communication_element.setAttribute("url", url); 
-                        self.emit_event("WikiSubsOpenTab", self.communication_element);
-                    }, false);
+                    item.addEventListener("click", callback, false);
                     this.subtitlesMenu.appendChild(item);
+                },
+
+                /* This will add an option in the subtitles menu that will open a new tab and let the
+                 user interact directly with the subtitles wiki repository */
+                addMenuLink : function (title, url){
+                  var self=this;
+                  this.addMenuCallback(title, function(e) {
+                    self.communication_element.setAttribute("url", url); 
+                    self.emit_event("WikiSubsOpenTab", self.communication_element);
+                  }, false);
                 },
 
 /*
