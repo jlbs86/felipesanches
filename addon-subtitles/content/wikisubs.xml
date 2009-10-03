@@ -189,6 +189,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                   if (this.current_subtitle == null) return;
 
                   var text = "";
+                  this.current_subtitle_index = -1;
                   var subs = this.current_subtitle["content"];
                   for (i=0; i < subs.length; i++){
                     if ((currentTime >= subs[i].start) && (currentTime < subs[i].end)){
@@ -201,14 +202,17 @@ subtitle, and bailing out early if .currentTime is between those two values
                   this.set_subtitle_sliders(currentTime, subs[i]["start"], subs[i]["end"]);
                 },
 
-                set_subtitle_sliders : function(now, start, end){
+                set_subtitle_sliders : function(start, end){
+                  this.interval_start.setAttribute("value", start);
+                  this.interval_end.setAttribute("value", end);
+                },
+
+                set_subtitle_sliders_limits : function(){
+                  var now = Math.round(this.video.currentTime * 1000);
                   this.interval_start.setAttribute("min", now - 2500);
                   this.interval_start.setAttribute("max", now + 2500);
                   this.interval_end.setAttribute("min", now - 2500);
                   this.interval_end.setAttribute("max", now + 2500);
-
-                  this.interval_start.setAttribute("value", start);
-                  this.interval_end.setAttribute("value", end);
                 },
 
                 /*this will ask the wiki repository for a list of subtitles that match the current video:*/
@@ -390,6 +394,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.video.pause();
                     this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
                     this.editor_hbox.setAttribute("hidden", "false");
+                    this.set_subtitle_sliders_limits();
                 },
 
                 exit_edit_mode : function(resume) {
@@ -406,9 +411,16 @@ subtitle, and bailing out early if .currentTime is between those two values
                       this.interval_start.value == this.original_start &&
                       this.interval_end.value == this.original_end) return;
 
-                  this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
-                  this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
-                  this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
+                  if (this.current_subtitle_index == -1){
+                    this.current_subtitle["content"].push(
+                        {"text": this.subtitles_textbox.value,
+                         "start": this.interval_start.value,
+                         "end": this.interval_end.value});
+                  } else {
+                    this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
+                    this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
+                    this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
+                  }
 
                   //remove this subtitle chunk if user has deleted all text in the textbox
                   if (this.subtitles_textbox.value==""){
