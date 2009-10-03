@@ -198,6 +198,17 @@ subtitle, and bailing out early if .currentTime is between those two values
                     }
                   }
                   this.subtitles_textbox.value = text;
+                  this.set_subtitle_sliders(currentTime, subs[i]["start"], subs[i]["end"]);
+                },
+
+                set_subtitle_sliders : function(now, start, end){
+                  this.interval_start.setAttribute("min", now - 2500);
+                  this.interval_start.setAttribute("max", now + 2500);
+                  this.interval_end.setAttribute("min", now - 2500);
+                  this.interval_end.setAttribute("max", now + 2500);
+
+                  this.interval_start.setAttribute("value", start);
+                  this.interval_end.setAttribute("value", end);
                 },
 
                 /*this will ask the wiki repository for a list of subtitles that match the current video:*/
@@ -276,18 +287,18 @@ subtitle, and bailing out early if .currentTime is between those two values
                     var interval_stack = document.createElementNS(xulns, "vbox");
                     interval_stack.setAttribute("flex", "1");
                     interval_stack.setAttribute("class", "subtitle_interval_hbox");
-                    this.min_interval = document.createElementNS(xulns, "scale");
-                    this.min_interval.setAttribute("movetoclick", "true");
-                    this.min_interval.setAttribute("class", "subtitle_interval_scale left_arrow");
-                    this.max_interval = document.createElementNS(xulns, "scale");
-                    this.max_interval.setAttribute("movetoclick", "true");
-                    this.max_interval.setAttribute("class", "subtitle_interval_scale right_arrow");
-                    interval_stack.appendChild(this.min_interval);
-                    interval_stack.appendChild(this.max_interval);
+                    this.interval_start = document.createElementNS(xulns, "scale");
+                    this.interval_start.setAttribute("movetoclick", "true");
+                    this.interval_start.setAttribute("class", "subtitle_interval_scale left_arrow");
+                    this.interval_end = document.createElementNS(xulns, "scale");
+                    this.interval_end.setAttribute("movetoclick", "true");
+                    this.interval_end.setAttribute("class", "subtitle_interval_scale right_arrow");
+                    interval_stack.appendChild(this.interval_start);
+                    interval_stack.appendChild(this.interval_end);
 
 
-//                    this.editor_hbox.appendChild(this.min_interval);
-//                    this.editor_hbox.appendChild(this.max_interval);
+//                    this.editor_hbox.appendChild(this.interval_start);
+//                    this.editor_hbox.appendChild(this.interval_end);
                     this.editor_hbox.appendChild(interval_stack);
                     this.editor_hbox.appendChild(this.save_button);
                     this.editor_hbox.appendChild(this.cancel_button);
@@ -373,6 +384,9 @@ subtitle, and bailing out early if .currentTime is between those two values
                 enter_edit_mode : function(event){
                     this.edit_mode = true;
                     this.original_text = this.subtitles_textbox.value;
+                    this.original_star = this.interval_start.value;
+                    this.original_end = this.interval_end.value;
+
                     this.video.pause();
                     this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
                     this.editor_hbox.setAttribute("hidden", "false");
@@ -386,8 +400,15 @@ subtitle, and bailing out early if .currentTime is between those two values
                 },
 
                 saveSubs : function(){
-                  if (this.subtitles_textbox.value == this.original_text) return;
+                  //ignore save if current sub is not altered
+                  //(we save immediatly after user edits so only the current sub mathers)
+                  if (this.subtitles_textbox.value == this.original_text &&
+                      this.interval_start.value == this.original_start &&
+                      this.interval_end.value == this.original_end) return;
+
                   this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
+                  this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
+                  this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
 
                   //This may seem complicated, but I am doing it in order to
                   // keep itext attributes compliant to Silvia's spec: 
