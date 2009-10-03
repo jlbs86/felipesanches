@@ -199,7 +199,14 @@ subtitle, and bailing out early if .currentTime is between those two values
                     }
                   }
                   this.subtitles_textbox.value = text;
-                  this.set_subtitle_sliders(currentTime, subs[i]["start"], subs[i]["end"]);
+
+                  if (this.current_subtitle_index == -1){
+                    //user is addind a new chunk of subtitle text.
+                    //So preset the time interval to the previous past 3 seconds
+                    this.set_subtitle_sliders(currentTime - 3000, currentTime);
+                  } else {
+                    this.set_subtitle_sliders(subs[i]["start"], subs[i]["end"]);
+                  }
                 },
 
                 set_subtitle_sliders : function(start, end){
@@ -209,10 +216,10 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                 set_subtitle_sliders_limits : function(){
                   var now = Math.round(this.video.currentTime * 1000);
-                  this.interval_start.setAttribute("min", now - 2500);
-                  this.interval_start.setAttribute("max", now + 2500);
-                  this.interval_end.setAttribute("min", now - 2500);
-                  this.interval_end.setAttribute("max", now + 2500);
+                  this.interval_start.setAttribute("min", now - 3000);
+                  this.interval_start.setAttribute("max", now + 3000);
+                  this.interval_end.setAttribute("min", now - 3000);
+                  this.interval_end.setAttribute("max", now + 3000);
                 },
 
                 /*this will ask the wiki repository for a list of subtitles that match the current video:*/
