@@ -55,3 +55,27 @@
     font-family: Arial, sans-serif;
     text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
+
+.subtitle_interval_scale * {
+    -moz-appearance: none !important;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    spacing: none;
+    background-color: rgba(0,0,0, 0.6);
+}
+
+.left_arrow  .scale-thumb{
+    background: url(chrome://wikisubs/skin/leftarrow.png) no-repeat center;
+}
+
+.right_arrow  .scale-thumb{
+    background: url(chrome://wikisubs/skin/rightarrow.png) no-repeat center;
+}
+
+.subtitle_interval_scale .scale-thumb {
+    min-width: 28px;
+    min-height: 14px;
+    bottom:14px;
+    -moz-box-pack: center;
+}
