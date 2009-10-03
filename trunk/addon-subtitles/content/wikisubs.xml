@@ -267,6 +267,28 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.cancel_button.setAttribute("class", "plain wikisubs_button");
                     this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
 
+/*
+                    <stack flex="1">
+                        <scale class="subtitle_interval_scale" movetoclick="true"/>
+                        <scale class="subtitle_interval_scale" movetoclick="true"/>
+                    </stack>
+*/
+                    var interval_stack = document.createElementNS(xulns, "vbox");
+                    interval_stack.setAttribute("flex", "1");
+                    interval_stack.setAttribute("class", "subtitle_interval_hbox");
+                    this.min_interval = document.createElementNS(xulns, "scale");
+                    this.min_interval.setAttribute("movetoclick", "true");
+                    this.min_interval.setAttribute("class", "subtitle_interval_scale left_arrow");
+                    this.max_interval = document.createElementNS(xulns, "scale");
+                    this.max_interval.setAttribute("movetoclick", "true");
+                    this.max_interval.setAttribute("class", "subtitle_interval_scale right_arrow");
+                    interval_stack.appendChild(this.min_interval);
+                    interval_stack.appendChild(this.max_interval);
+
+
+//                    this.editor_hbox.appendChild(this.min_interval);
+//                    this.editor_hbox.appendChild(this.max_interval);
+                    this.editor_hbox.appendChild(interval_stack);
                     this.editor_hbox.appendChild(this.save_button);
                     this.editor_hbox.appendChild(this.cancel_button);
                     this.exit_edit_mode(false);
