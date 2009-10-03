@@ -410,6 +410,11 @@ subtitle, and bailing out early if .currentTime is between those two values
                   this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
                   this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
 
+                  //remove this subtitle chunk if user has deleted all text in the textbox
+                  if (this.subtitles_textbox.value==""){
+                    this.current_subtitle["content"].splice(this.current_subtitle_index, 1);
+                  }
+
                   //This may seem complicated, but I am doing it in order to
                   // keep itext attributes compliant to Silvia's spec: 
                   var pagename = this.current_subtitle["url"].split("title=")[1];
