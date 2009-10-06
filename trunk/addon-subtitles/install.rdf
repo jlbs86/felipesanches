@@ -2,15 +2,28 @@
 <RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
-	<Description about="urn:mozilla:install-manifest">
-	
+	<Description about="urn:mozilla:install-manifest">	
 		<em:id>wikisubs@fsanches.net</em:id>
-		<em:name>WikiSubs</em:name>
 		<em:version>0.1</em:version>
-		<em:description>Adds a wiki-style collaborative subtitling system to HTML5 videos.</em:description>
 		<em:creator>Felipe Corrêa da Silva Sanches</em:creator>
 		<em:iconURL>chrome://wikisubs/skin/subtitles-icon.png</em:iconURL>
 		<em:type>2</em:type>
+
+    <em:localized>
+      <Description>
+        <em:locale>pt-BR</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Proporciona um sistema colaborativo de legendas para vídeos HTML5.</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>en-US</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Enables a wiki-style collaborative subtitling system to HTML5 videos.</em:description>
+      </Description>
+    </em:localized>
 
         <!-- Firefox -->
 		<em:targetApplication>
