@@ -25,6 +25,14 @@
       </Description>
     </em:localized>
 
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Permet d'avoir un système de sous-titrage de type Wiki des vidéos en HTML5.</em:description>
+      </Description>
+    </em:localized>
+
         <!-- Firefox -->
 		<em:targetApplication>
 			<Description>
