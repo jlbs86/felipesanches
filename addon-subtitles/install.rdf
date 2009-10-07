@@ -27,9 +27,25 @@
 
     <em:localized>
       <Description>
+        <em:locale>de</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Ein Wiki-ähnliches System zum gemeinsamen Bearbeiten von Untertiteln für HTML5-Videos</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>fr</em:locale>
         <em:name>WikiSubs</em:name>
         <em:description>Permet d'avoir un système de sous-titrage de type Wiki des vidéos en HTML5.</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>es</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Permite un sistema de subtitulado colaborativo de tipo Wiki para videos en HTML5.</em:description>
       </Description>
     </em:localized>
 
