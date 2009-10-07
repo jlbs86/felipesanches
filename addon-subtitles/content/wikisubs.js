@@ -98,7 +98,9 @@ var Wikisubs = {
         }
       }
 
-      var src = video.getElementsByTagName("source")[0].src;  //todo: improve it
+      var src = video.currentSrc;
+      if (!src) src = video.getElementsByTagName("source")[0].src;
+
       this.loadMediawikiPage("http://www.wstr.org/subs/", "Subtitles/URL/" + src, parse_sub_list);
     },
 
