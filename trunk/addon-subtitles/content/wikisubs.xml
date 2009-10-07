@@ -293,28 +293,22 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.cancel_button.setAttribute("class", "plain wikisubs_button");
                     this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
 
-/*
-                    <stack flex="1">
-                        <scale class="subtitle_interval_scale" movetoclick="true"/>
-                        <scale class="subtitle_interval_scale" movetoclick="true"/>
-                    </stack>
-*/
-                    var interval_stack = document.createElementNS(xulns, "vbox");
-                    interval_stack.setAttribute("flex", "1");
-                    interval_stack.setAttribute("class", "subtitle_interval_hbox");
+                    var interval_vbox = document.createElementNS(xulns, "vbox");
+                    interval_vbox.setAttribute("flex", "1");
+                    interval_vbox.setAttribute("class", "subtitle_interval_hbox");
                     this.interval_start = document.createElementNS(xulns, "scale");
                     this.interval_start.setAttribute("movetoclick", "true");
                     this.interval_start.setAttribute("class", "subtitle_interval_scale left_arrow");
                     this.interval_end = document.createElementNS(xulns, "scale");
                     this.interval_end.setAttribute("movetoclick", "true");
                     this.interval_end.setAttribute("class", "subtitle_interval_scale right_arrow");
-                    interval_stack.appendChild(this.interval_start);
-                    interval_stack.appendChild(this.interval_end);
+                    interval_vbox.appendChild(this.interval_start);
+                    interval_vbox.appendChild(this.interval_end);
 
 
 //                    this.editor_hbox.appendChild(this.interval_start);
 //                    this.editor_hbox.appendChild(this.interval_end);
-                    this.editor_hbox.appendChild(interval_stack);
+                    this.editor_hbox.appendChild(interval_vbox);
                     this.editor_hbox.appendChild(this.save_button);
                     this.editor_hbox.appendChild(this.cancel_button);
                     this.exit_edit_mode(false);
@@ -385,6 +379,9 @@ subtitle, and bailing out early if .currentTime is between those two values
                 videoChildInserted : function(event) {
                     //I am trying to implement behaviour proposed by Silvia Pfeiffer
                     //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
+
+                    //This could be soon updated to support this second version of her spec: 
+                    //http://blog.gingertech.net/2009/10/06/new-proposal-for-captions-and-other-timed-text-for-html5/
 
                     if (event.target.tagName == "itext"){
                         this.addSubtitle({"title": event.target.id,
