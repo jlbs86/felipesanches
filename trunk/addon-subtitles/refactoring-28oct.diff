@@ -1,0 +1,629 @@
+Index: content/wikisubs.xml
+===================================================================
+--- content/wikisubs.xml	(revisão 63)
++++ content/wikisubs.xml	(cópia de trabalho)
+@@ -37,100 +37,47 @@
+ */
+ -->
+ 
+-  <binding id="wikisubs"
+-               extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
+-      <implementation>
+-        <field name="wikisubsUtils">
+-            <![CDATA[ ({
+-                video : null,
+-                subtitlesMenu : null,
+-                button : null,
+-                current_subtitle : null,
+-                loading_subtitles : false,
+-                edit_mode : false,
++  <binding id="subtitlesmenu">
++    <content>
++      <xul:button class="subtitlesButton" type="menu" position="before_end" dir="reverse" hidden="true">
++        <xul:menupopup class="subtitlesMenu" />
++      </xul:button>
++    </content>
+ 
+-                /* SRT (subtitles file format) parsing and encoding routines: */
++    <implementation>
++      <field name="subtitlesMenuUtils">
++          <![CDATA[ ({
++                init : function(binding){
++                    var self=this;
+ 
+-                toMilliSeconds: function (s){
+-                  var timeparts = s.split(',');
+-                  msecs = Number(timeparts[1]);
+-                  var timeparts = timeparts[0].split(':');
+-                  var hours = Number(timeparts[0]);
+-                  var mins = Number(timeparts[1]);
+-                  var secs = Number(timeparts[2]);
++                    //TODO: ugly! 
++                    this.video = binding.parentNode.parentNode.parentNode.parentNode.parentNode;
++                    this.communication_element = document.createElement("WikiSubsCommunicationElement");
++                    this.video.appendChild(this.communication_element);
+ 
+-                  return (((hours*60 + mins) * 60) + secs)*1000 + msecs;
+-                },
++                    this.subtitlesMenu = document.getAnonymousElementByAttribute(binding, "class", "subtitlesMenu");
++                    this.subtitlesButton = document.getAnonymousElementByAttribute(binding, "class", "subtitlesButton");
++                    this.addMenuLink("Subtitles wiki page...", "http://www.wstr.org/subs/");
+ 
+-                MilliSecondsToString: function(time){
+-                  var timeString;
+-                  var hours = Math.floor(time / 3600000);
+-                  var mins  = Math.floor(time % 3600000 / 60000);
+-                  var secs  = Math.floor(time % 60000 / 1000);
+-                  var msecs = time%1000;
+-                  if (secs < 10) secs = "0" + secs;
+-                  if (mins < 10) mins = "0" + mins;
+-                  if (hours < 10) hours = "0" + hours;
+-                  if (msecs < 10) msecs = "0" + msecs;
+-                  if (msecs < 100) msecs = "0" + msecs;
+-                  return hours + ":" + mins + ":" + secs + "," + msecs;
+-                },
++                    for (i in this.video.childNodes){
++                      var node = this.video.childNodes[i];
++                      if (node.tagName == "ITEXT"){
++                          this.addSubtitle({"title": node.id,
++                            "lang": node.getAttribute("lang"),
++                             "url": node.getAttribute("src"),
++                              "itext_node": node });
++                          this.subtitlesButton.setAttribute("hidden", "false");
++                      }
++                    }
+ 
+-                parse_SRT : function (text){
+-                  var blocks = text.split("\n\n");
+-                  var content = [];
+-                  for (var i=0; i<blocks.length; i++){
+-                    var block = blocks[i].split("\n");
+-                    //block[0] is the index. I'll ignore it. Could be used to check validity of the SRT
+-                    var timeinterval = block[1].split(' --> ');
+-                    var start = this.toMilliSeconds(timeinterval[0]);
+-                    var end = this.toMilliSeconds(timeinterval[1]);
+-                    content.push({'start':start, 'end':end, 'text':block[2]});
+-                  }
+-                  return content;
+-                },
++                    this.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
+ 
+-                encode_SRT : function (sub){
+-                  text = ""
+-                  for (i in sub){
+-                      text+=(Number(i)+1)+"\n"
+-                      text+=this.MilliSecondsToString(sub[i]["start"])
+-                      text+=" --> "
+-                      text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
+-                      text+=sub[i]["text"]+"\n\n";
+-                  }
+-                  return text;
+-                },
++                    //TODO: Why?!
++                    //self.video.addEventListener("load", function(){ self.look_for_available_subtitles(); }, false);
++                    window.setInterval ( function(){ self.look_for_available_subtitles(); } );
+ 
+-/*
+-This addon uses XMLHttpRequest to fetch and save content to a subtitles (wiki) repository. 
+-
+-Gavin Sharp gave me this advice:
+-
+-Cross-site XMLHttpRequest *in chrome code* works in extensions, but since you're actually
+- extending a content-hosted video control, you're not able to take advantage of it (the security
+- policies of the video-hosting website are in effect).
+-
+-To work around the issue, you could have your binding generate a custom event when it wants
+- to retrieve data, and have a chrome-hosted listener watch for that event and take care of the
+- request. See https://developer.mozilla.org/en/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
+- for an example.
+-*/
+-                emit_event : function (eventName, node){
+-                  var evt = document.createEvent("Events");
+-                  evt.initEvent(eventName, true, false);
+-                  node.dispatchEvent(evt);
+                 },
+ 
+-                fetch : function (sub, node){
+-                  if (!node) node = this.communication_element;
+-                  this.loading_subtitles = true;
+-                  sub["content"] = [];
+-                  this.current_subtitle = sub
+-                  this.communication_element.setAttribute("src", sub["url"]); 
+-                  this.emit_event("WikiSubsLoadSub", node);
+-                },
+-
+                 addMenuCallback : function (title, callback){
+                     var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                     var item = document.createElementNS(xulns, "menuitem");
+@@ -164,13 +111,140 @@
+                     item.setAttribute("label", sub["title"]);
+ 
+                     var self = this;
+-                    sub["itext_node"].addEventListener("DOMNodeInserted", function(event) { self.itextChildInserted(event); }, false);
++//                    sub["itext_node"].addEventListener("DOMNodeInserted", function(event) { self.itextChildInserted(event); }, false);
+                     item.addEventListener("click", function(e) {self.fetch(sub, sub["itext_node"]);}, false);
+                     this.subtitlesMenu.appendChild(item);
+                     this.subtitlesButton.setAttribute("hidden", "false");
+                 },
+ 
++                /*this will ask the wiki repository for a list of subtitles that match the current video:*/
++                look_for_available_subtitles : function(){
++                    this.emit_event("WikiSubsLoadSubList", this.communication_element);
++                },
++
+ /*
++This addon uses XMLHttpRequest to fetch and save content to a subtitles (wiki) repository. 
++
++Gavin Sharp gave me this advice:
++
++Cross-site XMLHttpRequest *in chrome code* works in extensions, but since you're actually
++ extending a content-hosted video control, you're not able to take advantage of it (the security
++ policies of the video-hosting website are in effect).
++
++To work around the issue, you could have your binding generate a custom event when it wants
++ to retrieve data, and have a chrome-hosted listener watch for that event and take care of the
++ request. See https://developer.mozilla.org/en/Code_snippets/Interaction_between_privileged_and_non-privileged_pages
++ for an example.
++*/
++                emit_event : function (eventName, node){
++                  //return;//temp hack
++
++                  var evt = document.createEvent("Events");
++                  evt.initEvent(eventName, true, false);
++                  node.dispatchEvent(evt);
++                },
++
++                videoChildInserted : function(event) {
++                    //I am trying to implement behaviour proposed by Silvia Pfeiffer
++                    //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
++
++                    //This could be soon updated to support this second version of her spec: 
++                    //http://blog.gingertech.net/2009/10/06/new-proposal-for-captions-and-other-timed-text-for-html5/
++
++                    if (event.target.tagName == "itext"){
++                        this.addSubtitle({"title": event.target.id,
++                          "lang": event.target.getAttribute("lang"),
++                           "url": event.target.getAttribute("src"),
++                            "itext_node": event.target });
++
++                        this.subtitlesButton.setAttribute("hidden", "false");
++                    }
++                }
++
++            }) ]]>
++        </field>
++
++        <constructor>
++            <![CDATA[
++                this.subtitlesMenuUtils.init(this);
++            ]]>
++        </constructor>
++    </implementation>
++
++  </binding>
++
++
++  <binding id="subtitleseditor">
++    <content>
++      <xul:hbox class="subtitle_editor_hbox" hidden="true">
++        <xul:vbox class="subtitle_interval_vbox" flex="1">
++          <xul:scale movetoclick="true" class="subtitle_interval_scale left_arrow" />
++          <xul:scale movetoclick="true" class="subtitle_interval_scale right_arrow" />
++        </xul:vbox>
++        <xul:button label="Save" class="plain wikisubs_button save_button" />
++        <xul:button label="Cancel" class="plain wikisubs_button cancel_button" />
++      </xul:hbox>
++      <xul:textbox class="plain subtitles_textbox" multiline="true" spellcheck="false" />
++    </content>
++
++      <implementation>
++        <field name="editorUtils">
++            <![CDATA[ ({
++                edit_mode : false,
++
++                enter_edit_mode : function(event){
++                    this.edit_mode = true;
++                    this.original_text = this.subtitles_textbox.value;
++                    this.original_star = this.interval_start.value;
++                    this.original_end = this.interval_end.value;
++
++                    this.video.pause();
++                    this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
++                    this.editor_hbox.setAttribute("hidden", "false");
++                    this.set_subtitle_sliders_limits();
++                },
++
++                exit_edit_mode : function(resume) {
++                    this.edit_mode=false;
++                    this.subtitles_textbox.style.background = "transparent"
++                    this.editor_hbox.setAttribute("hidden", "true");
++                    if (resume) this.video.play();
++                },
++
++                saveSubs : function(){
++                  //ignore save if current sub is not altered
++                  //(we save immediatly after user edits so only the current sub mathers)
++                  if (this.subtitles_textbox.value == this.original_text &&
++                      this.interval_start.value == this.original_start &&
++                      this.interval_end.value == this.original_end) return;
++
++                  if (this.current_subtitle_index == -1){
++                    this.current_subtitle["content"].push(
++                        {"text": this.subtitles_textbox.value,
++                         "start": this.interval_start.value,
++                         "end": this.interval_end.value});
++                  } else {
++                    this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
++                    this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
++                    this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
++                  }
++
++                  //remove this subtitle chunk if user has deleted all text in the textbox
++                  if (this.subtitles_textbox.value==""){
++                    this.current_subtitle["content"].splice(this.current_subtitle_index, 1);
++                  }
++
++                  //This may seem complicated, but I am doing it in order to
++                  // keep itext attributes compliant to Silvia's spec: 
++                  var pagename = this.current_subtitle["url"].split("title=")[1];
++
++                  var srt = this.encode_SRT(this.current_subtitle["content"]);
++                  this.communication_element.setAttribute("pagename", pagename);
++                  this.communication_element.setAttribute("srt", srt);
++                  this.emit_event("WikiSubsSaveSub", this.communication_element);
++                },
++
++/*
+ Justin Dolske gave me this advice (but I havent implemented it yet):
+ 
+ This is terribly inefficient. The timeupdate event is dispatched every frame,
+@@ -226,11 +300,112 @@
+                   this.interval_end.setAttribute("max", now + 3000);
+                 },
+ 
+-                /*this will ask the wiki repository for a list of subtitles that match the current video:*/
+-                look_for_available_subtitles : function(){
+-                    this.emit_event("WikiSubsLoadSubList", this.communication_element);  
++              init : function(binding){
++                    self = this;
++                    //TODO: make it cleaner:
++                    this.video = binding.parentNode.parentNode.parentNode.parentNode;
++
++                    this.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
++
++                    var save_button = document.getAnonymousElementByAttribute(binding, "class", "plain wikisubs_button save_button");
++                    var cancel_button = document.getAnonymousElementByAttribute(binding, "class", "plain wikisubs_button cancel_button");
++                    this.subtitles_textbox = document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox");
++                    this.subtitlesMenu = document.getAnonymousElementByAttribute(binding, "class", "subtitlesMenu");
++                    this.interval_start = document.getAnonymousElementByAttribute(binding, "class", "left_arrow");
++                    this.interval_end = document.getAnonymousElementByAttribute(binding, "class", "right_arrow");
++                    this.editor_hbox = document.getAnonymousElementByAttribute(binding, "class", "subtitle_editor_hbox");
++
++                    save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(true); } , false);
++                    cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
++                    this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
++                    this.exit_edit_mode(false);                
++              }
++
++            }) ]]>
++        </field>
++
++        <constructor>
++            <![CDATA[
++                this.editorUtils.init(this);
++            ]]>
++        </constructor>
++    </implementation>
++  </binding>
++
++  <binding id="wikisubs"
++               extends="chrome://global/content/bindings/videocontrols.xml#videoControls">
++      <implementation>
++        <field name="wikisubsUtils">
++            <![CDATA[ ({
++                video : null,
++                subtitlesMenu : null,
++                button : null,
++                current_subtitle : null,
++                loading_subtitles : false,
++                edit_mode : false,
++
++                /* SRT (subtitles file format) parsing and encoding routines: */
++
++                toMilliSeconds: function (s){
++                  var timeparts = s.split(',');
++                  msecs = Number(timeparts[1]);
++                  var timeparts = timeparts[0].split(':');
++                  var hours = Number(timeparts[0]);
++                  var mins = Number(timeparts[1]);
++                  var secs = Number(timeparts[2]);
++
++                  return (((hours*60 + mins) * 60) + secs)*1000 + msecs;
+                 },
+ 
++                MilliSecondsToString: function(time){
++                  var timeString;
++                  var hours = Math.floor(time / 3600000);
++                  var mins  = Math.floor(time % 3600000 / 60000);
++                  var secs  = Math.floor(time % 60000 / 1000);
++                  var msecs = time%1000;
++                  if (secs < 10) secs = "0" + secs;
++                  if (mins < 10) mins = "0" + mins;
++                  if (hours < 10) hours = "0" + hours;
++                  if (msecs < 10) msecs = "0" + msecs;
++                  if (msecs < 100) msecs = "0" + msecs;
++                  return hours + ":" + mins + ":" + secs + "," + msecs;
++                },
++
++                parse_SRT : function (text){
++                  var blocks = text.split("\n\n");
++                  var content = [];
++                  for (var i=0; i<blocks.length; i++){
++                    var block = blocks[i].split("\n");
++                    //block[0] is the index. I'll ignore it. Could be used to check validity of the SRT
++                    var timeinterval = block[1].split(' --> ');
++                    var start = this.toMilliSeconds(timeinterval[0]);
++                    var end = this.toMilliSeconds(timeinterval[1]);
++                    content.push({'start':start, 'end':end, 'text':block[2]});
++                  }
++                  return content;
++                },
++
++                encode_SRT : function (sub){
++                  text = ""
++                  for (i in sub){
++                      text+=(Number(i)+1)+"\n"
++                      text+=this.MilliSecondsToString(sub[i]["start"])
++                      text+=" --> "
++                      text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
++                      text+=sub[i]["text"]+"\n\n";
++                  }
++                  return text;
++                },
++
++                fetch : function (sub, node){
++                  if (!node) node = this.communication_element;
++                  this.loading_subtitles = true;
++                  sub["content"] = [];
++                  this.current_subtitle = sub
++                  this.communication_element.setAttribute("src", sub["url"]); 
++                  this.emit_event("WikiSubsLoadSub", node);
++                },
++
+ //This is a test. I plan to have an annotation overlay to be rendered
+ // using SVG on top of the video.
+ // You can see a demo of the balloon XBL at this page:
+@@ -261,82 +436,21 @@
+                 init : function (binding) {
+                     dump("\n--------- wikisubs constructor ---------\n\n");
+                     var self = this;
++                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+                     this.video = binding.parentNode;
+ 
+-                    this.communication_element = document.createElement("WikiSubsCommunicationElement");
+-                    this.video.appendChild(this.communication_element);
+-
+-                    // XBL doesn't have a good way to inject content into the middle of
+-                    // something else, so we'll insert our content via DOM manipulation.
+-                    //This same user interface is declared statically in the patch I have
+-                    // attached to bug #515898 at bugzilla 
+-                    var xulns = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+-                    this.subtitlesButton = document.createElementNS(xulns, "button");
+-                    this.subtitlesButton.setAttribute("class", "subtitlesButton");
+-                    this.subtitlesButton.setAttribute("type", "menu");
+-
+-                    this.subtitlesMenu = document.createElementNS(xulns, "menupopup");
+-                    this.subtitlesButton.appendChild(this.subtitlesMenu);
+-                    this.subtitlesButton.setAttribute("type", "menu");
+-                    this.subtitlesButton.setAttribute("position", "before_end");
+-                    this.subtitlesButton.setAttribute("dir", "reverse");
+-
+-                    this.subtitles_textbox = document.createElementNS(xulns, "textbox");
+-                    this.editor_hbox = document.createElementNS(xulns, "hbox");
+-                    this.save_button = document.createElementNS(xulns, "button");
+-                    this.save_button.setAttribute("label", "Save");
+-                    this.save_button.setAttribute("class", "plain wikisubs_button");
+-                    this.save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(true); } , false);
+-
+-                    this.cancel_button = document.createElementNS(xulns, "button");
+-                    this.cancel_button.setAttribute("label", "Cancel");
+-                    this.cancel_button.setAttribute("class", "plain wikisubs_button");
+-                    this.cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
+-
+-                    var interval_vbox = document.createElementNS(xulns, "vbox");
+-                    interval_vbox.setAttribute("flex", "1");
+-                    interval_vbox.setAttribute("class", "subtitle_interval_hbox");
+-                    this.interval_start = document.createElementNS(xulns, "scale");
+-                    this.interval_start.setAttribute("movetoclick", "true");
+-                    this.interval_start.setAttribute("class", "subtitle_interval_scale left_arrow");
+-                    this.interval_end = document.createElementNS(xulns, "scale");
+-                    this.interval_end.setAttribute("movetoclick", "true");
+-                    this.interval_end.setAttribute("class", "subtitle_interval_scale right_arrow");
+-                    interval_vbox.appendChild(this.interval_start);
+-                    interval_vbox.appendChild(this.interval_end);
+-
+-
+-//                    this.editor_hbox.appendChild(this.interval_start);
+-//                    this.editor_hbox.appendChild(this.interval_end);
+-                    this.editor_hbox.appendChild(interval_vbox);
+-                    this.editor_hbox.appendChild(this.save_button);
+-                    this.editor_hbox.appendChild(this.cancel_button);
+-                    this.exit_edit_mode(false);
+-
+-                    this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
+-                    this.subtitles_textbox.setAttribute("class", "plain subtitles_textbox");
+-                    this.subtitles_textbox.setAttribute("multiline", "true");
+-
+-//MDC states:    spellcheck   New in Firefox 2.0.0.2
+-//                      Type: boolean 
+-//                      "If true, spell checking is enabled by default for the text box; if false, spell checking is disabled by default."
+-//                      "If not specified, this defaults to false "
+-//                      (but it seems to be true by default...)
+-//                    this.subtitles_textbox.spellcheck=false;
+-//                    this.subtitles_textbox.spellcheck=false;
+-
+                     //Subtitles will be displayed above the controls:
++                    var subtitles_editor = document.createElementNS(xulns, "subtitleseditor");
+                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
+-                    controlBar.parentNode.insertBefore(this.editor_hbox, controlBar);
+-                    controlBar.parentNode.insertBefore(this.subtitles_textbox, controlBar);
++                    controlBar.parentNode.insertBefore(subtitles_editor, controlBar);
++                    subtitles_editor.setAttribute("style", '-moz-binding:url("chrome://global/content/wikisubs.xml#subtitleseditor");');
+ 
+                     //Subtitles menu will be near the mute button:
++                    this.subtitlesButton =  document.createElementNS(xulns, "subtitlesbutton");
+                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
+                     muteButton.parentNode.insertBefore(this.subtitlesButton, muteButton);
++                    this.subtitlesButton.setAttribute("style", '-moz-binding:url("chrome://global/content/wikisubs.xml#subtitlesmenu");');
+ 
+-                    //Let it be initially hidden while we dont have a list of available subs:
+-                    this.subtitlesButton.setAttribute("hidden", "true");
+-
+ /* Temporarily disabled. Experimental feature.
+             //setup annotations overlay:
+                     statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
+@@ -346,16 +460,7 @@
+ 
+                     this.addBalloon(0,0,10,10,20,30,"testing");
+ */
+-                    self.video.addEventListener("DOMNodeInserted", function(event) { self.videoChildInserted(event); }, false);
+-                    self.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
+ 
+-                    self.addMenuLink("Subtitles wiki page...", "http://www.wstr.org/subs/");
+-
+-                    //TODO: Why?!
+-                    //self.video.addEventListener("load", function(){ self.look_for_available_subtitles(); }, false);
+-                    window.setInterval ( function(){ self.look_for_available_subtitles(); } );
+-
+-
+                     //This is a hack. we need a way to inhibit video controls handling of keypress
+                     // events when we are typing text in the subtitles textbox, so that for instance
+                     // typing a spacebar won't trigger togglePause
+@@ -371,80 +476,12 @@
+                     dump("--- wikisubs initialized ---\n");
+                 },
+ 
++//todo> review this method. it seems wrong
+                 itextChildInserted : function(event) {
+                         this.current_subtitle["content"] = this.parse_SRT(event.target.data);
+                         this.loading_subtitles = false;
+                 },
+ 
+-                videoChildInserted : function(event) {
+-                    //I am trying to implement behaviour proposed by Silvia Pfeiffer
+-                    //You can test it on http://bighead.poli.usp.br/~juca/teste/teste.html
+-
+-                    //This could be soon updated to support this second version of her spec: 
+-                    //http://blog.gingertech.net/2009/10/06/new-proposal-for-captions-and-other-timed-text-for-html5/
+-
+-                    if (event.target.tagName == "itext"){
+-                        this.addSubtitle({"title": event.target.id,
+-                          "lang": event.target.getAttribute("lang"),
+-                           "url": event.target.getAttribute("src"),
+-                            "itext_node": event.target });
+-
+-                        this.subtitlesButton.setAttribute("hidden", "false");
+-                    }
+-                },
+-
+-                enter_edit_mode : function(event){
+-                    this.edit_mode = true;
+-                    this.original_text = this.subtitles_textbox.value;
+-                    this.original_star = this.interval_start.value;
+-                    this.original_end = this.interval_end.value;
+-
+-                    this.video.pause();
+-                    this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
+-                    this.editor_hbox.setAttribute("hidden", "false");
+-                    this.set_subtitle_sliders_limits();
+-                },
+-
+-                exit_edit_mode : function(resume) {
+-                    this.edit_mode=false;
+-                    this.subtitles_textbox.style.background = "transparent"
+-                    this.editor_hbox.setAttribute("hidden", "true");
+-                    if (resume) this.video.play();
+-                },
+-
+-                saveSubs : function(){
+-                  //ignore save if current sub is not altered
+-                  //(we save immediatly after user edits so only the current sub mathers)
+-                  if (this.subtitles_textbox.value == this.original_text &&
+-                      this.interval_start.value == this.original_start &&
+-                      this.interval_end.value == this.original_end) return;
+-
+-                  if (this.current_subtitle_index == -1){
+-                    this.current_subtitle["content"].push(
+-                        {"text": this.subtitles_textbox.value,
+-                         "start": this.interval_start.value,
+-                         "end": this.interval_end.value});
+-                  } else {
+-                    this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
+-                    this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
+-                    this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
+-                  }
+-
+-                  //remove this subtitle chunk if user has deleted all text in the textbox
+-                  if (this.subtitles_textbox.value==""){
+-                    this.current_subtitle["content"].splice(this.current_subtitle_index, 1);
+-                  }
+-
+-                  //This may seem complicated, but I am doing it in order to
+-                  // keep itext attributes compliant to Silvia's spec: 
+-                  var pagename = this.current_subtitle["url"].split("title=")[1];
+-
+-                  var srt = this.encode_SRT(this.current_subtitle["content"]);
+-                  this.communication_element.setAttribute("pagename", pagename);
+-                  this.communication_element.setAttribute("srt", srt);
+-                  this.emit_event("WikiSubsSaveSub", this.communication_element);
+-                }
+-
+             }) ]]>
+         </field>
+ 
+Index: content/wikisubs.js
+===================================================================
+--- content/wikisubs.js	(revisão 63)
++++ content/wikisubs.js	(cópia de trabalho)
+@@ -82,25 +82,29 @@
+       var parse_sub_list = function(data){
+         var lines = data.split("\n");
+         for (i in lines){
+-          //TODO try: catch:
+-          var string = lines[i].split("[[")[1];
+-          string = string.split("]]")[0];
+-          string = string.split("|");
+-          var pagename = string[0].trim();
+-          var title = string[1].trim();
++          try{
++            var string = lines[i].split("[[")[1];
++            string = string.split("]]")[0];
++            string = string.split("|");
++            var pagename = string[0].trim();
++            var title = string[1].trim();
+ 
+-          itext_node = document.createElement("itext");
+-          itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + pagename);
+-          itext_node.setAttribute("id", title);
+-          //itext_node.setAttribute("cat", "");
+-//          itext_node.setAttribute("lang", lang);
+-          video.appendChild(itext_node);
++            itext_node = document.createElement("itext");
++            itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + pagename);
++            itext_node.setAttribute("id", title);
++            //itext_node.setAttribute("cat", "");
++  //          itext_node.setAttribute("lang", lang);
++            video.appendChild(itext_node);
++          } catch(e) {
++            //do nothing.
++          }
+         }
+       }
+ 
+       var src = video.currentSrc;
+       if (!src) src = video.getElementsByTagName("source")[0].src;
+ 
++      //TODO: treat file:// differently
+       this.loadMediawikiPage("http://www.wstr.org/subs/", "Subtitles/URL/" + src, parse_sub_list);
+     },
+ 
