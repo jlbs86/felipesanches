@@ -82,25 +82,29 @@ var Wikisubs = {
       var parse_sub_list = function(data){
         var lines = data.split("\n");
         for (i in lines){
-          //TODO try: catch:
-          var string = lines[i].split("[[")[1];
-          string = string.split("]]")[0];
-          string = string.split("|");
-          var pagename = string[0].trim();
-          var title = string[1].trim();
+          try{
+            var string = lines[i].split("[[")[1];
+            string = string.split("]]")[0];
+            string = string.split("|");
+            var pagename = string[0].trim();
+            var title = string[1].trim();
 
-          itext_node = document.createElement("itext");
-          itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + pagename);
-          itext_node.setAttribute("id", title);
-          //itext_node.setAttribute("cat", "");
-//          itext_node.setAttribute("lang", lang);
-          video.appendChild(itext_node);
+            itext_node = document.createElement("itext");
+            itext_node.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + pagename);
+            itext_node.setAttribute("id", title);
+            //itext_node.setAttribute("cat", "");
+  //          itext_node.setAttribute("lang", lang);
+            video.appendChild(itext_node);
+          } catch(e) {
+            //do nothing.
+          }
         }
       }
 
       var src = video.currentSrc;
       if (!src) src = video.getElementsByTagName("source")[0].src;
 
+      //TODO: treat file:// differently
       this.loadMediawikiPage("http://www.wstr.org/subs/", "Subtitles/URL/" + src, parse_sub_list);
     },
 
