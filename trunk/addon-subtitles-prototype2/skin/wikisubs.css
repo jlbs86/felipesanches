@@ -1,0 +1,80 @@
+.subtitlesButton {
+    -moz-user-focus: none;
+    background: url(chrome://wikisubs/skin/subtitlesButton.png) no-repeat center;
+    /* Remove the native button appearance and styling */
+    -moz-appearance: none;
+    margin: 0px;
+    padding: 0px;
+    min-height: 28px;
+    min-width: 28px;
+    border: none;
+}
+
+.subtitlesButton * {
+    -moz-appearance: none !important;
+}
+
+.subtitlesButton menuitem:hover {
+    background-color: rgba(60,60,60, 1) !important;
+}
+
+.subtitlesButton menuitem {
+    background-color: rgba(100,100,100, 1) !important;
+    border: 1px solid rgba(200,200,200, 1);
+    color: rgba(255,255,128, 1);
+    padding: 4px;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
+
+.subtitles_textbox * {
+    text-align:center;
+    padding: 4px;
+    padding-bottom: 8px;
+}
+
+.subtitles_textbox {
+    font-size: 13px;
+    font-family: Arial, sans-serif;
+    color: rgba(255,255,128, 1);
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
+
+.wikisubs_button:hover {
+    background-color: rgba(60,60,60, 1) !important;
+}
+
+.wikisubs_button {
+    -moz-appearance: none !important;
+    background-color: rgba(100,100,100, 1) !important;
+    border: 1px solid rgba(200,200,200, 1);
+    color: rgba(255,255,128, 1);
+    padding: 4px;
+    font-size: 11px;
+    font-family: Arial, sans-serif;
+    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
+
+.subtitle_interval_scale * {
+    -moz-appearance: none !important;
+    border: 0px;
+    margin: 0px;
+    padding: 0px;
+    background-color: rgba(0,0,0, 0.6);
+}
+
+.left_arrow  .scale-thumb{
+    background: url(chrome://wikisubs/skin/leftarrow.png) no-repeat center;
+}
+
+.right_arrow  .scale-thumb{
+    background: url(chrome://wikisubs/skin/rightarrow.png) no-repeat center;
+}
+
+.subtitle_interval_scale .scale-thumb {
+    min-width: 28px;
+    min-height: 14px;
+    bottom:14px;
+    -moz-box-pack: center;
+}

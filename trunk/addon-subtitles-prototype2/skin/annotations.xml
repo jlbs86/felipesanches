@@ -41,7 +41,7 @@
 			</property>
 			<constructor>
 	<![CDATA[
-	
+	alert("annotations XBL constructed");
 	const STROKE_WIDTH = 4;
 	const CORNER_RADIUS = 0;
 	
@@ -63,13 +63,7 @@
 	this.rect = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-rect");
 	this.text = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-text");
 	this.path = document.getAnonymousElementByAttribute(this, "anonid", "svg-shape-path");
-
-  this.knot_pointer = document.getAnonymousElementByAttribute(this, "anonid", "knot-pointer");
-  this.knot_tl = document.getAnonymousElementByAttribute(this, "anonid", "knot-top-left");
-  this.knot_tr = document.getAnonymousElementByAttribute(this, "anonid", "knot-top-right");
-  this.knot_bl = document.getAnonymousElementByAttribute(this, "anonid", "knot-bottom-left");
-  this.knot_br = document.getAnonymousElementByAttribute(this, "anonid", "knot-bottom-right");
-
+	
 	my_func = function myFunction(){ my_this.doLayout();}
 	window.addEventListener("load", my_func, true);
 
@@ -89,57 +83,27 @@
 	this.svg_shape_box.setAttribute("width", box_w);
 	this.svg_shape_box.setAttribute("height", box_h);
 		
-  var x,y,w,h,px,py, description;
-
-  x = this.getAttribute("x")*box_w/100;
-	y = this.getAttribute("y")*box_h/100;
-	w = this.getAttribute("w")*box_w/100;
-	h = this.getAttribute("h")*box_h/100;
-  px = this.getAttribute("px")*box_w/100;
-	py = this.getAttribute("py")*box_h/100;
-
-  if (false){
-
-    knot_size = 2*box_h/100;
-
-    this.knot_tl.setAttribute("x", x - knot_size/2);
-    this.knot_tl.setAttribute("y", y - knot_size/2);
-    this.knot_tl.setAttribute("width", knot_size);
-    this.knot_tl.setAttribute("height", knot_size);
-
-    this.knot_tr.setAttribute("x", x+w - knot_size/2);
-    this.knot_tr.setAttribute("y", y - knot_size/2);
-    this.knot_tr.setAttribute("width", knot_size);
-    this.knot_tr.setAttribute("height", knot_size);
-
-    this.knot_bl.setAttribute("x", x - knot_size/2);
-    this.knot_bl.setAttribute("y", y+h - knot_size/2);
-    this.knot_bl.setAttribute("width", knot_size);
-    this.knot_bl.setAttribute("height", knot_size);
-
-    this.knot_br.setAttribute("x", x+w - knot_size/2);
-    this.knot_br.setAttribute("y", y+h - knot_size/2);
-    this.knot_br.setAttribute("width", knot_size);
-    this.knot_br.setAttribute("height", knot_size);
-
-    this.knot_pointer.setAttribute("x", px - knot_size/2);
-    this.knot_pointer.setAttribute("y", py - knot_size/2);
-    this.knot_pointer.setAttribute("width", knot_size);
-    this.knot_pointer.setAttribute("height", knot_size);
-  }
-
 	if (this.type == "balloon") {
+
+    var x,y,w,h,px,py, description;
+
+    x = this.getAttribute("x")*box_w/100;
+		y = this.getAttribute("y")*box_h/100;
+		w = this.getAttribute("w")*box_w/100;
+		h = this.getAttribute("h")*box_h/100;
+    px = this.getAttribute("px")*box_w/100;
+		py = this.getAttribute("py")*box_h/100;
 
   	var text_w = this.text.getComputedTextLength();	
     var text_h = document.defaultView.getComputedStyle(this.text, "").getPropertyCSSValue("font-size").getFloatValue(CSSPrimitiveValue.CSS_PX);
     
     base_coords = function(point, p0, length){
       if (point > p0 + length/2){
-        base0 = p0 + 4*length/6;
-        base1 = p0 + 5*length/6;
+        base0 = 4*length/6;
+        base1 = 5*length/6;
       }else{
-        base0 = p0 + 1*length/6;
-        base1 = p0 + 2*length/6;
+        base0 = 1*length/6;
+        base1 = 2*length/6;
       }
       return [base0, base1];
     }
@@ -148,66 +112,58 @@
         return x + "," + y + " ";
     }
 
-    var rx = 3*box_h/100;
-    var ry = rx;
-
     //begin drawing the balloon at the top left corner
-    description = "M " + coord(x,y+ry);
+    description = "M " + coord(x,y);
 
-    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+rx) + " " + y +" L ";
     //top side of the balloon
     if (py<y &&
         ( (px-(x+w)) < (y-py) ) &&
         ( (x-px) < (y-py) )){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(px, x+rx, w-2*rx);
-        description += coord(base[0], y);
+        base = base_coords(px, x, w);
+        description += coord(x+base[0],y);
         description += coord(px,py);
-        description += coord(base[1], y);
+        description += coord(x+base[1],y);
     }
-    description += coord(x+w-rx,y);
+    description += coord(x+w,y);
 
     //right side of the balloon
-    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+w) + " " + (y+ry) +" L ";
     if (px>x+w &&
         ((py-(y+h)) < (px-(x+w))) &&
         ((y-py)<(px-(x+w)))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(py, y+ry, h-2*ry);
-        description += coord(x+w, base[0]);
+        base = base_coords(py, y, h);
+        description += coord(x+w,y+base[0]);
         description += coord(px,py);
-        description += coord(x+w, base[1]);
+        description += coord(x+w,y+base[1]);
     }
-    description += coord(x+w,y+h-ry);
+    description += coord(x+w,y+h);
 
     //bottom side of the balloon
-    description += "A "+rx+" "+ry+" 0 0 1 "+ (x+w-rx) + " " + (y+h) +" L ";
     if (py>y+h &&
         ((x-px) < (py-(y+h))) &&
         ((px-(x+w))<(py-(y+h)))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(px, x+rx, w-2*rx);
-        description += coord(base[1], y+h);
+        base = base_coords(px, x, w);
+        description += coord(x+base[1],y+h);
         description += coord(px,py);
-        description += coord(base[0], y+h);
+        description += coord(x+base[0],y+h);
     }
-    description += coord(x+rx,y+h);
+    description += coord(x,y+h);
 
     //left side of the balloon
-    description += " A "+rx+" "+ry+" 0 0 1 "+ x + " " + (y+h-ry) +" L ";
     if (px<x &&
         ((py-(y+h)) < (x-px)) &&
         ((y-py)<(x-px))){
         //if arrow is rendered at this side of the balloon:
-        base = base_coords(py, y+ry, h-2*ry);
-        description += coord(x, base[1]);
+        base = base_coords(py, y, h);
+        description += coord(x,y+base[1]);
         description += coord(px,py);
-        description += coord(x, base[0]);
+        description += coord(x,y+base[0]);
     }
-    description += coord(x,y+ry);
 
     //close the path:
-    description += " z";
+    description += "z";
 
 		this.path.setAttribute("d", description);
 		this.text.setAttribute("x", x + w/2 - text_w/2);
@@ -295,12 +251,6 @@
 						<svg:rect anonid="svg-shape-rect" class="svg-shape-rect" x="2" y="2" width="10" height="10" rx="8" ry="8"/>
 						<svg:path anonid="svg-shape-path" class="svg-shape-path"/>
 						<svg:text anonid="svg-shape-text" x="0" y="0" class="svg-shape-text">Text</svg:text>
-
-						<svg:rect class="knot" anonid="knot-top-left" width="3" height="3" />
-						<svg:rect class="knot" anonid="knot-top-right" width="3" height="3" />
-						<svg:rect class="knot" anonid="knot-bottom-right" width="3" height="3" />
-						<svg:rect class="knot" anonid="knot-bottom-left" width="3" height="3" />
-						<svg:rect class="knot" anonid="knot-pointer" width="3" height="3" />
 					</svg:g>
 				</svg:svg>
 			</xul:hbox>
