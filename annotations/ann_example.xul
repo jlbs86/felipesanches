@@ -28,7 +28,7 @@ function on_load(evt){
 	]]>
 </script>
 	<stack flex="1">
-      <html:img src="http://farm3.static.flickr.com/2450/3942567511_3673c143cd.jpg"/>
+      <html:img src="00029.jpg"/>
 			<annotation flex="1" id="balloon" type="balloon" x="30" y="30" w="30" h="20" px="10" py="20" label="teste" />
 	</stack>
 

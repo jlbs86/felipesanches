@@ -1,0 +1,7 @@
+@namespace xul url(http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul);
+
+video > xul|videocontrols {
+    -moz-binding: url("chrome://global/content/wikisubs.xml#wikisubs");
+}
+
+

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg4563"
+   version="1.1"
+   inkscape:version="0.46+devel r22325"
+   width="28"
+   height="28"
+   sodipodi:docname="SubtitlesWikiLogo.svg"
+   inkscape:export-filename="/home/felipe/devel/felipesanches/addon-subtitles/skin/SubtitlesWikiLogo.png"
+   inkscape:export-xdpi="321.42999"
+   inkscape:export-ydpi="321.42999">
+  <metadata
+     id="metadata4569">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs4567">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       id="perspective4571" />
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#000000"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="684"
+     inkscape:window-height="480"
+     id="namedview4565"
+     showgrid="false"
+     inkscape:zoom="7.8257857"
+     inkscape:cx="0.10633047"
+     inkscape:cy="15.494452"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg4563" />
+  <path
+     id="path5354"
+     style="fill:none;stroke:#19aeff;stroke-width:1.5305841;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     d="m 14.254387,14.41741 8.878313,0 m -8.878313,-2.73748 8.878313,0 m -9.803137,-3.8472692 10.653977,0 c 1.455082,0 2.626502,1.1714191 2.626502,2.6265012 l 0,4.58713 c 0,1.455082 -1.17142,2.626501 -2.626502,2.626501 l -1.590699,0 -2.515522,3.551325 -1.849649,-3.551325 -4.698107,0 c -1.455082,0 -2.626501,-1.171419 -2.626501,-2.626501 l 0,-4.58713 c 0,-1.4550821 1.171419,-2.6265012 2.626501,-2.6265012 z" />
+  <text
+     xml:space="preserve"
+     style="font-size:6.22096204999999980px;font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;fill:none;stroke:#005c94;stroke-width:0.98498565000000005;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:AR PL UMing TW MBE;-inkscape-font-specification:AR PL UMing TW MBE Light"
+     x="0.43940833"
+     y="5.7836742"
+     id="text5384"><tspan
+       sodipodi:role="line"
+       id="tspan5386"
+       x="0.43940833"
+       y="5.7836742"
+       style="stroke-width:0.98498565000000005;fill:none;stroke:#005c94">Subtitles</tspan></text>
+  <text
+     id="text5898"
+     y="26.762861"
+     x="0.45761019"
+     style="font-size:8.07248974px;font-style:normal;font-variant:normal;font-weight:300;font-stretch:normal;fill:none;stroke:#005c94;stroke-width:1.27814412;stroke-linecap:butt;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;font-family:AR PL UMing TW MBE;-inkscape-font-specification:AR PL UMing TW MBE Light"
+     xml:space="preserve"><tspan
+       style="fill:none;stroke:#005c94;stroke-width:1.27814412"
+       y="26.762861"
+       x="0.45761019"
+       id="tspan5900"
+       sodipodi:role="line">Wiki</tspan></text>
+</svg>

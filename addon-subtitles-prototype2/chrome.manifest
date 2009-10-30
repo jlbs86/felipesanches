@@ -1,0 +1,10 @@
+content wikisubs     content/ contentaccessible=yes
+skin    wikisubs     default     skin/
+overlay chrome://browser/content/browser.xul chrome://wikisubs/content/overlay.xul
+#
+# Due to a hack in XPCSystemOnlyWrapper.cpp, only code from "chrome://global"
+# can touch native anonymous content in the video controls. So put our code
+# into the global namespace via an override...
+#
+override chrome://global/content/wikisubs.xml content/wikisubs.xml
+override chrome://global/content/annotations.xml content/annotations.xml

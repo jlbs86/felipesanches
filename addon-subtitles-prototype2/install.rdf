@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+	<Description about="urn:mozilla:install-manifest">	
+		<em:id>wikisubs@fsanches.net</em:id>
+		<em:version>0.1</em:version>
+		<em:creator>Felipe Corrêa da Silva Sanches</em:creator>
+		<em:iconURL>chrome://wikisubs/skin/subtitles-icon.png</em:iconURL>
+		<em:type>2</em:type>
+
+    <em:localized>
+      <Description>
+        <em:locale>pt-BR</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Proporciona um sistema colaborativo de legendas para vídeos HTML5.</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>en-US</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Enables a wiki-style collaborative subtitling system to HTML5 videos.</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>de</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Ein Wiki-ähnliches System zum gemeinsamen Bearbeiten von Untertiteln für HTML5-Videos</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Permet d'avoir un système de sous-titrage de type Wiki des vidéos en HTML5.</em:description>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>es</em:locale>
+        <em:name>WikiSubs</em:name>
+        <em:description>Permite un sistema de subtitulado colaborativo de tipo Wiki para videos en HTML5.</em:description>
+      </Description>
+    </em:localized>
+
+        <!-- Firefox -->
+		<em:targetApplication>
+			<Description>
+				<em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
+				<em:minVersion>3.5</em:minVersion>
+				<em:maxVersion>3.7</em:maxVersion>
+			</Description>
+		</em:targetApplication>
+
+	</Description>
+</RDF>
