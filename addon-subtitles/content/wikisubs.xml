@@ -190,15 +190,11 @@ To work around the issue, you could have your binding generate a custom event wh
   <binding id="subtitleseditor">
     <content>
       <xul:vbox flex="1">
-        <xul:hbox class="subtitle_editor_hbox" hidden="true">
-          <xul:vbox class="subtitle_interval_vbox" flex="1">
-            <xul:scale movetoclick="true" class="subtitle_interval_scale left_arrow" />
-            <xul:scale movetoclick="true" class="subtitle_interval_scale right_arrow" />
-          </xul:vbox>
-          <xul:button label="Save" class="plain wikisubs_button save_button" />
-          <xul:button label="Cancel" class="plain wikisubs_button cancel_button" />
-        </xul:hbox>
-        <xul:textbox class="plain subtitles_textbox" multiline="true" spellcheck="false" />
+        <xul:textbox class="plain subtitles_textbox textbox1" multiline="false" spellcheck="false" flex="1" />
+        <xul:textbox class="plain subtitles_textbox textbox2" multiline="false" spellcheck="false" flex="1" />
+        <xul:textbox class="plain subtitles_textbox textbox3" multiline="false" spellcheck="false" flex="1" />
+        <xul:textbox class="plain subtitles_textbox textbox4" multiline="false" spellcheck="false" flex="1" />
+        <xul:textbox class="plain subtitles_textbox textbox5" multiline="false" spellcheck="false" flex="1" />
       </xul:vbox>
     </content>
 
@@ -295,20 +291,11 @@ To work around the issue, you could have your binding generate a custom event wh
 
                 enter_edit_mode : function(event){
                     this.edit_mode = true;
-                    this.original_text = this.subtitles_textbox.value;
-                    this.original_star = this.interval_start.value;
-                    this.original_end = this.interval_end.value;
-
                     this.video.pause();
-                    this.subtitles_textbox.style.background = "rgba(255,255,128, 0.3)"
-                    this.editor_hbox.setAttribute("hidden", "false");
-                    this.set_subtitle_sliders_limits();
                 },
 
                 exit_edit_mode : function(resume) {
                     this.edit_mode=false;
-                    this.subtitles_textbox.style.background = "transparent"
-                    this.editor_hbox.setAttribute("hidden", "true");
                     if (resume) this.video.play();
                 },
 
@@ -341,8 +328,13 @@ To work around the issue, you could have your binding generate a custom event wh
 
                   var srt = this.encode_SRT(this.current_subtitle["content"]);
                   this.communication_element.setAttribute("pagename", pagename);
-                  this.communication_element.setAttribute("srt", srt);
-                  this.emit_event("WikiSubsSaveSub", this.communication_element);
+                  this.communication_element.setAttribute("content", srt);
+                  this.emit_event("WikiSubsSavePage", this.communication_element);
+                },
+
+                displaySubtitles : function(){
+                    if (this.mode == "playback") this.displaySubtitles_playback();
+                    if (this.mode == "sync") this.displaySubtitles_sync();
                 },
 
 /*
@@ -357,7 +349,7 @@ I'd suggest doing something like caching the min/max time for the current
 subtitle, and bailing out early if .currentTime is between those two values
 (because you then know the current subtitle doesn't need changed).
 */
-                displaySubtitles : function(){
+                displaySubtitles_playback : function(){
                   var currentTime = Math.round(this.video.currentTime * 1000); // in ms
                   if (this.loading_subtitles == true) {
                   //TODO: l10n
@@ -367,38 +359,48 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                   if (this.current_subtitle == null) return;
 
-                  var text = "";
                   this.current_subtitle_index = -1;
                   var subs = this.current_subtitle["content"];
                   for (i=0; i < subs.length; i++){
                     if ((currentTime >= subs[i].start) && (currentTime < subs[i].end)){
-                      text = subs[i]["text"];
                       this.current_subtitle_index = i;
                       break;
                     }
                   }
-                  this.subtitles_textbox.value = text;
-
-                  if (this.current_subtitle_index == -1){
-                    //user is addind a new chunk of subtitle text.
-                    //So preset the time interval to the previous past 3 seconds
-                    this.set_subtitle_sliders(currentTime - 3000, currentTime);
-                  } else {
-                    this.set_subtitle_sliders(subs[i]["start"], subs[i]["end"]);
+                  if (i=subs.length){
+                    this.subtitles_textbox[0].value = "";
+                    this.subtitles_textbox[1].value = "";
+                    this.subtitles_textbox[2].value = "";
+                    this.subtitles_textbox[3].value = "";
+                    this.subtitles_textbox[4].value = "";
+                    return;
                   }
+
+                  this.subtitles_textbox[0].value = ((i>=2) ? subs[i-2]["text"] : "");
+                  this.subtitles_textbox[1].value = ((i>=1) ? subs[i-1]["text"] : "");
+                  this.subtitles_textbox[2].value = subs[i]["text"];
+                  this.subtitles_textbox[3].value = ((i+1<subs.length) ? subs[i+1]["text"] : "");
+                  this.subtitles_textbox[4].value = ((i+2<subs.length) ? subs[i+2]["text"] : "");
                 },
 
-                set_subtitle_sliders : function(start, end){
-                  this.interval_start.setAttribute("value", start);
-                  this.interval_end.setAttribute("value", end);
-                },
+                displaySubtitles_sync : function(){
+                  if (this.current_subtitle == null){
+                    this.subtitles_textbox[0].value = "";
+                    this.subtitles_textbox[1].value = "";
+                    this.subtitles_textbox[2].value = "";
+                    this.subtitles_textbox[3].value = "";
+                    this.subtitles_textbox[4].value = "";
+                    return;
+                  }
 
-                set_subtitle_sliders_limits : function(){
-                  var now = Math.round(this.video.currentTime * 1000);
-                  this.interval_start.setAttribute("min", now - 3000);
-                  this.interval_start.setAttribute("max", now + 3000);
-                  this.interval_end.setAttribute("min", now - 3000);
-                  this.interval_end.setAttribute("max", now + 3000);
+                  var subs = this.current_subtitle["content"];
+
+                  var i = this.current_title_sync;
+                  if (i>=2) this.subtitles_textbox[0].value = subs[i-2]["text"];
+                  if (i>=1) this.subtitles_textbox[1].value = subs[i-1]["text"];
+                  this.subtitles_textbox[2].value = subs[i]["text"];
+                  if (i+1<subs.length) this.subtitles_textbox[3].value = subs[i+1]["text"];
+                  if (i+2<subs.length) this.subtitles_textbox[4].value = subs[i+2]["text"];
                 },
 
 //TODO: duplicated method. MUST refactor!
@@ -408,28 +410,90 @@ subtitle, and bailing out early if .currentTime is between those two values
                   node.dispatchEvent(evt);
                 },
 
+                current_title_sync: null,
+
+                tap : function(){
+                  if(this.current_title_sync == null) return;
+                  this.current_title_sync++;
+                },
+
+                saveTranscript : function(){
+                  var src = self.video.currentSrc;
+                  if (!src) src = self.video.getElementsByTagName("source")[0].src;
+
+                  this.communication_element.setAttribute("pagename", "Transcript/URL/" + src);
+                  this.communication_element.setAttribute("content", self.textinput.value);
+                  this.emit_event("WikiSubsSavePage", this.communication_element);
+                },
+
+                loadTranscript : function(){
+                  var src = self.video.currentSrc;
+                  if (!src) src = self.video.getElementsByTagName("source")[0].src;
+
+//TODO: load server address from addon preferences
+                  this.textinput.setAttribute("src", "http://www.wstr.org/subs/" + "index.php?action=raw&title=" + "Transcript/URL/" + src);
+                  this.emit_event("WikiSubsLoadPage", this.textinput);
+                },
+
               init : function(binding){
                     self = this;
                     //TODO: make it cleaner:
                     this.video = binding.parentNode.parentNode.parentNode.parentNode;
+
+                    this.subtitles_textbox = []
+                    this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox1"));
+                    this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox2"));
+                    this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox3"));
+                    this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox4"));
+                    this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox5"));
+
+                    var htmlns="http://www.w3.org/1999/xhtml";
+                    br_node = document.createElementNS(htmlns, "br");
+                    this.textinput = document.createElementNS(htmlns, "textarea");
+                    this.textinput.style.width="320px";
+                    this.textinput.style.height="200px";
+                    this.video.parentNode.appendChild(br_node);
+                    this.video.parentNode.appendChild(this.textinput);
+                    sync_button = document.createElementNS(htmlns, "input");
+                    sync_button.type = "button";
+                    sync_button.value = "Synchronize";
+                    sync_button.onclick = function(){
+                      self.saveTranscript();
+                      var titles = self.textinput.value.split('\n');
+                      var subs = [];
+                      for (i in titles){
+                        subs.push({"text":titles[i], "start":-1,"end":-1});
+                      }
+                      self.current_subtitle = {"content":subs};
+                      self.current_title_sync = 0;
+                      self.mode = "sync";
+                    };
+
+                    watch_button = document.createElementNS(htmlns, "input");
+                    watch_button.type = "button";
+                    watch_button.value = "Watch";
+                    watch_button.onclick = function(){alert("watch")};
+
+                    br_node = document.createElementNS(htmlns, "br");
+                    this.video.parentNode.appendChild(br_node);
+                    this.video.parentNode.appendChild(sync_button);
+                    this.video.parentNode.appendChild(watch_button);
+
+                    this.textinput.onkeydown = function(event){
+                      if (event.which == 17){ //17=ctrl key //TODO: this is ugly!
+                        var newval = self.video.currentTime - 3;
+                        self.video.currentTime = (newval >= 0 ? newval : 0);
+                      }
+                    };
+
 //TODO: there are 2 WikiSubsCommunicationElement elements!
                     this.communication_element = document.createElement("WikiSubsCommunicationElement");
                     this.video.appendChild(this.communication_element);
 
                     this.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
+                    this.loadTranscript();
 
-                    var save_button = document.getAnonymousElementByAttribute(binding, "class", "plain wikisubs_button save_button");
-                    var cancel_button = document.getAnonymousElementByAttribute(binding, "class", "plain wikisubs_button cancel_button");
-                    this.subtitles_textbox = document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox");
                     this.subtitlesMenu = document.getAnonymousElementByAttribute(binding, "class", "subtitlesMenu");
-                    this.interval_start = document.getAnonymousElementByAttribute(binding, "class", "subtitle_interval_scale left_arrow");
-                    this.interval_end = document.getAnonymousElementByAttribute(binding, "class", "subtitle_interval_scale right_arrow");
-                    this.editor_hbox = document.getAnonymousElementByAttribute(binding, "class", "subtitle_editor_hbox");
-
-                    save_button.addEventListener("click", function(){ self.saveSubs(); self.exit_edit_mode(true); } , false);
-                    cancel_button.addEventListener("click", function(){ self.exit_edit_mode(true) } , false);
-                    this.subtitles_textbox.addEventListener("click", function(event){ self.enter_edit_mode(); }, false);
-                    this.exit_edit_mode(false);                
               }
 
             }) ]]>
@@ -442,7 +506,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                   if (!node) node = this.communication_element;
                   this.editorUtils.loading_subtitles = true;
                   sub["content"] = [];
-                  this.editorUtils.current_subtitle = sub
+                  this.editorUtils.current_subtitle = sub;
                   this.editorUtils.communication_element.setAttribute("src", sub["url"]); 
                   this.editorUtils.emit_event("WikiSubsLoadSub", node);
             </body>
@@ -453,6 +517,12 @@ subtitle, and bailing out early if .currentTime is between those two values
             <body>
               this.editorUtils.current_subtitle["content"] = this.editorUtils.parse_SRT(content);
               this.editorUtils.loading_subtitles = false;
+            </body>
+        </method>
+
+        <method name="do_tap">
+            <body>
+               this.editorUtils.tap();
             </body>
         </method>
 
@@ -469,7 +539,6 @@ subtitle, and bailing out early if .currentTime is between those two values
       <implementation>
         <field name="wikisubsUtils">
             <![CDATA[ ({
-
                 init : function (binding) {
                     dump("\n--------- wikisubs constructor ---------\n\n");
                     var self = this;
@@ -477,17 +546,23 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.video = binding.parentNode;
 
                     //Subtitles will be displayed above the controls:
-                    var subtitles_editor = document.createElementNS(xulns, "subtitleseditor");
+                    this.subtitles_editor = document.createElementNS(xulns, "subtitleseditor");
                     var controlBar = document.getAnonymousElementByAttribute(binding, "class", "controlBar");
-                    controlBar.parentNode.insertBefore(subtitles_editor, controlBar);
-                    subtitles_editor.setAttribute("style", '-moz-binding:url("chrome://global/content/wikisubs.xml#subtitleseditor");');
+                    controlBar.parentNode.insertBefore(this.subtitles_editor, controlBar);
+                    this.subtitles_editor.setAttribute("style", '-moz-binding:url("chrome://global/content/wikisubs.xml#subtitleseditor");');
 
                     //Subtitles menu will be near the mute button:
                     this.subtitlesmenu =  document.createElementNS(xulns, "subtitlesmenu");
                     this.subtitlesmenu.setAttribute("style", '-moz-binding:url("chrome://global/content/wikisubs.xml#subtitlesmenu");');
                     var muteButton = document.getAnonymousElementByAttribute(binding, "class", "muteButton");
                     muteButton.parentNode.insertBefore(this.subtitlesmenu, muteButton);
-                    this.subtitlesmenu.set_editor(subtitles_editor);
+                    
+                    try{
+                      this.subtitlesmenu.set_editor(subtitles_editor);
+                    } catch(e){
+                        //TODO why doesnt it find the method here sometimes?!
+                    };
+
 /* Temporarily disabled. Experimental feature.
             //setup annotations overlay:
                     statusOverlay = document.getAnonymousElementByAttribute(binding, "class", "statusOverlay");
@@ -503,12 +578,25 @@ subtitle, and bailing out early if .currentTime is between those two values
                     // typing a spacebar won't trigger togglePause
                     binding.Utils.original_keyHandler = binding.Utils.keyHandler;
                     binding.Utils.keyHandler = function(event){
-                      if (self.edit_mode==false)
-                        binding.Utils.original_keyHandler(event);
+                      if (String.fromCharCode(event.charCode) == '['){
+                        var newval = self.video.currentTime - 3;
+                        self.video.currentTime = (newval >= 0 ? newval : 0);
+                      }
+                      switch (event.keyCode) {
+                          case KeyEvent.DOM_VK_DOWN:
+                              self.subtitles_editor.do_tap();
+                              break;
+                          case KeyEvent.DOM_VK_TAB:
+//                                  var newval = this.video.currentTime - 3;
+  //                                this.video.currentTime = (newval >= 0 ? newval : 0);
+                              break;
+                      }
+
+                      binding.Utils.original_keyHandler(event);
                     };
 
-                    var playButton = document.getAnonymousElementByAttribute(binding, "class", "playButton");
-                    playButton.addEventListener("click", function(){ if (self.edit_mode) self.exit_edit_mode(false); }, false);
+                    //var playButton = document.getAnonymousElementByAttribute(binding, "class", "playButton");
+                    //playButton.addEventListener("click", function(){ if (self.edit_mode) self.exit_edit_mode(false); }, false);
 
                     dump("--- wikisubs initialized ---\n");
                 }

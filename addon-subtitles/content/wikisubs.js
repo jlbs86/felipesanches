@@ -51,15 +51,15 @@ var Wikisubs = {
             sss.loadAndRegisterSheet(sheetURI, sss.AGENT_SHEET);
     },
 
-    saveSub: function(evt){
+    saveMediawikiPage: function(evt){
       var pagename = evt.target.getAttribute("pagename");
-      var content = evt.target.getAttribute("srt");
+      var content = evt.target.getAttribute("content");
       var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
       var token = "+\\"; //this token is used for anonymous edits
   
       var display_result = function(data){
           //for debugging purpose only:
-          //alert("result:\n\n"+data);
+//          alert("result:\n\n"+data);
       }
 
       var params = "action=edit&title=" + encodeURIComponent(pagename) + "&section=0&text="+encodeURIComponent(content) + "&token=" + encodeURIComponent(token);
@@ -128,6 +128,24 @@ var Wikisubs = {
       this.sendGETRequest(url, set_current_subtitle);
     },
 
+//TODO:refactor it. It is almost the same as loadSub().
+    loadPage: function(evt){
+      self = this;
+      var callback = function(data){
+          var node = evt.target;
+node.value = data;
+//          if (node.childNodes.length){
+  //          node.removeChild(node.childNodes[0]);
+    //      }
+
+      //    var text = document.createTextNode(data);
+        //  node.appendChild(text);
+      }
+
+      var url = evt.target.getAttribute("src");
+      this.sendGETRequest(url, callback);
+    },
+
     sendGETRequest : function(url, callback) {
 
      	var xhr = new XMLHttpRequest();
@@ -184,6 +202,7 @@ var Wikisubs = {
 window.addEventListener("load", function() { Wikisubs.init(); }, false);
 document.addEventListener("WikiSubsLoadSubList", function(e) { Wikisubs.loadSubList(e); }, false, true);
 document.addEventListener("WikiSubsLoadSub", function(e) { Wikisubs.loadSub(e); }, false, true);
-document.addEventListener("WikiSubsSaveSub", function(e) { Wikisubs.saveSub(e); }, false, true);
+document.addEventListener("WikiSubsLoadPage", function(e) { Wikisubs.loadPage(e); }, false, true);
+document.addEventListener("WikiSubsSavePage", function(e) { Wikisubs.saveMediawikiPage(e); }, false, true);
 document.addEventListener("WikiSubsOpenTab", function(e) { Wikisubs.openTab(e); }, false, true);
 
