@@ -28,6 +28,18 @@
     text-shadow: rgba(0,0,0, 0.6) 1px 1px;
 }
 
+.textbox1, .textbox5 {
+  color: rgba(255,255,128, 0.4);
+}
+.textbox2, .textbox4 {
+  color: rgba(255,255,128, 0.7);
+  text-shadow: rgba(0,0,0, 0.3) 1px 1px;
+}
+.textbox3 {
+  color: rgba(255,255,128, 1);
+  text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+}
+
 .subtitles_textbox * {
     text-align:center;
     padding: 4px;
@@ -37,8 +49,7 @@
 .subtitles_textbox {
     font-size: 13px;
     font-family: Arial, sans-serif;
-    color: rgba(255,255,128, 1);
-    text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+    background: rgba(255,255,128,0.2);
 }
 
 .wikisubs_button:hover {
