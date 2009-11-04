@@ -333,6 +333,17 @@ To work around the issue, you could have your binding generate a custom event wh
                 },
 
                 displaySubtitles : function(){
+
+                    if (self.current_subtitle){
+                      var text="";
+                      var subs = self.current_subtitle["content"];
+                      for (i in subs){
+                        text += "start:" + subs[i].start + " end: " + subs[i].end + " text: \""+subs[i].text+"\"\n"
+                      }
+
+                      this.debug.value = "sync="+this.current_title_sync+"\n\n"+text;
+                    }
+
                     if (this.mode == "playback") this.displaySubtitles_playback();
                     if (this.mode == "sync") this.displaySubtitles_sync();
                 },
@@ -394,11 +405,20 @@ subtitle, and bailing out early if .currentTime is between those two values
                   }
 
                   var subs = this.current_subtitle["content"];
+                  var currentTime = Math.round(this.video.currentTime * 1000);
+                  if (subs[0].start>=0 && currentTime < subs[0].start) this.current_title_sync = 0;
 
-                  var i = this.current_title_sync;
+                  for (i=0; i < subs.length; i++){
+                    if ((subs[i].start != -1) && (currentTime >= subs[i].start) && ((currentTime < subs[i].end) || (subs[i].end==-1))){
+                      this.current_title_sync = i+1;
+                      break;
+                    }
+                  }
+
+                  var i = this.current_title_sync-1;
                   this.subtitles_textbox[0].value = (i-2>=0) ? subs[i-2]["text"] : "";
                   this.subtitles_textbox[1].value = (i-1>=0) ? subs[i-1]["text"] : "";
-                  this.subtitles_textbox[2].value = (i < subs.length) ? subs[i]["text"] : "";
+                  this.subtitles_textbox[2].value = (i>=0 && i < subs.length) ? subs[i]["text"] : "";
                   this.subtitles_textbox[3].value = (i+1<subs.length) ? subs[i+1]["text"] : "";
                   this.subtitles_textbox[4].value = (i+2<subs.length) ? subs[i+2]["text"] : "";
                 },
@@ -457,9 +477,17 @@ subtitle, and bailing out early if .currentTime is between those two values
                     br_node = document.createElementNS(htmlns, "br");
                     this.textinput = document.createElementNS(htmlns, "textarea");
                     this.textinput.style.width="320px";
-                    this.textinput.style.height="200px";
+                    this.textinput.style.height="100px";
+
+                    this.debug = document.createElementNS(htmlns, "textarea");
+                    this.debug.style.width="320px";
+                    this.debug.style.height="200px";
+                    this.debug.value = "in this text area you can see some debugging information."
+
+                    this.video.parentNode.appendChild(this.debug);
                     this.video.parentNode.appendChild(br_node);
                     this.video.parentNode.appendChild(this.textinput);
+
                     sync_button = document.createElementNS(htmlns, "input");
                     sync_button.type = "button";
                     sync_button.value = "Synchronize";
@@ -475,22 +503,17 @@ subtitle, and bailing out early if .currentTime is between those two values
                       self.mode = "sync";
                     };
 
-                    watch_button = document.createElementNS(htmlns, "input");
-                    watch_button.type = "button";
-                    watch_button.value = "Watch";
-                    watch_button.onclick = function(){
-                      var text;
-                      var subs = self.current_subtitle["content"];
-                      for (i in subs){
-                        text += "start:" + subs[i].start + " end: " + subs[i].end + " text: \""+subs[i].text+"\"\n"
-                      }
-                      alert(text)
+                    save_button = document.createElementNS(htmlns, "input");
+                    save_button.type = "button";
+                    save_button.value = "Save";
+                    save_button.onclick = function(){
+                      alert("TODO: save resulting SRT to the wiki. Before that, we also need an extra input field for the name of the new subtitle we are creating.");
                     };
 
                     br_node = document.createElementNS(htmlns, "br");
                     this.video.parentNode.appendChild(br_node);
                     this.video.parentNode.appendChild(sync_button);
-                    this.video.parentNode.appendChild(watch_button);
+                    this.video.parentNode.appendChild(save_button);
 
                     this.textinput.onkeydown = function(event){
                       if (event.which == 17){ //17=ctrl key //TODO: this is ugly!
@@ -595,13 +618,15 @@ subtitle, and bailing out early if .currentTime is between those two values
                         var newval = self.video.currentTime - 3;
                         self.video.currentTime = (newval >= 0 ? newval : 0);
                       }
+
                       switch (event.keyCode) {
                           case KeyEvent.DOM_VK_DOWN:
                               self.subtitles_editor.do_tap();
                               break;
-                          case KeyEvent.DOM_VK_TAB:
-//                                  var newval = this.video.currentTime - 3;
-  //                                this.video.currentTime = (newval >= 0 ? newval : 0);
+                          case KeyEvent.DOM_VK_LEFT:
+                                  var newval = this.video.currentTime - 1;
+                                  this.video.currentTime = (newval >= 0 ? newval : 0);
+                                  return;//this is to avoid the original left arrow key handler
                               break;
                       }
 
