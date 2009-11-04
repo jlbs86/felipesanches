@@ -396,11 +396,11 @@ subtitle, and bailing out early if .currentTime is between those two values
                   var subs = this.current_subtitle["content"];
 
                   var i = this.current_title_sync;
-                  if (i>=2) this.subtitles_textbox[0].value = subs[i-2]["text"];
-                  if (i>=1) this.subtitles_textbox[1].value = subs[i-1]["text"];
-                  this.subtitles_textbox[2].value = subs[i]["text"];
-                  if (i+1<subs.length) this.subtitles_textbox[3].value = subs[i+1]["text"];
-                  if (i+2<subs.length) this.subtitles_textbox[4].value = subs[i+2]["text"];
+                  this.subtitles_textbox[0].value = (i-2>=0) ? subs[i-2]["text"] : "";
+                  this.subtitles_textbox[1].value = (i-1>=0) ? subs[i-1]["text"] : "";
+                  this.subtitles_textbox[2].value = (i < subs.length) ? subs[i]["text"] : "";
+                  this.subtitles_textbox[3].value = (i+1<subs.length) ? subs[i+1]["text"] : "";
+                  this.subtitles_textbox[4].value = (i+2<subs.length) ? subs[i+2]["text"] : "";
                 },
 
 //TODO: duplicated method. MUST refactor!
@@ -414,7 +414,13 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                 tap : function(){
                   if(this.current_title_sync == null) return;
-                  this.current_title_sync++;
+                  var subs = this.current_subtitle["content"];
+                  var now = Math.round(this.video.currentTime * 1000);
+                  if (this.current_title_sync>0) subs[this.current_title_sync-1].end = now;
+                  if (this.current_title_sync<subs.length){
+                    subs[this.current_title_sync].start = now;
+                    this.current_title_sync++;
+                  }
                 },
 
                 saveTranscript : function(){
@@ -472,7 +478,14 @@ subtitle, and bailing out early if .currentTime is between those two values
                     watch_button = document.createElementNS(htmlns, "input");
                     watch_button.type = "button";
                     watch_button.value = "Watch";
-                    watch_button.onclick = function(){alert("watch")};
+                    watch_button.onclick = function(){
+                      var text;
+                      var subs = self.current_subtitle["content"];
+                      for (i in subs){
+                        text += "start:" + subs[i].start + " end: " + subs[i].end + " text: \""+subs[i].text+"\"\n"
+                      }
+                      alert(text)
+                    };
 
                     br_node = document.createElementNS(htmlns, "br");
                     this.video.parentNode.appendChild(br_node);
