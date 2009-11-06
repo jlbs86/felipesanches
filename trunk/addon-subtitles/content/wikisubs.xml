@@ -459,6 +459,8 @@ subtitle, and bailing out early if .currentTime is between those two values
                       <br/>\
                       Subtitles name: <input id="subtitlesname" type="text" />\
                       <br/>\
+                      <input id="autorewind" type="checkbox"></input> Skip back 3 seconds every 4 seconds\
+                      <br/>\
                       <input type="button" id="sync_button" value="Synchronize"></input>\
                       <input type="button" id="save_button" value="Save"></input>\
                       <br/>\
@@ -469,6 +471,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.textinput = document.getElementById("textinput");
                     this.debug = document.getElementById("debug");
                     this.subtitlesname = document.getElementById("subtitlesname");
+                    this.autorewind = document.getElementById("autorewind");
                     sync_button = document.getElementById("sync_button");
                     save_button = document.getElementById("save_button");
 
@@ -501,6 +504,15 @@ subtitle, and bailing out early if .currentTime is between those two values
 
                     this.video.addEventListener("timeupdate", function() { self.displaySubtitles(); }, false);
                     this.loadTranscript();
+
+                    this.rewind_interval = setInterval(
+                      function(){                        
+                        if (self.autorewind.checked){
+                          var newval = self.video.currentTime - 2;
+                          self.video.currentTime = (newval >= 0 ? newval : 0);
+                        }
+                      }
+                    , 3000);
 
                     this.subtitlesMenu = document.getAnonymousElementByAttribute(binding, "class", "subtitlesMenu");
               }
