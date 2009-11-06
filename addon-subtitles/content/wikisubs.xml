@@ -300,34 +300,12 @@ To work around the issue, you could have your binding generate a custom event wh
                 },
 
                 saveSubs : function(){
-                  //ignore save if current sub is not altered
-                  //(we save immediatly after user edits so only the current sub mathers)
-                  if (this.subtitles_textbox.value == this.original_text &&
-                      this.interval_start.value == this.original_start &&
-                      this.interval_end.value == this.original_end) return;
-
-                  if (this.current_subtitle_index == -1){
-                    this.current_subtitle["content"].push(
-                        {"text": this.subtitles_textbox.value,
-                         "start": this.interval_start.value,
-                         "end": this.interval_end.value});
-                  } else {
-                    this.current_subtitle["content"][this.current_subtitle_index]["text"] = this.subtitles_textbox.value;
-                    this.current_subtitle["content"][this.current_subtitle_index]["start"] = this.interval_start.value;
-                    this.current_subtitle["content"][this.current_subtitle_index]["end"] = this.interval_end.value;
-                  }
-
-                  //remove this subtitle chunk if user has deleted all text in the textbox
-                  if (this.subtitles_textbox.value==""){
-                    this.current_subtitle["content"].splice(this.current_subtitle_index, 1);
-                  }
-
-                  //This may seem complicated, but I am doing it in order to
-                  // keep itext attributes compliant to Silvia's spec: 
-                  var pagename = this.current_subtitle["url"].split("title=")[1];
+                  var src = self.video.currentSrc;
+                  if (!src) src = self.video.getElementsByTagName("source")[0].src;
+                  if (this.subtitlesname.value != "") src += "/" + this.subtitlesname.value;
 
                   var srt = this.encode_SRT(this.current_subtitle["content"]);
-                  this.communication_element.setAttribute("pagename", pagename);
+                  this.communication_element.setAttribute("pagename", "Subtitles/URL/" + src);
                   this.communication_element.setAttribute("content", srt);
                   this.emit_event("WikiSubsSavePage", this.communication_element);
                 },
@@ -446,6 +424,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                 saveTranscript : function(){
                   var src = self.video.currentSrc;
                   if (!src) src = self.video.getElementsByTagName("source")[0].src;
+                  if (this.subtitlesname.value != "") src += "/" + this.subtitlesname.value;
 
                   this.communication_element.setAttribute("pagename", "Transcript/URL/" + src);
                   this.communication_element.setAttribute("content", self.textinput.value);
@@ -474,7 +453,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox5"));
 
                     var htmlns="http://www.w3.org/1999/xhtml";
-                    br_node = document.createElementNS(htmlns, "br");
+                    var br_node;
                     this.textinput = document.createElementNS(htmlns, "textarea");
                     this.textinput.style.width="320px";
                     this.textinput.style.height="100px";
@@ -484,8 +463,18 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.debug.style.height="200px";
                     this.debug.value = "in this text area you can see some debugging information."
 
+                    br_node = document.createElementNS(htmlns, "br");
                     this.video.parentNode.appendChild(br_node);
                     this.video.parentNode.appendChild(this.textinput);
+
+                    br_node = document.createElementNS(htmlns, "br");
+                    this.video.parentNode.appendChild(br_node);
+                    name_label = document.createTextNode("Subtitles name:");
+                    this.video.parentNode.appendChild(name_label);
+
+                    this.subtitlesname = document.createElementNS(htmlns, "input");
+                    this.subtitlesname.type = "text";
+                    this.video.parentNode.appendChild(this.subtitlesname);
 
                     sync_button = document.createElementNS(htmlns, "input");
                     sync_button.type = "button";
@@ -506,7 +495,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                     save_button.type = "button";
                     save_button.value = "Save";
                     save_button.onclick = function(){
-                      alert("TODO: save resulting SRT to the wiki. Before that, we also need an extra input field for the name of the new subtitle we are creating.");
+                      self.saveSubs();
                     };
 
                     br_node = document.createElementNS(htmlns, "br");
