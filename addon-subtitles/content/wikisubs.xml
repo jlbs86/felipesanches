@@ -452,33 +452,26 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox4"));
                     this.subtitles_textbox.push(document.getAnonymousElementByAttribute(binding, "class", "plain subtitles_textbox textbox5"));
 
-                    var htmlns="http://www.w3.org/1999/xhtml";
-                    var br_node;
-                    this.textinput = document.createElementNS(htmlns, "textarea");
-                    this.textinput.style.width="320px";
-                    this.textinput.style.height="100px";
+                    div = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
+                    div.innerHTML = '\
+                      <br/>\
+                      <textarea id="textinput" style="width:320px;height:100px"></textarea>\
+                      <br/>\
+                      Subtitles name: <input id="subtitlesname" type="text" />\
+                      <br/>\
+                      <input type="button" id="sync_button" value="Synchronize"></input>\
+                      <input type="button" id="save_button" value="Save"></input>\
+                      <br/>\
+                      <textarea id="debug" style="width:320px;height:200px">in this text area you can see some debugging information.</textarea>\
+'
+                    this.video.parentNode.appendChild(div);
 
-                    this.debug = document.createElementNS(htmlns, "textarea");
-                    this.debug.style.width="320px";
-                    this.debug.style.height="200px";
-                    this.debug.value = "in this text area you can see some debugging information."
+                    this.textinput = document.getElementById("textinput");
+                    this.debug = document.getElementById("debug");
+                    this.subtitlesname = document.getElementById("subtitlesname");
+                    sync_button = document.getElementById("sync_button");
+                    save_button = document.getElementById("save_button");
 
-                    br_node = document.createElementNS(htmlns, "br");
-                    this.video.parentNode.appendChild(br_node);
-                    this.video.parentNode.appendChild(this.textinput);
-
-                    br_node = document.createElementNS(htmlns, "br");
-                    this.video.parentNode.appendChild(br_node);
-                    name_label = document.createTextNode("Subtitles name:");
-                    this.video.parentNode.appendChild(name_label);
-
-                    this.subtitlesname = document.createElementNS(htmlns, "input");
-                    this.subtitlesname.type = "text";
-                    this.video.parentNode.appendChild(this.subtitlesname);
-
-                    sync_button = document.createElementNS(htmlns, "input");
-                    sync_button.type = "button";
-                    sync_button.value = "Synchronize";
                     sync_button.onclick = function(){
                       self.saveTranscript();
                       var titles = self.textinput.value.split('\n');
@@ -491,21 +484,9 @@ subtitle, and bailing out early if .currentTime is between those two values
                       self.mode = "sync";
                     };
 
-                    save_button = document.createElementNS(htmlns, "input");
-                    save_button.type = "button";
-                    save_button.value = "Save";
                     save_button.onclick = function(){
                       self.saveSubs();
                     };
-
-                    br_node = document.createElementNS(htmlns, "br");
-                    this.video.parentNode.appendChild(br_node);
-                    this.video.parentNode.appendChild(sync_button);
-                    this.video.parentNode.appendChild(save_button);
-
-                    br_node = document.createElementNS(htmlns, "br");
-                    this.video.parentNode.appendChild(br_node);
-                    this.video.parentNode.appendChild(this.debug);
 
                     this.textinput.onkeydown = function(event){
                       if (event.which == 17){ //17=ctrl key //TODO: this is ugly!
