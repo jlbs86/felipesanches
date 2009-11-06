@@ -484,7 +484,6 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.debug.style.height="200px";
                     this.debug.value = "in this text area you can see some debugging information."
 
-                    this.video.parentNode.appendChild(this.debug);
                     this.video.parentNode.appendChild(br_node);
                     this.video.parentNode.appendChild(this.textinput);
 
@@ -514,6 +513,10 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.video.parentNode.appendChild(br_node);
                     this.video.parentNode.appendChild(sync_button);
                     this.video.parentNode.appendChild(save_button);
+
+                    br_node = document.createElementNS(htmlns, "br");
+                    this.video.parentNode.appendChild(br_node);
+                    this.video.parentNode.appendChild(this.debug);
 
                     this.textinput.onkeydown = function(event){
                       if (event.which == 17){ //17=ctrl key //TODO: this is ugly!
