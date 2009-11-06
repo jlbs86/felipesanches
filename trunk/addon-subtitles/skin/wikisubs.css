@@ -30,14 +30,18 @@
 
 .textbox1, .textbox5 {
   color: rgba(255,255,255, 0.4);
+  background: rgba(255,255,128,0.2);
 }
 .textbox2, .textbox4 {
   color: rgba(255,255,255, 0.7);
   text-shadow: rgba(0,0,0, 0.3) 1px 1px;
+  background: rgba(255,255,128,0.4);
 }
 .textbox3 {
   color: rgba(255,255,128, 1);
   text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+  font-size: larger !important;
+  background: rgba(255,255,128,0.7);
 }
 
 .subtitles_textbox * {
@@ -49,7 +53,6 @@
 .subtitles_textbox {
     font-size: 13px;
     font-family: Arial, sans-serif;
-    background: rgba(255,255,128,0.2);
 }
 
 .wikisubs_button:hover {
