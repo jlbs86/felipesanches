@@ -455,16 +455,48 @@ subtitle, and bailing out early if .currentTime is between those two values
                     div = document.createElementNS("http://www.w3.org/1999/xhtml", "div");
                     div.innerHTML = '\
                       <br/>\
-                      <textarea id="textinput" style="width:320px;height:100px"></textarea>\
-                      <br/>\
-                      Subtitles name: <input id="subtitlesname" type="text" />\
-                      <br/>\
-                      <input id="autorewind" type="checkbox"></input> Skip back 3 seconds every 4 seconds\
-                      <br/>\
-                      <input type="button" id="sync_button" value="Synchronize"></input>\
-                      <input type="button" id="save_button" value="Save"></input>\
-                      <br/>\
-                      <textarea id="debug" style="width:320px;height:200px">in this text area you can see some debugging information.</textarea>\
+                      <form>\
+                        <textarea id="textinput" style="width:320px;height:100px"></textarea>\
+                        <br/>\
+                        Subtitles name: <input id="subtitlesname" type="text" />\
+                        <br/>\
+                        Tap Hotkey:\
+                        <select name="taphotkey">\
+                          <option>TAB</option>\
+                          <option>CTRL</option>\
+                          <option>[</option>\
+                          <option>]</option>\
+                          <option>SPACEBAR</option>\
+                          <option>|</option>\
+                        </select>\
+                        <br/>\
+                        Rewind Hotkey:\
+                        <select name="rewindhotkey">\
+                          <option>TAB</option>\
+                          <option>CTRL</option>\
+                          <option>[</option>\
+                          <option>]</option>\
+                          <option>SPACEBAR</option>\
+                          <option>|</option>\
+                        </select>\
+                        <br/>\
+                        Play/Pause Hotkey:\
+                        <select name="playpausehotkey">\
+                          <option>TAB</option>\
+                          <option>CTRL</option>\
+                          <option>[</option>\
+                          <option>]</option>\
+                          <option>SPACEBAR</option>\
+                          <option>|</option>\
+                        </select>\
+                        <br/>\
+                        <input id="autorewind" type="checkbox"></input> Skip back 3 seconds every 4 seconds\
+                        <br/>\
+                        <input type="button" id="sync_button" value="Synchronize"></input>\
+                        <input type="button" id="save_button" value="Save"></input>\
+                        <br/>\
+                        <textarea id="debug" style="width:320px;height:200px">in this text area you can see some debugging information.</textarea>\
+                      </form>\
 '
                     this.video.parentNode.appendChild(div);
 
