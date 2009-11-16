@@ -461,7 +461,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                         Subtitles name: <input id="subtitlesname" type="text" />\
                         <br/>\
                         Tap Hotkey:\
-                        <select name="taphotkey">\
+                        <select id="taphotkey">\
                           <option>TAB</option>\
                           <option>CTRL</option>\
                           <option>[</option>\
@@ -471,7 +471,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                         </select>\
                         <br/>\
                         Rewind Hotkey:\
-                        <select name="rewindhotkey">\
+                        <select id="rewindhotkey">\
                           <option>TAB</option>\
                           <option>CTRL</option>\
                           <option>[</option>\
@@ -481,7 +481,7 @@ subtitle, and bailing out early if .currentTime is between those two values
                         </select>\
                         <br/>\
                         Play/Pause Hotkey:\
-                        <select name="playpausehotkey">\
+                        <select id="playpausehotkey">\
                           <option>TAB</option>\
                           <option>CTRL</option>\
                           <option>[</option>\
@@ -504,6 +504,11 @@ subtitle, and bailing out early if .currentTime is between those two values
                     this.debug = document.getElementById("debug");
                     this.subtitlesname = document.getElementById("subtitlesname");
                     this.autorewind = document.getElementById("autorewind");
+
+                    this.rewind_key = document.getElementById("rewindhotkey");
+                    this.playpause_key = document.getElementById("playpausehotkey");
+                    this.tap_key = document.getElementById("taphotkey");
+
                     sync_button = document.getElementById("sync_button");
                     save_button = document.getElementById("save_button");
 
@@ -523,11 +528,35 @@ subtitle, and bailing out early if .currentTime is between those two values
                       self.saveSubs();
                     };
 
+                    var select_key = function(value){
+                      switch (value){
+                        case "TAB": return 9;
+                        case "CTRL": return 17;
+                        case "[": return 219;
+                        case "]": return 221;
+                        case "SPACEBAR": return 32;
+                        case "|": return 220;
+                      }
+                    };
+
                     this.textinput.onkeydown = function(event){
-                      if (event.which == 17){ //17=ctrl key //TODO: this is ugly!
+                      var rewind_key = select_key(self.rewind_key.value);
+                      var playpause_key = select_key(self.playpause_key.value);
+
+                      if (event.which == rewind_key){
                         var newval = self.video.currentTime - 3;
                         self.video.currentTime = (newval >= 0 ? newval : 0);
+                        //TODO: inhibit key event propagation
                       }
+
+                      if (event.which == playpause_key){
+                        if (self.video.paused || self.video.ended)
+                            self.video.play();
+                        else
+                            self.video.pause();
+                        //TODO: inhibit key event propagation
+                      }
+
                     };
 
 //TODO: there are 2 WikiSubsCommunicationElement elements!
@@ -631,21 +660,41 @@ subtitle, and bailing out early if .currentTime is between those two values
                     // typing a spacebar won't trigger togglePause
                     binding.Utils.original_keyHandler = binding.Utils.keyHandler;
                     binding.Utils.keyHandler = function(event){
+
+alert("event.keyCode:\n"+event.keyCode);
+
+/*
                       if (String.fromCharCode(event.charCode) == '['){
                         var newval = self.video.currentTime - 3;
                         self.video.currentTime = (newval >= 0 ? newval : 0);
                       }
+*/
 
-                      switch (event.keyCode) {
-                          case KeyEvent.DOM_VK_DOWN:
-                              self.subtitles_editor.do_tap();
-                              break;
-                          case KeyEvent.DOM_VK_LEFT:
-                                  var newval = this.video.currentTime - 1;
-                                  this.video.currentTime = (newval >= 0 ? newval : 0);
-                                  return;//this is to avoid the original left arrow key handler
-                              break;
+                    var select_key = function(value){
+                      switch (value){
+                        case "TAB": return 9;
+                        case "CTRL": return 17;
+                        case "[": return 219;
+                        case "]": return 221;
+                        case "SPACEBAR": return 32;
+                        case "|": return 220;
                       }
+                    };
+
+                    var rewind_key = select_key(self.rewind_key.value);
+//                    var playpause_key = select_key(self.playpause_key.value);
+                    var tap_key = select_key(self.tap_key.value);
+
+alert("rewind_key:\n"+rewind_key);
+
+                    if (event.keyCode == tap_key){
+                        self.subtitles_editor.do_tap();
+                    }
+
+                    if (event.keyCode == rewind_key){
+                        var newval = this.video.currentTime - 1;
+                        this.video.currentTime = (newval >= 0 ? newval : 0);
+                    }
 
                       binding.Utils.original_keyHandler(event);
                     };
