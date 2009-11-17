@@ -1,0 +1,53 @@
+.videodiv
+{
+  display: block;
+  margin: auto;
+  position:absolute;
+}
+
+.subtitles
+{
+  width: 100%;
+  margin: auto;
+  position: relative;
+  text-align: center;
+  font-family: sans-serif;
+  line-height: 2em;
+  top: -4.8em;
+  color: rgba(255,255,128, 1);
+  text-shadow: rgba(0,0,0, 0.6) 1px 1px;
+  font-size: larger !important;
+}
+
+input[type=number]
+{
+  width:2em;
+}
+
+.leftcolumn
+{
+  position:absolute;
+  top: 10px;
+  left: 10px;
+//  padding: 10px;
+  width: 60%;
+  height: 95%;
+}
+
+.rightcolumn
+{
+  position:absolute;
+  top: 10px;
+  right: 10px;
+  padding: 10px;
+  width: 30%;
+  height: 90%;
+  background-color: #606060;
+  color: #efefef;
+  border: 1px solid black;
+}
+
+body
+{
+  background-color: #222;
+}
