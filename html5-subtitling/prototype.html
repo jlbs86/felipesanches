@@ -1,0 +1,50 @@
+<html>
+    <script src="subtitling.js" ></script>
+    <link rel="stylesheet" type="text/css" href="subtitling.css" />
+    <body onload="load(event);">
+
+      <div class="leftcolumn">
+        <div class="videodiv">
+          <video controls id="video" src="Fred_von_Lohmann-DRM.ogg"></video>
+          <p id="subtitles" class="subtitles">Testing subtitles...</p>
+        </div>
+        <br/>
+
+        <form>
+          <textarea>BLAH- BLAH - BLAH</textarea>
+        </form>
+      </div>
+
+      <div class="rightcolumn">
+        <div class="transcription">
+          <h3>Step1: Transcription</h3>
+          <form>
+              <select id="rewindhotkey">
+                <option>TAB</option>
+                <option>CTRL</option>
+                <option>[</option>
+                <option>]</option>
+                <option>SPACEBAR</option>
+                <option>|</option>
+              </select> Rewind <input name="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+
+              <select id="playpausehotkey">
+                <option>TAB</option>
+                <option>CTRL</option>
+                <option>[</option>
+                <option>]</option>
+                <option>SPACEBAR</option>
+                <option>|</option>
+              </select> Play/Pause<br/>
+
+              <input name=skipback type=checkbox value=false /> Skip Back <input name="skipback-ammount" type=number min=1 value=2 /> seconds every <input name="skipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
+
+              <input type=button value="Next Step: Syncyng"/>
+          </form>
+        </div>
+      </div>
+
+    </body>
+</html>
+
+
