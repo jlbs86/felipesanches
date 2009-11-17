@@ -1,3 +1,18 @@
+.textinput
+{
+  display: block;
+  margin: auto;
+  position:absolute;
+  top: 300px;
+}
+
+.textinput textarea
+{
+  width:512px;
+  height:200px;
+}
+
+
 .videodiv
 {
   display: block;
@@ -16,7 +31,6 @@
   top: -4.8em;
   color: rgba(255,255,128, 1);
   text-shadow: rgba(0,0,0, 0.6) 1px 1px;
-  font-size: larger !important;
 }
 
 input[type=number]
@@ -26,10 +40,8 @@ input[type=number]
 
 .leftcolumn
 {
-  position:absolute;
   top: 10px;
   left: 10px;
-//  padding: 10px;
   width: 60%;
   height: 95%;
 }
@@ -45,6 +57,7 @@ input[type=number]
   background-color: #606060;
   color: #efefef;
   border: 1px solid black;
+  line-height:200%
 }
 
 body
