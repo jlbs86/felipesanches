@@ -28,7 +28,7 @@
                 <option>]</option>
                 <option>SPACEBAR</option>
                 <option>|</option>
-              </select> Rewind <input name="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+              </select> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
 
               <select id="playpausehotkey">
                 <option>TAB</option>
@@ -39,7 +39,7 @@
                 <option>|</option>
               </select> Play/Pause<br/>
 
-              <input name=skipback type=checkbox value=false /> Skip Back <input name="skipback-ammount" type=number min=1 value=2 /> seconds every <input name="skipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
+              <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
 
               <input type=button value="Next Step: Syncyng"/>
           </form>
