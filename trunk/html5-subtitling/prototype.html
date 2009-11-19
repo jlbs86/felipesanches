@@ -18,7 +18,7 @@
       </div>
 
       <div class="rightcolumn">
-        <div class="transcription">
+        <div id="transcription">
           <h3>Step1: Transcription</h3>
           <form>
               <select id="rewindhotkey">
@@ -41,9 +41,24 @@
 
               <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
 
-              <input type=button value="Next Step: Syncyng"/>
+              <input type=button value="Next Step: Syncing" onclick="sync_mode()"/>
           </form>
         </div>
+
+        <div id="syncing" style="display:none">
+          <h3>Step2: Sync</h3>
+          <form>
+              <select id="taphotkey">
+                <option>TAB</option>
+                <option>CTRL</option>
+                <option>[</option>
+                <option>]</option>
+                <option>SPACEBAR</option>
+                <option>|</option>
+              </select> Set Next Subtitle
+          </form>
+        </div>
+
       </div>
 
     </body>
