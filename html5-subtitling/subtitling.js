@@ -7,7 +7,13 @@ var autoskipback_ammount;
 var autoskip_timeout;
 
 //---------------
+function sync_mode(){
+  var transcriptiondiv = document.getElementById("transcription");
+  var syncdiv = document.getElementById("syncing");
 
+  transcriptiondiv.style.display="none";
+  syncdiv.style.display="block";
+}
 
 function displaySubtitles_sync(){
   if (current_subtitle == null){
