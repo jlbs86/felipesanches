@@ -31,21 +31,17 @@
           <h3>Step1: Transcription</h3>
           <form>
               <select id="rewindhotkey">
-                <option>TAB</option>
-                <option>CTRL</option>
+                <option SELECTED>CTRL</option>
                 <option>[</option>
                 <option>]</option>
-                <option>SPACEBAR</option>
                 <option>|</option>
               </select> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
 
               <select id="playpausehotkey">
-                <option>TAB</option>
                 <option>CTRL</option>
                 <option>[</option>
                 <option>]</option>
-                <option>SPACEBAR</option>
-                <option>|</option>
+                <option SELECTED>|</option>
               </select> Play/Pause<br/>
 
               <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
@@ -58,12 +54,11 @@
           <h3>Step2: Sync</h3>
           <form>
               <select id="taphotkey">
-                <option>TAB</option>
                 <option>CTRL</option>
                 <option>[</option>
                 <option>]</option>
-                <option>SPACEBAR</option>
                 <option>|</option>
+                <option SELECTED>SPACEBAR</option>
               </select> Set Next Subtitle
               <input type=button value="Next Step: Translate" onclick="alert('we need a mockup of the translate mode');translate_mode()"/>
           </form>
