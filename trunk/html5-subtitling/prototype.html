@@ -1,32 +1,92 @@
 <html>
-    <style id="step3css">
-      .step1 { display:none }
-      .step1and2 { display:none }
-      .step2 { display:none }
-      .step3 { display:block }
-    </style>
+    <head>
+      <style id="step3css">
+        .step1 { display:none }
+        .step1and2 { display:none }
+        .step2 { display:none }
+        .step3 { display:block }
+      </style>
 
-    <style id="step2css">
-      .step1 { display:none }
-      .step1and2 { display:block }
-      .step2 { display:block }
-      .step3 { display:none }
-    </style>
+      <style id="step2css">
+        .step1 { display:none }
+        .step1and2 { display:block }
+        .step2 { display:block }
+        .step3 { display:none }
+      </style>
 
-    <style id="step1css">
-      .step1 { display:block }
-      .step1and2 { display:block }
-      .step2 { display:none }
-      .step3 { display:none }
-    </style>
+      <style id="step1css">
+        .step1 { display:block }
+        .step1and2 { display:block }
+        .step2 { display:none }
+        .step3 { display:none }
+      </style>
 
-    <script src="subtitling.js" ></script>
-    <link rel="stylesheet" type="text/css" href="subtitling.css" />
+      <script src="subtitling.js" ></script>
+      <script type="text/javascript" src="javascript/jquery.js"></script>
+
+      <script type="text/javascript" src="skins/schmucker/tinyvid.js"></script>
+      <link href="skins/schmucker/tinyvid.css" type="text/css" rel="stylesheet"/>
+
+      <link rel="stylesheet" type="text/css" href="subtitling.css" />
+    </head>
     <body onload="load(event);">
 
       <div class="leftcolumn">
         <div class="videodiv">
-          <video controls id="video" src="Fred_von_Lohmann-DRM.ogg"></video>
+
+<!--///////////////////-->
+
+      <div id="main">
+            <div class="tinyVidPlayer">
+
+                <div class="nw"><div class="ne"><div class="nc">
+                </div></div></div>
+                <div class="mw"><div class="me"><div class="mc">
+          
+          <video class="v" id="video" src="Fred_von_Lohmann-DRM.ogg">
+          </video>
+
+        </div></div></div>
+        <div class="sw"><div class="se"><div class="sc">
+            <a class="play btn" href="#play" aria-live="off">
+              <img src="skins/schmucker/images/button_play.png" alt="video play button"/>
+            </a>
+            <a class="stop btn" href="#stop" aria-live="off">
+
+              <img src="skins/schmucker/images/button_stop.png" alt="video stop button"/>
+            </a>
+            <div class="seeker bar">
+
+                <div class="fill">
+                    <div class="progress"></div>
+                    <div class="limiter">
+                        <div class="handle"></div>
+                    </div>
+
+                    <div class="w"></div><div class="e"></div>
+                </div>
+            </div>
+            <a class="sound btn" href="#sound"><img class="soundimg" aria-live="off" src="skins/schmucker/images/sound.png" alt="video volume" /></a>
+            <a class="itext btn" href="#itext"><img class="itextimg" aria-live="off" src="skins/schmucker/images/itext.png" alt="Access Subtitles, Captions and Audio Descriptions - press space bar"/></a>
+
+            <div class="volume bar">
+                <div class="fill">
+                    <div class="progress"></div>
+
+                    <div class="w"></div><div class="e"></div>
+                </div>
+            </div>
+            <div class="size"></div>
+        </div></div></div>
+    </div>
+
+<!--///////////////////-->
+
+
+
+
+
+
           <p id="subtitles" class="subtitles"></p>
         </div>
 
