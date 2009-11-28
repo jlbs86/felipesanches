@@ -12,6 +12,16 @@ var subtitles_p;
 
 //---------------
 
+function step1(){
+  document.getElementById("step1css").disabled = false;
+  document.getElementById("step2css").disabled = true;
+}
+
+function step2(){
+  document.getElementById("step1css").disabled = true;
+  document.getElementById("step2css").disabled = false;
+}
+
 function displaySubtitles_sync(){
   if (current_subtitle == null){
     subtitles_textbox[0].innerHTML = "[silence]";
@@ -44,13 +54,10 @@ function displaySubtitles_sync(){
 }
 
 function sync_mode(){
-  var transcriptiondiv = document.getElementById("transcription");
-  var syncdiv = document.getElementById("syncing");
+  step2();
+
   var titlesdiv = document.getElementById("titles_list");
   var textinput = document.getElementById("textinput");
-
-  transcriptiondiv.style.display="none";
-  syncdiv.style.display="block";
 
   textinput.style.display="none";
   titlesdiv.style.display="block";
@@ -95,6 +102,8 @@ function autoskip_clicked(event){
 }
 
 function load(event){
+  step1();
+
   video = document.getElementById("video");
   subtitles_p = document.getElementById("subtitles");
 
