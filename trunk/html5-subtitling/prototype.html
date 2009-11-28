@@ -1,4 +1,16 @@
 <html>
+    <style id="step1css">
+      .step1 { display:block }
+      .step1and2 { display:block }
+      .step2 { display:none }
+    </style>
+
+    <style id="step2css">
+      .step1 { display:none }
+      .step1and2 { display:block }
+      .step2 { display:block }
+    </style>
+
     <script src="subtitling.js" ></script>
     <link rel="stylesheet" type="text/css" href="subtitling.css" />
     <body onload="load(event);">
@@ -27,32 +39,34 @@
       </div>
 
       <div class="rightcolumn">
-        <div id="transcription">
-          <h3>Step1: Transcription</h3>
+          <h3 class="step1">Step 1: Transcription</h3>
+          <h3 class="step2">Step 2: Synching</h3>
           <form>
+            <div class="step1and2">
               <select id="rewindhotkey">
                 <option SELECTED>CTRL</option>
                 <option>[</option>
                 <option>]</option>
                 <option>|</option>
               </select> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+            </div>
 
+            <div class="step1and2">
               <select id="playpausehotkey">
                 <option>CTRL</option>
                 <option>[</option>
                 <option>]</option>
                 <option SELECTED>|</option>
               </select> Play/Pause<br/>
+            </div>
 
+            <div class="step1">
               <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
+            </div>
 
-              <input type=button value="Next Step: Syncing" onclick="sync_mode()"/>
-          </form>
-        </div>
+            <input class="step1" type=button value="Next Step: Syncing" onclick="sync_mode()"/>
 
-        <div id="syncing" style="display:none">
-          <h3>Step2: Sync</h3>
-          <form>
+            <div class="step2">
               <select id="taphotkey">
                 <option>CTRL</option>
                 <option>[</option>
@@ -60,10 +74,11 @@
                 <option>|</option>
                 <option SELECTED>SPACEBAR</option>
               </select> Set Next Subtitle
-              <input type=button value="Next Step: Translate" onclick="alert('we need a mockup of the translate mode');translate_mode()"/>
-          </form>
-        </div>
+            </div>
 
+            <input class="step2" type=button value="Next Step: Translate" onclick="alert('we need a mockup of the translate mode');translate_mode()"/>
+
+          </form>
       </div>
 
     </body>
