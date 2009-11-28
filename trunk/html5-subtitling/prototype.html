@@ -3,12 +3,21 @@
       .step1 { display:block }
       .step1and2 { display:block }
       .step2 { display:none }
+      .step3 { display:none }
     </style>
 
     <style id="step2css">
       .step1 { display:none }
       .step1and2 { display:block }
       .step2 { display:block }
+      .step3 { display:none }
+    </style>
+
+    <style id="step3css">
+      .step1 { display:none }
+      .step1and2 { display:none }
+      .step2 { display:none }
+      .step3 { display:block }
     </style>
 
     <script src="subtitling.js" ></script>
@@ -41,6 +50,10 @@
       <div class="rightcolumn">
           <h3 class="step1">Step 1: Transcription</h3>
           <h3 class="step2">Step 2: Synching</h3>
+          <h3 class="step3">Step 3: Translation</h3>
+
+          <div class="step3">We still need a mockup for this step</div>
+
           <form>
             <div class="step1and2">
               <select id="rewindhotkey">
@@ -64,7 +77,7 @@
               <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
             </div>
 
-            <input class="step1" type=button value="Next Step: Syncing" onclick="sync_mode()"/>
+            <input class="step1" type=button value="Next Step: Syncing" onclick="step2();"/>
 
             <div class="step2">
               <select id="taphotkey">
@@ -76,7 +89,7 @@
               </select> Set Next Subtitle
             </div>
 
-            <input class="step2" type=button value="Next Step: Translate" onclick="alert('we need a mockup of the translate mode');translate_mode()"/>
+            <input class="step2" type=button value="Next Step: Translate" onclick="step3();"/>
 
           </form>
       </div>

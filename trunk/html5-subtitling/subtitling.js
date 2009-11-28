@@ -15,11 +15,22 @@ var subtitles_p;
 function step1(){
   document.getElementById("step1css").disabled = false;
   document.getElementById("step2css").disabled = true;
+  document.getElementById("step3css").disabled = true;
+  transcription_mode();
 }
 
 function step2(){
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = false;
+  document.getElementById("step3css").disabled = true;
+  sync_mode();
+}
+
+function step3(){
+  document.getElementById("step1css").disabled = true;
+  document.getElementById("step2css").disabled = true;
+  document.getElementById("step3css").disabled = false;
+  translate_mode();
 }
 
 function displaySubtitles_sync(){
