@@ -9,10 +9,12 @@ var autoskip_timeout;
 var video;
 var holdingkey=false;
 var subtitles_p;
+var current_step=1;
 
 //---------------
 
 function step1(){
+  current_step=1;
   document.getElementById("step1css").disabled = false;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = true;
@@ -20,6 +22,7 @@ function step1(){
 }
 
 function step2(){
+  current_step=2;
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = false;
   document.getElementById("step3css").disabled = true;
@@ -27,6 +30,7 @@ function step2(){
 }
 
 function step3(){
+  current_step=3;
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = false;
@@ -64,8 +68,13 @@ function displaySubtitles_sync(){
   subtitles_textbox[4].innerHTML = (i+2<subs.length && subs[i+2]["text"] != "") ? subs[i+2]["text"] : "[silence]";
 }
 
+function transcription_mode(){
+  //STEP 1
+//TODO: refactor: put specific step1 stuff here
+}
+
 function sync_mode(){
-  step2();
+  //STEP 2
 
   var titlesdiv = document.getElementById("titles_list");
   var textinput = document.getElementById("textinput");
@@ -90,6 +99,11 @@ function sync_mode(){
 
 }
 
+function translate_mode(){
+  //STEP 3
+//TODO: implement
+}
+
 function setup_autoskip(){
   if (autoskip_timeout)
     clearTimeout(autoskip_timeout);
@@ -97,8 +111,8 @@ function setup_autoskip(){
   autoskip_timeout = setTimeout( auto_skip, autoskipback_interval.value*1000);
 }
 
-function auto_skip(){                        
-  if (autoskipback.checked){
+function auto_skip(){                      
+  if (autoskipback.checked && current_step==1){
     var newval = video.currentTime - autoskipback_ammount.value;
     video.currentTime = (newval >= 0 ? newval : 0);
     setup_autoskip();
