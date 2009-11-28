@@ -91,18 +91,18 @@
         </div>
 
         <br/>
-        <div id="textinput">
+        <div id="textinput" class="step1">
           <form>
             <textarea id="titles_textarea"></textarea>
           </form>
         </div>
 
-        <div id="titles_list" style="display:none">
-          <p id="title_1">asasd</p>
-          <p id="title_2">asdfasdf</p>
-          <p id="title_3" class="current_title">qwerqwer</p>
-          <p id="title_4">12341234</p>
-          <p id="title_5">23453245</p>
+        <div class="step2" id="titles_list" >
+          <p id="title_1"></p>
+          <p id="title_2"></p>
+          <p id="title_3" class="current_title"></p>
+          <p id="title_4"></p>
+          <p id="title_5"></p>
         </div>
 
       </div>
@@ -137,7 +137,7 @@
               <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
             </div>
 
-            <input class="step1" type=button value="Next Step: Syncing" onclick="step2();"/>
+            <input class="step1 nextbutton" type=button value="Next Step: Syncing" onclick="step2();"/>
 
             <div class="step2">
               <select id="taphotkey">
@@ -149,7 +149,10 @@
               </select> Set Next Subtitle
             </div>
 
-            <input class="step2" type=button value="Next Step: Translate" onclick="step3();"/>
+            <input class="step2 nextbutton" type=button value="Next Step: Translate" onclick="step3();"/>
+            <input class="step2 previousbutton" type=button value="Previous Step: Transcription" onclick="step1();"/>
+
+            <input class="step3 previousbutton" type=button value="Previous Step: Syncing" onclick="step2();"/>
 
           </form>
       </div>

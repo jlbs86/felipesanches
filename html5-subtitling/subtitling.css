@@ -78,6 +78,20 @@ input[type=number]
   line-height:200%
 }
 
+.previousbutton
+{
+  position:absolute;
+  bottom:15px;
+}
+
+.nextbutton
+{
+  position:absolute;
+  bottom:15px;
+  right:15px;
+}
+
+
 body
 {
   background-color: #222;

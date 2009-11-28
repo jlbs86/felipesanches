@@ -18,7 +18,6 @@ function step1(){
   document.getElementById("step1css").disabled = false;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = true;
-  transcription_mode();
 }
 
 function step2(){
@@ -26,7 +25,22 @@ function step2(){
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = false;
   document.getElementById("step3css").disabled = true;
-  sync_mode();
+
+  var titles = document.getElementById("titles_textarea").value.split('\n');
+  var subs = [];
+  for (i in titles){
+    subs.push({"text": titles[i], "start":-1,"end":-1});
+  }
+  current_subtitle = {"content":subs};
+  current_title_sync = 0;
+
+  //restart playback:
+  video.currentTime = 0;
+
+  video.addEventListener('timeupdate', function(e){
+    displaySubtitles_sync(e.target.currentTime*1000)
+  }, false);
+
 }
 
 function step3(){
@@ -34,7 +48,6 @@ function step3(){
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = false;
-  translate_mode();
 }
 
 function displaySubtitles_sync(){
@@ -66,42 +79,6 @@ function displaySubtitles_sync(){
   if (subtitles_p.innerHTML == "[silence]") subtitles_p.innerHTML = ""
   subtitles_textbox[3].innerHTML = (i+1<subs.length && subs[i+1]["text"] != "") ? subs[i+1]["text"] : "[silence]";
   subtitles_textbox[4].innerHTML = (i+2<subs.length && subs[i+2]["text"] != "") ? subs[i+2]["text"] : "[silence]";
-}
-
-function transcription_mode(){
-  //STEP 1
-//TODO: refactor: put specific step1 stuff here
-}
-
-function sync_mode(){
-  //STEP 2
-
-  var titlesdiv = document.getElementById("titles_list");
-  var textinput = document.getElementById("textinput");
-
-  textinput.style.display="none";
-  titlesdiv.style.display="block";
-
-  var titles = document.getElementById("titles_textarea").value.split('\n');
-  var subs = [];
-  for (i in titles){
-    subs.push({"text": titles[i], "start":-1,"end":-1});
-  }
-  current_subtitle = {"content":subs};
-  current_title_sync = 0;
-
-  //restart playback:
-  video.currentTime = 0;
-
-  video.addEventListener('timeupdate', function(e){
-    displaySubtitles_sync(e.target.currentTime*1000)
-  }, false);
-
-}
-
-function translate_mode(){
-  //STEP 3
-//TODO: implement
 }
 
 function setup_autoskip(){
