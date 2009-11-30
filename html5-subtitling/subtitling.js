@@ -13,6 +13,55 @@ var current_step=1;
 
 //---------------
 
+function save_article(articlename, content){
+//TODO
+//alert("saving:\n\n" + content + "\n\nto article:\n"+articlename);
+}
+
+function load_article(articlename){
+//TODO
+  return content;
+}
+
+/* SRT (subtitles file format) parsing and encoding routines: */
+
+function toMilliSeconds(s){
+  var timeparts = s.split(',');
+  msecs = Number(timeparts[1]);
+  var timeparts = timeparts[0].split(':');
+  var hours = Number(timeparts[0]);
+  var mins = Number(timeparts[1]);
+  var secs = Number(timeparts[2]);
+
+  return (((hours*60 + mins) * 60) + secs)*1000 + msecs;
+}
+
+function MilliSecondsToString(time){
+  var timeString;
+  var hours = Math.floor(time / 3600000);
+  var mins  = Math.floor(time % 3600000 / 60000);
+  var secs  = Math.floor(time % 60000 / 1000);
+  var msecs = time%1000;
+  if (secs < 10) secs = "0" + secs;
+  if (mins < 10) mins = "0" + mins;
+  if (hours < 10) hours = "0" + hours;
+  if (msecs < 10) msecs = "0" + msecs;
+  if (msecs < 100) msecs = "0" + msecs;
+  return hours + ":" + mins + ":" + secs + "," + msecs;
+}
+
+function encode_srt(sub){
+  text = ""
+  for (i in sub){
+      text+=(Number(i)+1)+"\n"
+      text+=this.MilliSecondsToString(sub[i]["start"])
+      text+=" --> "
+      text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
+      text+=sub[i]["text"]+"\n\n";
+  }
+  return text;
+}
+
 function step1(){
   current_step=1;
   document.getElementById("step1css").disabled = false;
@@ -21,12 +70,18 @@ function step1(){
 }
 
 function step2(){
+  var transcript = document.getElementById("titles_textarea").value;
+  if (current_step==1){
+    var src = video.currentSrc;
+//    if (!src) src = video.getElementsByTagName("source")[0].src;
+    save_article("Transcript/URL/"+src, transcript);
+  }
   current_step=2;
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = false;
   document.getElementById("step3css").disabled = true;
 
-  var titles = document.getElementById("titles_textarea").value.split('\n');
+  var titles = transcript.split('\n');
   var subs = [];
   for (i in titles){
     subs.push({"text": titles[i], "start":-1,"end":-1});
@@ -44,6 +99,11 @@ function step2(){
 }
 
 function step3(){
+  if (current_step==2){
+    var src = video.currentSrc;
+//    if (!src) src = video.getElementsByTagName("source")[0].src;
+    save_article("Subtitles/URL/"+src, encode_srt(current_subtitle["content"]));
+  }
   current_step=3;
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = true;
@@ -159,7 +219,7 @@ function load(event){
     var playpause_key = select_key(document.getElementById("playpausehotkey").value);
 
     if (event.which == rewind_key){
-      var newval = video.currentTime - 3;
+      var newval = video.currentTime - document.getElementById("rewindsecs").value;
       video.currentTime = (newval >= 0 ? newval : 0);
       //TODO: inhibit key event propagation (?)
     }
