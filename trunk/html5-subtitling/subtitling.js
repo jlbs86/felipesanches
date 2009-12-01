@@ -12,16 +12,81 @@ var subtitles_p;
 var current_step=1;
 
 //---------------
+function sendGETRequest(url, callback) {
+//alert(url);
+//alert(callback);
+ 	var xhr = new XMLHttpRequest();
+  var ajaxDataReader = function () {
+    if (xhr.readyState == 4) {
+      //alert("sendGETRequest responseText:\n\n" + xhr.responseText);
+      callback(xhr.responseText);
+    }
+  }
+
+  xhr.open("GET", url, true);
+
+  //https://developer.mozilla.org/En/Using_XMLHttpRequest#Bypassing_the_cache
+  xhr.channel.loadFlags |= Components.interfaces.nsIRequest.LOAD_BYPASS_CACHE;
+
+  xhr.onreadystatechange = ajaxDataReader;
+  try {
+      xhr.send(null);
+    }
+  catch(e){
+//    alert("bad request");
+  }
+}
+
+function sendPOSTRequest(url, params, callback) {
+ 	var xhr = new XMLHttpRequest();
+  var ajaxDataReader = function () {
+    if (xhr.readyState == 4) {
+//alert("xhr.responseText: "+xhr.responseText);
+      callback(xhr.responseText);
+    }
+  }
+
+  xhr.open("POST", url, true);
+  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhr.setRequestHeader("Content-length", params.length);
+  xhr.setRequestHeader("Connection", 'close');
+
+  xhr.onreadystatechange = ajaxDataReader;
+  try {
+      xhr.send(params);
+    }
+  catch(e){
+//    alert("bad request");
+  }
+}
 
 function save_article(articlename, content){
-//TODO
-//alert("saving:\n\n" + content + "\n\nto article:\n"+articlename);
+  var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
+  var token = "+\\"; //this token is used for anonymous edits
+
+//  alert("article: "+articlename+"\n\ncontent:\n\n\""+content+"\"");
+
+  var display_result = function(data){
+      //for debugging purpose only:
+//          alert("result:\n\n"+data);
+  }
+
+  var params = "action=edit&title=" + encodeURIComponent(articlename) + "&section=0&text="+encodeURIComponent(content) + "&token=" + encodeURIComponent(token);
+
+  this.sendPOSTRequest(mediawiki_server + "api.php", params, display_result);
 }
 
-function load_article(articlename){
-//TODO
-  return content;
+function load_article(pagename, callback){
+  var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
+  var parse_response = function(text){
+    callback(text);
+  }
+    
+  sendGETRequest(mediawiki_server + "index.php?action=raw&title=" + pagename, parse_response);
 }
+
+//---------------
+
 
 /* SRT (subtitles file format) parsing and encoding routines: */
 
