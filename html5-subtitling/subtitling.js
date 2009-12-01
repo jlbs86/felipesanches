@@ -13,12 +13,9 @@ var current_step=1;
 
 //---------------
 function sendGETRequest(url, callback) {
-//alert(url);
-//alert(callback);
  	var xhr = new XMLHttpRequest();
   var ajaxDataReader = function () {
     if (xhr.readyState == 4) {
-      //alert("sendGETRequest responseText:\n\n" + xhr.responseText);
       callback(xhr.responseText);
     }
   }
@@ -38,6 +35,8 @@ function sendGETRequest(url, callback) {
 }
 
 function sendPOSTRequest(url, params, callback) {
+//alert("url: "+url);
+//alert("params: "+params);
  	var xhr = new XMLHttpRequest();
   var ajaxDataReader = function () {
     if (xhr.readyState == 4) {
@@ -61,28 +60,26 @@ function sendPOSTRequest(url, params, callback) {
 }
 
 function save_article(articlename, content){
-  var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
   var token = "+\\"; //this token is used for anonymous edits
 
 //  alert("article: "+articlename+"\n\ncontent:\n\n\""+content+"\"");
 
   var display_result = function(data){
       //for debugging purpose only:
-//          alert("result:\n\n"+data);
+          //alert("result:\n\n"+data);
   }
 
   var params = "action=edit&title=" + encodeURIComponent(articlename) + "&section=0&text="+encodeURIComponent(content) + "&token=" + encodeURIComponent(token);
 
-  this.sendPOSTRequest(mediawiki_server + "api.php", params, display_result);
+  sendPOSTRequest("../subs/api.php", params, display_result);
 }
 
 function load_article(pagename, callback){
-  var mediawiki_server = "http://www.wstr.org/subs/"; //TODO: setup settings
   var parse_response = function(text){
     callback(text);
   }
     
-  sendGETRequest(mediawiki_server + "index.php?action=raw&title=" + pagename, parse_response);
+  sendGETRequest("../subs/index.php?action=raw&title=" + pagename, parse_response);
 }
 
 //---------------
