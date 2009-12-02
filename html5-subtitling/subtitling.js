@@ -174,11 +174,11 @@ function step3(){
 
 function displaySubtitles_sync(){
   if (current_subtitle == null){
-    subtitles_textbox[0].innerHTML = "[silence]";
-    subtitles_textbox[1].innerHTML = "[silence]";
-    subtitles_textbox[2].innerHTML = "[silence]";
-    subtitles_textbox[3].innerHTML = "[silence]";
-    subtitles_textbox[4].innerHTML = "[silence]";
+    subtitles_textbox[0].innerHTML = "&nbsp;";
+    subtitles_textbox[1].innerHTML = "&nbsp;";
+    subtitles_textbox[2].innerHTML = "&nbsp;";
+    subtitles_textbox[3].innerHTML = "&nbsp;";
+    subtitles_textbox[4].innerHTML = "&nbsp;";
     subtitles.innerHTML = "";
     return;
   }
@@ -194,13 +194,15 @@ function displaySubtitles_sync(){
     }
   }
 
+//TODO: refactor this mess!
   var i = current_title_sync-1;
-  subtitles_textbox[0].innerHTML = (i-2>=0 && subs[i-2]["text"] != "") ? subs[i-2]["text"] : "[silence]";
-  subtitles_textbox[1].innerHTML = (i-1>=0 && subs[i-1]["text"] != "") ? subs[i-1]["text"] : "[silence]";
-  subtitles_p.innerHTML = subtitles_textbox[2].innerHTML = (i>=0 && i < subs.length && subs[i]["text"] != "") ? subs[i]["text"] : "[silence]";
+  subtitles_textbox[0].innerHTML = (i-2>=0) ? ((subs[i-2]["text"] != "") ? subs[i-2]["text"] : "[silence]") : "&nbsp;";
+  subtitles_textbox[1].innerHTML = (i-1>=0) ? ((subs[i-1]["text"] != "") ? subs[i-1]["text"] : "[silence]") : "&nbsp;";
+  subtitles_p.innerHTML = subtitles_textbox[2].innerHTML = (i>=0 && i < subs.length) ? ((subs[i]["text"] != "") ? subs[i]["text"] : "[silence]") : "&nbsp;";
   if (subtitles_p.innerHTML == "[silence]") subtitles_p.innerHTML = ""
-  subtitles_textbox[3].innerHTML = (i+1<subs.length && subs[i+1]["text"] != "") ? subs[i+1]["text"] : "[silence]";
-  subtitles_textbox[4].innerHTML = (i+2<subs.length && subs[i+2]["text"] != "") ? subs[i+2]["text"] : "[silence]";
+  if (subtitles_p.innerHTML == "&nbsp;") subtitles_p.innerHTML = ""
+  subtitles_textbox[3].innerHTML = (i+1<subs.length) ? ((subs[i+1]["text"] != "") ? subs[i+1]["text"] : "[silence]") : ((i+1==subs.length) ? "--- end of transcript ---" : "&nbsp;");
+  subtitles_textbox[4].innerHTML = (i+2<subs.length) ? ((subs[i+2]["text"] != "") ? subs[i+2]["text"] : "[silence]") : ((i+2==subs.length) ? "--- end of transcript ---" : "&nbsp;");
 }
 
 function setup_autoskip(){
