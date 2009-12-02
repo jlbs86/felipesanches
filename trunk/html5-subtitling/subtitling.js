@@ -275,7 +275,9 @@ function load(event){
     var tap_key = select_key(document.getElementById("taphotkey").value);
 
     if (event.which == tap_key){
-     if(current_title_sync == null) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if(current_title_sync == null) return;
       var subs = current_subtitle["content"];
       var now = Math.round(video.currentTime * 1000);
       if (current_title_sync>0) subs[current_title_sync-1].end = now;
@@ -297,7 +299,8 @@ function load(event){
     if (event.which == rewind_key){
       var newval = video.currentTime - document.getElementById("rewindsecs").value;
       video.currentTime = (newval >= 0 ? newval : 0);
-      //TODO: inhibit key event propagation (?)
+      event.preventDefault();
+      event.stopPropagation();
     }
 
     if (event.which == playpause_key){
@@ -305,12 +308,13 @@ function load(event){
           self.video.play();
       else
           video.pause();
-      //TODO: inhibit key event propagation (?)
+      event.preventDefault();
+      event.stopPropagation();
     }
 
   };
 
-  window.addEventListener("keydown", KeyDownHandler, false);
-  window.addEventListener("keyup", KeyUpHandler, false);
+  window.addEventListener("keydown", KeyDownHandler, true);
+  window.addEventListener("keyup", KeyUpHandler, true);
   
 }
