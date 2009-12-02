@@ -194,15 +194,27 @@ function displaySubtitles_sync(){
     }
   }
 
-//TODO: refactor this mess!
-  var i = current_title_sync-1;
-  subtitles_textbox[0].innerHTML = (i-2>=0) ? ((subs[i-2]["text"] != "") ? subs[i-2]["text"] : "[silence]") : "&nbsp;";
-  subtitles_textbox[1].innerHTML = (i-1>=0) ? ((subs[i-1]["text"] != "") ? subs[i-1]["text"] : "[silence]") : "&nbsp;";
-  subtitles_p.innerHTML = subtitles_textbox[2].innerHTML = (i>=0 && i < subs.length) ? ((subs[i]["text"] != "") ? subs[i]["text"] : "[silence]") : "&nbsp;";
-  if (subtitles_p.innerHTML == "[silence]") subtitles_p.innerHTML = ""
-  if (subtitles_p.innerHTML == "&nbsp;") subtitles_p.innerHTML = ""
-  subtitles_textbox[3].innerHTML = (i+1<subs.length) ? ((subs[i+1]["text"] != "") ? subs[i+1]["text"] : "[silence]") : ((i+1==subs.length) ? "--- end of transcript ---" : "&nbsp;");
-  subtitles_textbox[4].innerHTML = (i+2<subs.length) ? ((subs[i+2]["text"] != "") ? subs[i+2]["text"] : "[silence]") : ((i+2==subs.length) ? "--- end of transcript ---" : "&nbsp;");
+  function get_title(i){
+    if (i>=0 && i<subs.length){
+      return subs[i]["text"];
+    } else {
+      if (i==-3) return "--- Opening Silence ---"
+      if (i==-2) return "--- Skip down when people start talking ---";
+      if (i==subs.length) return "--- end of transcript ---";
+    }
+    return "&nbsp;";
+  }
+
+  function get_title_or_silence(i){
+    var title = get_title(i);
+    return (title == "") ? "[silence]" : title;
+  }
+
+  var i = current_title_sync - 1;
+  for (index in subtitles_textbox){
+    subtitles_textbox[index].innerHTML = get_title_or_silence(index-2 + i);
+  }
+  subtitles_p.innerHTML = get_title(i);
 }
 
 function setup_autoskip(){
