@@ -12,7 +12,6 @@ div.tinyVidPlayer video.v{
 }
 			
 div.tinyVidPlayer div.sw{
-//  background:url(images/sw.png) bottom left no-repeat;
   background: #ddd;
   height:40px;
   padding-left:24px;
@@ -20,14 +19,12 @@ div.tinyVidPlayer div.sw{
 }
 			
 div.tinyVidPlayer div.se{
-//  background:url(images/se.png) bottom right no-repeat;
   background: #ddd;
   padding-right:24px;
   height:inherit;
 }
 			
 div.tinyVidPlayer div.sc{
-  //background:url(images/sc.png) repeat-x;
   background: #ddd;
   height:inherit;
 }
@@ -41,7 +38,7 @@ div.tinyVidPlayer a.play{left:4px;top:4px;}
 div.tinyVidPlayer a.itext{right:87px;top:5px;}
 
 div.tinyVidPlayer a.sound{
-  right:90px;
+  right:60px;
   top:5px;
 
   width:28px;
@@ -78,7 +75,7 @@ div.tinyVidPlayer div.seeker{
 
 div.tinyVidPlayer div.volume{
   position:absolute;
-  right:17px;
+  right:-18px;
   top:6px;
   width:50px;
 }
@@ -86,8 +83,7 @@ div.tinyVidPlayer div.volume{
 div.tinyVidPlayer div.bar div.fill{
   height:inherit;
   top:10px;
-  left:-25px;
-  //background:url(images/bar.png) top left repeat-x;
+  left:-27px;
   background:#777;
   position:relative;
 }
@@ -96,7 +92,6 @@ div.tinyVidPlayer div.bar div.w{
   width:8px;
   height:inherit;
   position:absolute;
-//  background:url(images/bar_overlay_w.png) top left no-repeat;
   top:0px;
 }
 									
@@ -106,7 +101,6 @@ div.tinyVidPlayer div.bar div.e{
   position:absolute;
   right:0px;
   top:0px;
-//  background:url(images/bar_overlay_e.png) top right no-repeat;
 }
 									
 div.tinyVidPlayer div.seeker div.limiter{
@@ -133,23 +127,21 @@ div.tinyVidPlayer div.bar div.progress{
 }
   
 div.tinyVidPlayer div.seeker div.progress{
-//  background:url(images/bar_filler_or.png) top left repeat-x;
   background:#666;
   width:0%;
   height:inherit;
 }
   
 div.tinyVidPlayer div.volume div.progress{
-//  background:url(images/bar_filler_bl.png) top left repeat-x;
   background:#333;
   width:100%;
   height:inherit;
 }
 			
+//TODO: Remove it
 div.tinyVidPlayer div.size{
-  background:url(images/resizer.png) bottom right no-repeat;
   position:absolute;
-  width:12px;
+  width:0px;
   height:13px;
   top:18px;
   right:10px;
