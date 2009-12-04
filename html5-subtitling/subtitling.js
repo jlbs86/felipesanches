@@ -245,6 +245,31 @@ function load(event){
   video = document.getElementById("video");
   subtitles_p = document.getElementById("subtitles");
 
+  var url_fragments = String(document.location).split("?");
+
+//This is more than what we need, but is good because we
+// can eventually pass other useful attributes in the url
+  var dict = {};
+
+  if (url_fragments.length>1){
+    var params = url_fragments[1].split("&");
+    if (params.length==1){
+      var pair = String(params).split("=");
+      dict[pair[0]] = pair[1];
+    } else {
+      for (var i in params){ 
+        var pair = params[i].split("=");
+        dict[pair[0]] = pair[1];
+      }
+    }
+  }
+
+  if (dict["videourl"]){
+    video.src = dict["videourl"];
+  } else {
+    video.src = "http://videos.mozilla.org/firefox3/switch/switch.ogg";
+  }
+
   subtitles_textbox.push(document.getElementById("title_1"));
   subtitles_textbox.push(document.getElementById("title_2"));
   subtitles_textbox.push(document.getElementById("title_3"));
