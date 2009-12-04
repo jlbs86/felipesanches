@@ -304,10 +304,13 @@ function load(event){
     }
 
     if (event.which == playpause_key){
-      if (video.paused || video.ended)
+      if (video.paused || video.ended){
           self.video.play();
-      else
+          document.getElementById("playbtn").setAttribute("paused", "false");
+      } else {
           video.pause();
+          document.getElementById("playbtn").setAttribute("paused", "true");
+      }
       event.preventDefault();
       event.stopPropagation();
     }
