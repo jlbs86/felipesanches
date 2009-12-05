@@ -104,3 +104,41 @@ body
 {
   background-color: #222;
 }
+
+/* NPR style changes -- feel free to remove */
+
+body {
+	font-family: helvetica, sans-serif;
+}
+
+.rightcolumn
+{
+  float: right;
+  padding: 10px;
+  width: 350px;
+  height: 521px;
+  background-color: #606060;
+  color: #efefef;
+  border: 0px solid black;
+  line-height:200%;
+  margin-left: 300px;
+  position: relative;
+}
+
+.leftcolumn {
+  width: 900px;
+  height: 600px;
+  margin: auto;
+
+}
+
+#titles_textarea {
+	font-family: helvetica, sans-serif;
+	line-height: 1.5em;
+}
+
+
+/*  ----     */
+
+
+

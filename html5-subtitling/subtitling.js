@@ -1,4 +1,5 @@
 //Globar vars:
+var SUBTITLES_SERVER = "http://wstr.org/subs/";
 var mode = "playback";
 var current_subtitle = null;
 var current_title_sync;
@@ -264,11 +265,13 @@ function load(event){
     }
   }
 
-  if (dict["videourl"]){
-    video.src = dict["videourl"];
-  } else {
-    video.src = "http://videos.mozilla.org/firefox3/switch/switch.ogg";
+  if (!dict["videourl"]){
+    dict["videourl"] = "http://videos.mozilla.org/firefox3/switch/switch.ogg";
   }
+
+  video.src = dict["videourl"];
+  document.getElementById("transcript_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Transcript/URL/"+dict["videourl"]);
+  document.getElementById("SRT_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Subtitles/URL/"+dict["videourl"]);
 
   subtitles_textbox.push(document.getElementById("title_1"));
   subtitles_textbox.push(document.getElementById("title_2"));
