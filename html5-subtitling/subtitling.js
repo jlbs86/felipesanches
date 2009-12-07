@@ -173,6 +173,25 @@ function step3(){
   document.getElementById("step3css").disabled = false;
 }
 
+function check_and_prepare_for_double_line(text){
+  var parts = text.split(' ');
+  var counter = 0;
+  var result="";
+  var lines=1;
+  for (var i in parts){
+    if (counter + parts[i].length > 50){
+      counter = 0;
+      if (lines==2){ result += " [...]"; break; }
+      result += "<br/>";
+      lines++;
+    }
+    counter += parts[i].length + 1;
+    if (i>0) result += " ";
+    result += parts[i];
+  }
+  return "<p class='subtitles subtitleslines"+lines+"'>"+result+"</p>";
+}
+
 function displaySubtitles_sync(){
   if (current_subtitle == null){
     subtitles_textbox[0].innerHTML = "&nbsp;";
@@ -215,7 +234,7 @@ function displaySubtitles_sync(){
   for (index in subtitles_textbox){
     subtitles_textbox[index].innerHTML = get_title_or_silence(index-2 + i);
   }
-  subtitles_p.innerHTML = get_title(i);
+  subtitles_p.innerHTML = check_and_prepare_for_double_line(get_title(i));
 }
 
 function setup_autoskip(){
