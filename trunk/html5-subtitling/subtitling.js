@@ -181,7 +181,7 @@ function check_and_prepare_for_double_line(text){
   for (var i in parts){
     if (counter + parts[i].length > 50){
       counter = 0;
-      if (lines==2){ result += " [...]"; break; }
+      if (lines==3){ result += " [...]"; break; }
       result += "<br/>";
       lines++;
     }
