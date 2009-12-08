@@ -4,6 +4,7 @@ var mode = "playback";
 var current_subtitle = null;
 var current_title_sync;
 var subtitles_textbox = [];
+var subtitles_time_in = [];
 var autoskipback;
 var autoskipback_ammount;
 var autoskip_timeout;
@@ -230,9 +231,19 @@ function displaySubtitles_sync(){
     return (title == "") ? "[silence]" : title;
   }
 
+  function get_timein(i){
+    if (i>=0 && i<subs.length && subs[i].start>0){
+      return MilliSecondsToString(subs[i].start);
+    } else {
+      return "";
+    }
+    return "&nbsp;";
+  }
+
   var i = current_title_sync - 1;
   for (index in subtitles_textbox){
     subtitles_textbox[index].innerHTML = get_title_or_silence(index-2 + i);
+    subtitles_time_in[index].innerHTML = get_timein(index-2 + i);
   }
   subtitles_p.innerHTML = check_and_prepare_for_double_line(get_title(i));
 }
@@ -297,6 +308,12 @@ function load(event){
   subtitles_textbox.push(document.getElementById("title_3"));
   subtitles_textbox.push(document.getElementById("title_4"));
   subtitles_textbox.push(document.getElementById("title_5"));
+
+  subtitles_time_in.push(document.getElementById("time_1"));
+  subtitles_time_in.push(document.getElementById("time_2"));
+  subtitles_time_in.push(document.getElementById("time_3"));
+  subtitles_time_in.push(document.getElementById("time_4"));
+  subtitles_time_in.push(document.getElementById("time_5"));
 
   autoskipback = document.getElementById("autoskipback");
   autoskipback_ammount = document.getElementById("autoskipback-ammount");

@@ -29,6 +29,13 @@
   background: #dd8
 }
 
+.time_in{
+  font-size: xx-small;
+  position:absolute;
+  margin-top:2px;
+  margin-left:2em;
+} 
+
 a {
   color:#aaa;
 }
