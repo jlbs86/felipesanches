@@ -100,27 +100,33 @@ function toMilliSeconds(s){
   return (((hours*60 + mins) * 60) + secs)*1000 + msecs;
 }
 
-function MilliSecondsToString(time){
+function MilliSecondsToString(time, display_msecs){
   var timeString;
   var hours = Math.floor(time / 3600000);
   var mins  = Math.floor(time % 3600000 / 60000);
   var secs  = Math.floor(time % 60000 / 1000);
-  var msecs = time%1000;
+
   if (secs < 10) secs = "0" + secs;
   if (mins < 10) mins = "0" + mins;
   if (hours < 10) hours = "0" + hours;
-  if (msecs < 10) msecs = "0" + msecs;
-  if (msecs < 100) msecs = "0" + msecs;
-  return hours + ":" + mins + ":" + secs + "," + msecs;
+
+  if (display_msecs){
+    var msecs = time%1000;
+    if (msecs < 10) msecs = "0" + msecs;
+    if (msecs < 100) msecs = "0" + msecs;
+    return hours + ":" + mins + ":" + secs + "," + msecs;
+  } else {
+    return hours + ":" + mins + ":" + secs;
+  }
 }
 
 function encode_srt(sub){
   text = ""
   for (i in sub){
       text+=(Number(i)+1)+"\n"
-      text+=this.MilliSecondsToString(sub[i]["start"])
+      text+=this.MilliSecondsToString(sub[i]["start"], true)
       text+=" --> "
-      text+=this.MilliSecondsToString(sub[i]["end"])+"\n";
+      text+=this.MilliSecondsToString(sub[i]["end"], true)+"\n";
       text+=sub[i]["text"]+"\n\n";
   }
   return text;
@@ -233,7 +239,7 @@ function displaySubtitles_sync(){
 
   function get_timein(i){
     if (i>=0 && i<subs.length && subs[i].start>0){
-      return MilliSecondsToString(subs[i].start);
+      return MilliSecondsToString(subs[i].start, false);
     } else {
       return "";
     }
