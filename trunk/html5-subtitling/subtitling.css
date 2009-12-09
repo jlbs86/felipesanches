@@ -29,16 +29,26 @@
   background: #dd8
 }
 
-.time_in{
+.time_in
+{
   font-size: xx-small;
   position:absolute;
   margin-top:2px;
   margin-left:2em;
 } 
 
+.time_out
+{
+  font-size: xx-small;
+  position:absolute;
+  margin-top:2px;
+  margin-left:438px;
+} 
+
 a {
   color:#aaa;
 }
+
 video
 {
   height:290px;

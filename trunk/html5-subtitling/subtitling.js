@@ -5,6 +5,7 @@ var current_subtitle = null;
 var current_title_sync;
 var subtitles_textbox = [];
 var subtitles_time_in = [];
+var subtitles_time_out = [];
 var autoskipback;
 var autoskipback_ammount;
 var autoskip_timeout;
@@ -237,19 +238,27 @@ function displaySubtitles_sync(){
     return (title == "") ? "[silence]" : title;
   }
 
-  function get_timein(i){
+  function get_time_in(i){
     if (i>=0 && i<subs.length && subs[i].start>0){
       return MilliSecondsToString(subs[i].start, false);
     } else {
       return "";
     }
-    return "&nbsp;";
+  }
+
+  function get_time_out(i){
+    if (i>=0 && i<subs.length && subs[i].end>0){
+      return MilliSecondsToString(subs[i].end, false);
+    } else {
+      return "";
+    }
   }
 
   var i = current_title_sync - 1;
   for (index in subtitles_textbox){
     subtitles_textbox[index].innerHTML = get_title_or_silence(index-2 + i);
-    subtitles_time_in[index].innerHTML = get_timein(index-2 + i);
+    subtitles_time_in[index].innerHTML = get_time_in(index-2 + i);
+    subtitles_time_out[index].innerHTML = get_time_out(index-2 + i);
   }
   subtitles_p.innerHTML = check_and_prepare_for_double_line(get_title(i));
 }
@@ -315,11 +324,17 @@ function load(event){
   subtitles_textbox.push(document.getElementById("title_4"));
   subtitles_textbox.push(document.getElementById("title_5"));
 
-  subtitles_time_in.push(document.getElementById("time_1"));
-  subtitles_time_in.push(document.getElementById("time_2"));
-  subtitles_time_in.push(document.getElementById("time_3"));
-  subtitles_time_in.push(document.getElementById("time_4"));
-  subtitles_time_in.push(document.getElementById("time_5"));
+  subtitles_time_in.push(document.getElementById("time_in_1"));
+  subtitles_time_in.push(document.getElementById("time_in_2"));
+  subtitles_time_in.push(document.getElementById("time_in_3"));
+  subtitles_time_in.push(document.getElementById("time_in_4"));
+  subtitles_time_in.push(document.getElementById("time_in_5"));
+
+  subtitles_time_out.push(document.getElementById("time_out_1"));
+  subtitles_time_out.push(document.getElementById("time_out_2"));
+  subtitles_time_out.push(document.getElementById("time_out_3"));
+  subtitles_time_out.push(document.getElementById("time_out_4"));
+  subtitles_time_out.push(document.getElementById("time_out_5"));
 
   autoskipback = document.getElementById("autoskipback");
   autoskipback_ammount = document.getElementById("autoskipback-ammount");
