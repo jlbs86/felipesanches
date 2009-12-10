@@ -50,6 +50,7 @@ function color_scale(i){
 function TranscriptWidgetKeyHandler(e){
   if (current_step !=1) return;
   current_line.style.background=color_scale(current_line.value.length);
+  subtitles_p.innerHTML = check_and_prepare_for_double_line(current_line.value);
 
   if (((current_line.value.length > MAXCHARS) /* && e.type == "keypress" */ && e.keyCode == 32) ||
       (e.type == "keydown" && e.keyCode==13)){
