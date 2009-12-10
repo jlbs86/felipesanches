@@ -45,10 +45,10 @@ function load(event){
   function KeyHandler(e){
     current_line.style.background=color_scale(current_line.value.length);
 
-    if (current_line.value.length > MAXCHARS){
+    if (current_line.value.length > MAXCHARS ||
+        e.type == "keydown" && e.keyCode==13){
       current_line = add_line();
     }
-//    out.innerHTML += e.type + " ";
   }
 
   window.addEventListener("keydown", KeyHandler, true);
