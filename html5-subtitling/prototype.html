@@ -21,13 +21,15 @@
         .step3 { display:none }
       </style>
 
-      <script src="subtitling.js" ></script>
+      <script type="text/javascript" src="subtitling.js" ></script>
       <script type="text/javascript" src="javascript/jquery.js"></script>
-
+      <script type="text/javascript" src="transcript-widget.js"></script>
       <script type="text/javascript" src="skins/schmucker/tinyvid.js"></script>
-      <link href="skins/schmucker/tinyvid.css" type="text/css" rel="stylesheet"/>
 
+      <link href="skins/schmucker/tinyvid.css" type="text/css" rel="stylesheet"/>
       <link rel="stylesheet" type="text/css" href="subtitling.css" />
+      <link href="transcript-widget.css" type="text/css" rel="stylesheet"/>
+
     </head>
     <body onload="load(event);">
 
@@ -80,7 +82,8 @@
         <br/>
         <div id="textinput">
           <form>
-            <textarea class="step1" id="titles_textarea"></textarea>
+            <!-- <textarea class="step1" id="titles_textarea"></textarea> -->
+            <div class="step1 transcript_widget" id="inputfields"></div>
           </form>
         </div>
 
@@ -118,6 +121,9 @@
           <h3 class="step1">Step 1: Transcription</h3>
           <h3 class="step2">Step 2: Synching</h3>
           <h3 class="step3">Step 3: Translation</h3>
+
+          <div id="handlers"></div>
+          <br/>
 
           <div class="step3">We still need a mockup for this step</div>
 
@@ -164,6 +170,8 @@
             <input class="step2 previousbutton" type=button value="Previous Step: Transcription" onclick="step1();"/>
 
             <input class="step3 previousbutton" type=button value="Previous Step: Syncing" onclick="step2();"/>
+  
+<div id="debug"></div>
 
           </form>
       </div>

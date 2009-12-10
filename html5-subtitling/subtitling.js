@@ -10,6 +10,7 @@ var autoskipback;
 var autoskipback_ammount;
 var autoskip_timeout;
 var video;
+var holdingkey_string = "<b>key handler events:</b><br/>";
 var holdingkey=false;
 var subtitles_p;
 var current_step=1;
@@ -141,7 +142,21 @@ function step1(){
 }
 
 function step2(){
-  var transcript = document.getElementById("titles_textarea").value;
+  var input_fields = document.getElementById("inputfields");
+  var transcript = "";
+  var node;
+
+  for (var i in input_fields.childNodes){
+    node = input_fields.childNodes[i];
+    if (node.className == "separator"){
+      transcript += "\n";
+    }
+
+    if (node.tagName == "INPUT"){
+      transcript += node.value + "\n"; 
+    }
+  }
+
   if (current_step==1){
     var src = video.currentSrc;
 //    if (!src) src = video.getElementsByTagName("source")[0].src;
@@ -336,6 +351,8 @@ function load(event){
   subtitles_time_out.push(document.getElementById("time_out_4"));
   subtitles_time_out.push(document.getElementById("time_out_5"));
 
+  holdingkey_string = document.getElementById("handlers");
+
   autoskipback = document.getElementById("autoskipback");
   autoskipback_ammount = document.getElementById("autoskipback-ammount");
   autoskipback_interval = document.getElementById("autoskipback-interval");
@@ -355,8 +372,6 @@ function load(event){
   };
 
   function KeyUpHandler(event){
-    holdingkey = false;
-
     var tap_key = select_key(document.getElementById("taphotkey").value);
 
     if (event.which == tap_key){
@@ -371,13 +386,9 @@ function load(event){
         current_title_sync++;
       }
     }
-
   }
 
   function KeyDownHandler(event){
-    if (holdingkey==true) return;
-    holdingkey = true;
-
     var rewind_key = select_key(document.getElementById("rewindhotkey").value);
     var playpause_key = select_key(document.getElementById("playpausehotkey").value);
 
@@ -399,10 +410,10 @@ function load(event){
       event.preventDefault();
       event.stopPropagation();
     }
-
-  };
+  }
 
   window.addEventListener("keydown", KeyDownHandler, true);
   window.addEventListener("keyup", KeyUpHandler, true);
-  
+
+  init_transcript_widget(event);  
 }

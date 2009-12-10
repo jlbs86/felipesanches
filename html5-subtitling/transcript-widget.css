@@ -1,7 +1,16 @@
 .transcript_widget input
 {
-  width: 400px;
+  width:500px;
   padding: 5px;
   border: none;
   border-bottom:solid 1px #888;
+}
+
+.transcript_widget {
+  padding:6px;
+  width: 500px;
+  height: 200px;
+  background: #ffd;
+  overflow-x:hidden;
+  overflow-y:auto;
 }
