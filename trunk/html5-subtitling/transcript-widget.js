@@ -1,11 +1,25 @@
 var current_line = null;
 var input_fields = null;
-var MAXCHARS = 60;
+var MAXCHARS = 100;
 var transcript_disabled = false;
 
 function add_line(){
-  if (current_line)
+  if (current_line){
     current_line.style.background = "#ffd";
+
+/*
+//insert a silence marker:
+
+    if (current_line.value.length==0){
+      var silence = document.createElement("p");
+      silence.innerHTML="silence";
+      current_line.parentNode.insertBefore(document.createElement("br"), current_line);
+      current_line.parentNode.insertBefore(silence, current_line);
+
+      return current_line;
+    }
+*/
+  }
 
   var line = document.createElement("input");
   line.setAttribute("type", "text");
@@ -49,8 +63,12 @@ function TranscriptWidgetKeyHandler(e){
       line = line.previousSibling;
     }
 
-    if (line) current_line = line;
-    current_line.focus();
+    if (line){
+      current_line.style.background = "#ffd";
+      current_line = line;
+      current_line.focus();
+    }
+
   }
 
   if (e.type == "keydown" && e.keyCode == 40){//down-arrow
@@ -59,8 +77,11 @@ function TranscriptWidgetKeyHandler(e){
       line = line.nextSibling;
     }
 
-    if (line) current_line = line;
-    current_line.focus();
+    if (line){
+      current_line.style.background = "#ffd";
+      current_line = line;
+      current_line.focus();
+    }
   }
 
 }
