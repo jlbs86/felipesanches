@@ -118,60 +118,95 @@
       </div>
 
       <div class="rightcolumn">
-          <h3 class="step1">Step 1: Transcription</h3>
-          <h3 class="step2">Step 2: Synching</h3>
-          <h3 class="step3">Step 3: Translation</h3>
 
-          <div id="handlers"></div>
-          <br/>
+          <div class="step1">
+            <h4>Step 1: Transcription</h4>
+            <i style="font-size:x-small">In this step, you'll be typing a transcript containing everything spoken in the video.</i>
+            <span style="font-size:small">
+              <ul>
+                <li>When people start speaking, type all words they say.</li>
+                <li>Hit <b>[ENTER]</b> after each subtitle.</li>
+                <li>The video will get ahead of you. Use the <b>[CTRL]</b> key to skip back 4 seconds.</li>
+              </ul>
+              <h4>Tips:</h4>
+              <ul>
+                <li>Don't worry about timing, we'll take care of that in the next step. Just type!</li>
+                <li>Hit [enter] twice for silence, if there's a break in the dialog.</li>
+                <li>Don't make any subtitles too long! One line (in the entry area) is about right.</li>
+              </ul>
+            </span>
+            <br/><br/>
+          </div>
 
-          <div class="step3">We still need a mockup for this step</div>
+          <div class="step2">
+            <h4>Step 2: Synching</h4>
+            <i style="font-size:x-small">Now, you'll synchronize the subtitles that you have transcribed in the previous step.</i>
+            <span style="font-size:small">
+              <ul>
+                <li>Hit <b>[SPACEBAR]</b> when the first line should appear on screen.</li>
+                <li>Everytime you hit [SPACEBAR] the next line is displayed, until the end of the transcribed lines.</li>
+              </ul>
+              <h4>Tips:</h4>
+              <ul>
+                <li>You still can use the <b>[CTRL]</b> key to skip back 4 seconds and watch the movie with the subtitles you have synchronized so far.</li>
+              </ul>
+            </span>
 
-          <form>
-            <div class="step1and2">
+          </div>
 
-              <select style="display:none" id="rewindhotkey">
-                <option SELECTED>CTRL</option>
-                <option>[</option>
-                <option>]</option>
-                <option>|</option>
-              </select>
+          <div class="step3">
+            <h4>Step 3: Translation</h4>
+            <i style="font-size:x-small">We still need a mockup for this step.</i>
+          </div>
 
-            <b>CTRL:</b> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+
+            <form>
+            <div class="hotkeybox">
+              <div class="step1and2">
+
+                <select style="display:none" id="rewindhotkey">
+                  <option SELECTED>CTRL</option>
+                  <option>[</option>
+                  <option>]</option>
+                  <option>|</option>
+                </select>
+
+              <b>CTRL:</b> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+              </div>
+
+              <div class="step1and2">
+                <select style="display:none" id="playpausehotkey">
+                  <option>CTRL</option>
+                  <option>[</option>
+                  <option>]</option>
+                  <option SELECTED>|</option>
+                </select>
+
+              <b>Backslash:</b> Play/Pause<br/>
+              </div>
+
+              <div class="step1">
+                <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds<br/>
+              </div>
+
+              <input class="step1 nextbutton" type=button value="Next Step: Syncing" onclick="step2();"/>
+
+              <div class="step2">
+                <select style="display:none" id="taphotkey">
+                  <option>CTRL</option>
+                  <option>[</option>
+                  <option>]</option>
+                  <option>|</option>
+                  <option SELECTED>SPACEBAR</option>
+                </select>
+
+                <b>SPACEBAR:</b> Set Next Subtitle
+              </div>
+
+              <a id="transcript_wiki" href="#">See transcript in wiki</a> / <a id="SRT_wiki" href="#">See subtitles in wiki</a><br/>
+              <div class="step1">New video: <input type="text" onchange="document.location='prototype.html?videourl='+this.value"></input><br/></div>
+
             </div>
-
-            <div class="step1and2">
-              <select style="display:none" id="playpausehotkey">
-                <option>CTRL</option>
-                <option>[</option>
-                <option>]</option>
-                <option SELECTED>|</option>
-              </select>
-
-            <b>Backslash:</b> Play/Pause<br/>
-            </div>
-
-            <div class="step1">
-              <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds (bootleg slow-mo)<br/>
-            </div>
-
-            <input class="step1 nextbutton" type=button value="Next Step: Syncing" onclick="step2();"/>
-
-            <div class="step2">
-              <select style="display:none" id="taphotkey">
-                <option>CTRL</option>
-                <option>[</option>
-                <option>]</option>
-                <option>|</option>
-                <option SELECTED>SPACEBAR</option>
-              </select>
-
-            <b>SPACEBAR:</b> Set Next Subtitle
-            </div>
-
-            <div class="step1">New video: <input type="text" onchange="document.location='prototype.html?videourl='+this.value"></input><br/></div>
-            <a id="transcript_wiki" href="#">See transcript in wiki</a><br/>
-            <a id="SRT_wiki" href="#">See subtitles in wiki</a><br/>
 
             <input class="step2 nextbutton" type=button value="Next Step: Translate" onclick="step3();"/>
             <input class="step2 previousbutton" type=button value="Previous Step: Transcription" onclick="step1();"/>
