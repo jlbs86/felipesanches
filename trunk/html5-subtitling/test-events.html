@@ -1,0 +1,28 @@
+<html>
+<body>
+<div id="f"></div>
+
+<script>
+
+var f = document.getElementById("f"); 
+
+function KeyDownHandler(event){
+  f.innerHTML += "<span style='color:red'>down</span> ";
+}
+
+function KeyUpHandler(event){
+  f.innerHTML += "<span style='color:blue'>up</span> ";
+}
+
+function KeyPressHandler(event){
+  f.innerHTML += "<span style='color:green'>press</span> ";
+}
+
+  window.addEventListener("keydown", KeyDownHandler, true);
+  window.addEventListener("keyup", KeyUpHandler, true);
+  window.addEventListener("keypress", KeyPressHandler, true);
+</script>
+
+</body>
+</html>
+
