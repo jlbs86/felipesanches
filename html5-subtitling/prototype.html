@@ -129,21 +129,26 @@
 
           <form>
             <div class="step1and2">
-              <select id="rewindhotkey">
+
+              <select style="display:none" id="rewindhotkey">
                 <option SELECTED>CTRL</option>
                 <option>[</option>
                 <option>]</option>
                 <option>|</option>
-              </select> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
+              </select>
+
+            <b>CTRL:</b> Rewind <input id="rewindsecs" type=number min=1 value=4 /> seconds<br/>
             </div>
 
             <div class="step1and2">
-              <select id="playpausehotkey">
+              <select style="display:none" id="playpausehotkey">
                 <option>CTRL</option>
                 <option>[</option>
                 <option>]</option>
                 <option SELECTED>|</option>
-              </select> Play/Pause<br/>
+              </select>
+
+            <b>Backslash:</b> Play/Pause<br/>
             </div>
 
             <div class="step1">
