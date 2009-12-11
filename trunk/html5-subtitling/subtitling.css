@@ -20,7 +20,7 @@
   position:absolute;
   top:340px;
   width:488px;
-  height:200px;
+  height:206px;
 }
 
 .current_title
@@ -92,7 +92,17 @@ video
 
 input[type=number]
 {
-  width:2em;
+  width:1.2em;
+  padding:2px;
+  background: #ffd;
+  border:none;
+}
+
+input[type=text]
+{
+  background: #ffd;
+  border:none;
+  width:70%;
 }
 
 .leftcolumn
@@ -147,11 +157,11 @@ body {
   float: right;
   padding: 10px;
   width: 350px;
-  height: 521px;
+  height: 540px;
   background-color: #606060;
   color: #efefef;
   border: 0px solid black;
-  line-height:200%;
+  line-height:100%;
   margin-left: 300px;
   position: relative;
 }
@@ -160,7 +170,13 @@ body {
   width: 900px;
   height: 600px;
   margin: auto;
+}
 
+.hotkeybox {
+  background: #333;
+  padding: 5px;
+  line-height: 200%;
+  font-size: small;
 }
 
 #titles_textarea {
