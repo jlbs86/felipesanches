@@ -139,6 +139,10 @@ function step1(){
   document.getElementById("step1css").disabled = false;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = true;
+
+  document.getElementById("step1tab").setAttribute("class", "tab selected");
+  document.getElementById("step2tab").setAttribute("class", "tab");
+  document.getElementById("step3tab").setAttribute("class", "tab");
 }
 
 function step2(){
@@ -167,6 +171,10 @@ function step2(){
   document.getElementById("step2css").disabled = false;
   document.getElementById("step3css").disabled = true;
 
+  document.getElementById("step1tab").setAttribute("class", "tab");
+  document.getElementById("step2tab").setAttribute("class", "tab selected");
+  document.getElementById("step3tab").setAttribute("class", "tab");
+
   var titles = transcript.split('\n');
   var subs = [];
   for (i in titles){
@@ -194,6 +202,10 @@ function step3(){
   document.getElementById("step1css").disabled = true;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = false;
+
+  document.getElementById("step1tab").setAttribute("class", "tab");
+  document.getElementById("step2tab").setAttribute("class", "tab");
+  document.getElementById("step3tab").setAttribute("class", "tab selected");
 }
 
 function check_and_prepare_for_double_line(text){
