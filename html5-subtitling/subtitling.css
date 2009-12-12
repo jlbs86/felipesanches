@@ -12,6 +12,15 @@
   height:200px;
 }
 
+.leftcolumn
+{
+  top: 10px;
+  left: 10px;
+  width: 900px;
+  height: 600px;
+  margin: auto;
+}
+
 #titles_list
 {
   background: #ddd;
@@ -105,14 +114,6 @@ input[type=text]
   width:70%;
 }
 
-.leftcolumn
-{
-  top: 10px;
-  left: 10px;
-  width: 60%;
-  height: 95%;
-}
-
 .rightcolumn
 {
   position:absolute;
@@ -166,12 +167,6 @@ body {
   position: relative;
 }
 
-.leftcolumn {
-  width: 900px;
-  height: 600px;
-  margin: auto;
-}
-
 .hotkeybox {
   background: #333;
   padding: 5px;
@@ -183,9 +178,4 @@ body {
 	font-family: helvetica, sans-serif;
 	line-height: 1.5em;
 }
-
-
-/*  ----     */
-
-
 
