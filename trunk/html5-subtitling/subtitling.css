@@ -6,6 +6,42 @@
   top: 340px;
 }
 
+.tabs
+{
+  position:absolute;
+  top: 530px;
+}
+
+.tab{
+  position:absolute;
+  background:#888;
+  border:1px solid black;
+  height:30px;
+  width:160px;
+  padding:4px;
+  text-align: center;
+}
+
+.selected{
+  background:#bbb;
+  height:40px;
+}
+
+#step1tab
+{
+  left: 0px;
+}
+
+#step2tab
+{
+  left: 171px;
+}
+
+#step3tab
+{
+  left: 342px;
+}
+
 .leftcolumn #textinput textarea
 {
   width:512px;
@@ -29,7 +65,7 @@
   position:absolute;
   top:340px;
   width:488px;
-  height:206px;
+  height:164px;
 }
 
 .current_title
