@@ -50,8 +50,9 @@
   width:100px;
   height:25px;
   text-align:center;
-  background:green;
+  background:#77bb40;
   color:white;
+  font-weight:bold;
   padding:12px;
   border: 1px solid black; 
 }
