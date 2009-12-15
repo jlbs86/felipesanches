@@ -7,18 +7,15 @@ function add_line(){
   if (current_line){
     current_line.style.background = "#ffd";
 
-/*
-//insert a silence marker:
-
+    //insert a silence marker:
     if (current_line.value.length==0){
       var silence = document.createElement("p");
-      silence.innerHTML="silence";
-      current_line.parentNode.insertBefore(document.createElement("br"), current_line);
+      silence.innerHTML="(silence)";
+      silence["className"] = "silence_marker";
       current_line.parentNode.insertBefore(silence, current_line);
 
       return current_line;
     }
-*/
   }
 
   var line = document.createElement("input");

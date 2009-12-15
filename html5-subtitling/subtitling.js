@@ -152,7 +152,7 @@ function step2(){
 
   for (var i in input_fields.childNodes){
     node = input_fields.childNodes[i];
-    if (node.className == "separator"){
+    if (node.className == "silence_marker"){
       transcript += "\n";
     }
 
