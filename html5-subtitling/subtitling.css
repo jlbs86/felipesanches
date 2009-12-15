@@ -42,6 +42,20 @@
   left: 342px;
 }
 
+.nextstep
+{
+  position:absolute;
+  top: 600px;
+  left:197px;
+  width:100px;
+  height:25px;
+  text-align:center;
+  background:green;
+  color:white;
+  padding:12px;
+  border: 1px solid black; 
+}
+
 .leftcolumn #textinput textarea
 {
   width:512px;
@@ -164,26 +178,12 @@ input[type=text]
   line-height:200%
 }
 
-.previousbutton
-{
-  position:absolute;
-  bottom:15px;
-}
-
-.nextbutton
-{
-  position:absolute;
-  bottom:15px;
-  right:15px;
-}
-
-
 body
 {
   background-color: #222;
 }
 
-/* NPR style changes -- feel free to remove */
+/* NPR style changes -- TODO: merge them better */
 
 body {
 	font-family: helvetica, sans-serif;

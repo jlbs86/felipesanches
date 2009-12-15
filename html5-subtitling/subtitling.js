@@ -208,6 +208,17 @@ function step3(){
   document.getElementById("step3tab").setAttribute("class", "tab selected");
 }
 
+function next_step(){
+  switch(current_step){
+    case 1:
+      step2();
+      break;
+    case 2:
+      step3();
+      break;
+  }
+}
+
 function check_and_prepare_for_double_line(text){
   var parts = text.split(' ');
   var counter = 0;

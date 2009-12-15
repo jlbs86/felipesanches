@@ -79,6 +79,9 @@
           <div id="subtitles"></div>
         </div>
 
+<!-- shouldnt we have this closing </div> here? -->
+<!--      </div> -->
+
         <br/>
         <div id="textinput">
           <form>
@@ -120,6 +123,8 @@
           <div class="tab" id="step2tab" onclick="step2();">(2)&nbsp;Syncing</div>
           <div class="tab" id="step3tab" onclick="step3();">(3)&nbsp;Translation</div>
         </div>
+
+        <div class="nextstep" onclick="next_step();">Next Step >></div>
 
       </div>
 
@@ -195,8 +200,6 @@
                 <input id="autoskipback" type=checkbox value=false /> Skip Back <input id="autoskipback-ammount" type=number min=1 value=2 /> seconds every <input id="autoskipback-interval" type=number min=1 value=4 /> seconds<br/>
               </div>
 
-              <input class="step1 nextbutton" type=button value="Next Step: Syncing" onclick="step2();"/>
-
               <div class="step2">
                 <select style="display:none" id="taphotkey">
                   <option>CTRL</option>
@@ -213,13 +216,6 @@
               <div class="step1">New video: <input type="text" onchange="document.location='prototype.html?videourl='+this.value"></input><br/></div>
 
             </div>
-
-            <input class="step2 nextbutton" type=button value="Next Step: Translate" onclick="step3();"/>
-            <input class="step2 previousbutton" type=button value="Previous Step: Transcription" onclick="step1();"/>
-
-            <input class="step3 previousbutton" type=button value="Previous Step: Syncing" onclick="step2();"/>
-  
-<div id="debug"></div>
 
           </form>
       </div>
