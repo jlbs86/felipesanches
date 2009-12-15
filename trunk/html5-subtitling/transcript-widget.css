@@ -14,3 +14,12 @@
   overflow-x:hidden;
   overflow-y:auto;
 }
+
+.silence_marker
+{
+  text-align: center;
+  color:#aaa;
+  margin:0;
+  border: none;
+  border-bottom:solid 1px #888;
+}
