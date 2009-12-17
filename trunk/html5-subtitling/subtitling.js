@@ -10,8 +10,8 @@ var autoskipback;
 var autoskipback_ammount;
 var autoskip_timeout;
 var video;
-var holdingkey_string = "<b>key handler events:</b><br/>";
-var holdingkey=false;
+var holding_key=false;
+var hold_start;
 var subtitles_p;
 var current_step=1;
 
@@ -260,6 +260,8 @@ function displaySubtitles_sync(){
 
   var subs = current_subtitle["content"];
   var currentTime = Math.round(video.currentTime * 1000);
+
+  if (holding_key) currentTime = hold_start;
   if (subs[0].start>=0 && currentTime < subs[0].start) current_title_sync = 0;
 
   for (i=0; i < subs.length; i++){
@@ -332,6 +334,48 @@ function autoskip_clicked(event){
   if (autoskipback.checked) setup_autoskip();
 }
 
+function reset_titles(start, end){
+  if (!current_subtitle) return;
+
+  var subs = current_subtitle["content"];
+
+  for (i=0; i < subs.length; i++){
+    if ((subs[i].start > start) && (subs[i].start < end)){
+      subs[i].start = -1;
+    }
+
+    if ((subs[i].end > start) && (subs[i].end < end)){
+      subs[i].end = -1;
+    }
+  }
+
+  var now = Math.round(video.currentTime * 1000);
+  for (i=0; i < subs.length; i++){
+    if ((subs[i].start != -1) && (now >= subs[i].start) && ((now < subs[i].end) || (subs[i].end==-1))){
+      current_title_sync = i+1;
+      break;
+    }
+  }
+
+  if (current_title_sync>0) subs[current_title_sync-1].end = now;
+  if (current_title_sync<subs.length){
+    subs[current_title_sync].start = now;
+    current_title_sync++;
+  }
+
+}
+
+function HOLD_handle_keydown(event){
+  if (!holding_key) hold_start = Math.round(video.currentTime * 1000);
+
+  holding_key=true;
+}
+
+function HOLD_handle_keyup(event){
+  holding_key=false;
+  reset_titles(hold_start, Math.round(video.currentTime * 1000));
+}
+
 function load(event){
   step1();
 
@@ -383,8 +427,6 @@ function load(event){
   subtitles_time_out.push(document.getElementById("time_out_4"));
   subtitles_time_out.push(document.getElementById("time_out_5"));
 
-  holdingkey_string = document.getElementById("handlers");
-
   autoskipback = document.getElementById("autoskipback");
   autoskipback_ammount = document.getElementById("autoskipback-ammount");
   autoskipback_interval = document.getElementById("autoskipback-interval");
@@ -404,6 +446,8 @@ function load(event){
   };
 
   function KeyUpHandler(event){
+    HOLD_handle_keyup(event);
+
     var tap_key = select_key(document.getElementById("taphotkey").value);
 
     if (event.which == tap_key){
@@ -421,6 +465,19 @@ function load(event){
   }
 
   function KeyDownHandler(event){
+    HOLD_handle_keydown(event);
+
+/*
+    if (event.which == 74){ //J
+      HOLD_handle_keydown(event);
+    }
+
+    if (event.which == 75){ //K
+      HOLD_handle_keyup(event);
+    }
+*/
+
+
     var rewind_key = select_key(document.getElementById("rewindhotkey").value);
     var playpause_key = select_key(document.getElementById("playpausehotkey").value);
 
