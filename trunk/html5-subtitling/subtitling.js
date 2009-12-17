@@ -357,11 +357,13 @@ function reset_titles(start, end){
     }
   }
 
+/*
   if (current_title_sync>0) subs[current_title_sync-1].end = now;
   if (current_title_sync<subs.length){
     subs[current_title_sync].start = now;
     current_title_sync++;
   }
+*/
 
 }
 
