@@ -28,9 +28,9 @@ function add_line(){
 }
 
 function hex(i){
-  i = Math.floor(i);
-  var code = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'];
-  return code[i];
+  if (i>15) return 'F';
+  if (i<0) return '0';
+  return ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'][Math.floor(i)];
 }
 
 function color_scale(i){
