@@ -143,8 +143,13 @@ function encode_srt(sub){
   return text;
 }
 
+function load_article(){
+	return;
+}
+
 function step1(){
   current_step=1;
+
   document.getElementById("step1css").disabled = false;
   document.getElementById("step2css").disabled = true;
   document.getElementById("step3css").disabled = true;
@@ -379,8 +384,6 @@ function HOLD_handle_keyup(event){
 }
 
 function load(event){
-  step1();
-
   video = document.getElementById("video");
   subtitles_p = document.getElementById("subtitles");
 
@@ -507,4 +510,16 @@ function load(event){
   window.addEventListener("keyup", KeyUpHandler, true);
 
   init_transcript_widget(event);  
+
+	var src = video.currentSrc;
+	var article = load_article("Transcript/URL/"+src)
+	if (article){
+		article = article.split("\n");
+		for (i in article){
+			current_line.value = article[i];
+			current_line = add_line();
+		}
+	}
+
+  step1();
 }
