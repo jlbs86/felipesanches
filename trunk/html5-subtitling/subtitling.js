@@ -14,6 +14,7 @@ var holding_key=false;
 var hold_start;
 var subtitles_p;
 var current_step=1;
+var options = {};
 
 //---------------
 function sendGETRequest(url, callback) {
@@ -144,6 +145,24 @@ function encode_srt(sub){
 }
 
 function load_article(){
+	if (options["faketranscript"]=="true"){
+	return "\
+hi, I'm Asa Dotzler from Mozilla and I'm here to show you\n\
+how simple it is to switch to Firefox\n\
+just go to getfirefox.com with your current web browser\n\
+and click the green download button on the website\n\
+to save the Firefox setup file to your desktop\n\
+close the browser window and double-click the Firefox setup icon to start the install \n\
+\n\
+then follow the simple steps on the screen and Firefox will be installed on your computer\n\
+\n\
+Firefox can even import your personalized settings from your current webbrowser,\n\
+for example your favorites and stored passwords\n\
+\n\
+finish the installation and you're now searching the web using firefox,\n\
+the fast, secure, and customizable web browser from Mozilla.";
+	}
+
 	return;
 }
 
@@ -391,28 +410,27 @@ function load(event){
 
 //This is more than what we need, but is good because we
 // can eventually pass other useful attributes in the url
-  var dict = {};
 
   if (url_fragments.length>1){
     var params = url_fragments[1].split("&");
     if (params.length==1){
       var pair = String(params).split("=");
-      dict[pair[0]] = pair[1];
+      options[pair[0]] = pair[1];
     } else {
       for (var i in params){ 
         var pair = params[i].split("=");
-        dict[pair[0]] = pair[1];
+        options[pair[0]] = pair[1];
       }
     }
   }
 
-  if (!dict["videourl"]){
-    dict["videourl"] = "http://videos.mozilla.org/firefox3/switch/switch.ogg";
+  if (!options["videourl"]){
+    options["videourl"] = "http://videos.mozilla.org/firefox3/switch/switch.ogg";
   }
 
-  video.src = dict["videourl"];
-  document.getElementById("transcript_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Transcript/URL/"+dict["videourl"]);
-  document.getElementById("SRT_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Subtitles/URL/"+dict["videourl"]);
+  video.src = options["videourl"];
+  document.getElementById("transcript_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Transcript/URL/"+options["videourl"]);
+  document.getElementById("SRT_wiki").setAttribute("href", SUBTITLES_SERVER + "/index.php?title=Subtitles/URL/"+options["videourl"]);
 
   subtitles_textbox.push(document.getElementById("title_1"));
   subtitles_textbox.push(document.getElementById("title_2"));
