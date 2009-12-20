@@ -1,0 +1,50 @@
+Index: subtitling.js
+===================================================================
+--- subtitling.js	(revisão 138)
++++ subtitling.js	(cópia de trabalho)
+@@ -144,7 +144,21 @@
+ }
+ 
+ function load_article(){
+-	return;
++	return "\
++hi, I'm Asa Dotzler from Mozilla and I'm here to show you\n\
++how simple it is to switch to Firefox\n\
++just go to getfirefox.com with your current web browser\n\
++and click the green download button on the website\n\
++to save the Firefox setup file to your desktop\n\
++close the browser window and double-click the Firefox setup icon to start the install \n\
++\n\
++then follow the simple steps on the screen and Firefox will be installed on your computer\n\
++\n\
++Firefox can even import your personalized settings from your current webbrowser,\n\
++for example your favorites and stored passwords\n\
++\n\
++finish the installation and you're now searching the web using firefox,\n\
++the fast, secure, and customizable web browser from Mozilla.";
+ }
+ 
+ function step1(){
+@@ -512,14 +526,14 @@
+   init_transcript_widget(event);  
+ 
+ 	var src = video.currentSrc;
+-	var article = load_article("Transcript/URL/"+src)
+-	if (article){
+-		article = article.split("\n");
+-		for (i in article){
+-			current_line.value = article[i];
+-			current_line = add_line();
+-		}
+-	}
++	load_article("Transcript/URL/"+src,
++		function(article){
++			article = article.split("\n");
++			for (i in article){
++				current_line.value = article[i];
++				current_line = add_line();
++			}
++		});
+ 
+   step1();
+ }
