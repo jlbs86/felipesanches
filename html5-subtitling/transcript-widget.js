@@ -13,6 +13,7 @@ function add_line(){
       silence.innerHTML="(silence)";
       silence["className"] = "silence_marker";
       current_line.parentNode.insertBefore(silence, current_line);
+			current_line.focus();
       return current_line;
     }
   }
