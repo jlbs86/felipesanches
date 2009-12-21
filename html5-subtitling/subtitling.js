@@ -145,24 +145,7 @@ function encode_srt(sub){
 }
 
 function load_article(){
-	if (options["faketranscript"]=="true"){
-	return "\
-hi, I'm Asa Dotzler from Mozilla and I'm here to show you\n\
-how simple it is to switch to Firefox\n\
-just go to getfirefox.com with your current web browser\n\
-and click the green download button on the website\n\
-to save the Firefox setup file to your desktop\n\
-close the browser window and double-click the Firefox setup icon to start the install \n\
-\n\
-then follow the simple steps on the screen and Firefox will be installed on your computer\n\
-\n\
-Firefox can even import your personalized settings from your current webbrowser,\n\
-for example your favorites and stored passwords\n\
-\n\
-finish the installation and you're now searching the web using firefox,\n\
-the fast, secure, and customizable web browser from Mozilla.";
-	}
-
+//TODO: implement-me!
 	return;
 }
 
@@ -218,11 +201,56 @@ function step2(){
 
   //restart playback:
   video.currentTime = 0;
+	displaySubtitles_sync(0);
 
   video.addEventListener('timeupdate', function(e){
     displaySubtitles_sync(e.target.currentTime*1000)
   }, false);
 
+}
+
+function fake_transcript_mode(){
+
+  current_step=2;
+  document.getElementById("step1css").disabled = true;
+  document.getElementById("step2css").disabled = false;
+  document.getElementById("step3css").disabled = true;
+
+  document.getElementById("step1tab").setAttribute("class", "tab");
+  document.getElementById("step2tab").setAttribute("class", "tab selected");
+  document.getElementById("step3tab").setAttribute("class", "tab");
+
+	var transcript= "\
+hi, I'm Asa Dotzler from Mozilla and I'm here to show you\n\
+how simple it is to switch to Firefox\n\
+just go to getfirefox.com with your current web browser\n\
+and click the green download button on the website\n\
+to save the Firefox setup file to your desktop\n\
+close the browser window and double-click the Firefox setup icon to start the install \n\
+\n\
+then follow the simple steps on the screen and Firefox will be installed on your computer\n\
+\n\
+Firefox can even import your personalized settings from your current webbrowser,\n\
+for example your favorites and stored passwords\n\
+\n\
+finish the installation and you're now searching the web using firefox,\n\
+the fast, secure, and customizable web browser from Mozilla.";
+
+  var titles = transcript.split('\n');
+  var subs = [];
+  for (var i in titles){
+    subs.push({"text": titles[i], "start":-1,"end":-1});
+  }
+  current_subtitle = {"content":subs};
+  current_title_sync = 0;
+
+  //restart playback:
+//  video.currentTime = 0;
+	displaySubtitles_sync(0);
+
+  video.addEventListener('timeupdate', function(e){
+    displaySubtitles_sync(e.target.currentTime*1000);
+  }, false);
 }
 
 function step3(){
@@ -539,5 +567,10 @@ function load(event){
 		}
 	}
 
-  step1();
+	if (options["faketranscript"]=="true"){
+		fake_transcript_mode();
+	} else {
+	  step1();
+	}
+
 }
