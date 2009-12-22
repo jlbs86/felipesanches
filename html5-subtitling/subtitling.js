@@ -300,6 +300,17 @@ function check_and_prepare_for_double_line(text){
   return "<p class='subtitles subtitleslines"+lines+"'>"+result+"</p>";
 }
 
+function highlight_current_title(i){
+	var nodes = document.getElementById("inputfields").childNodes;
+	for (var n in nodes){
+		if (n%2==0){//div nodes
+			$(nodes[n]).removeClass("current_title");
+		}
+	}
+
+	$(nodes[2*i]).addClass("current_title");
+}
+
 //TODO: use the value passed to this function!
 function displaySubtitles_sync(current_time){
   if (current_subtitle == null){
@@ -365,12 +376,12 @@ function displaySubtitles_sync(current_time){
   }
   subtitles_p.innerHTML = check_and_prepare_for_double_line(get_title(i));
 
-			var node = document.getElementById("inputfields").childNodes[2*i].firstChild;
-//			node.style.background = "blue"; 
-//			document.getElementById("debug").innerHTML = node.value + " " + i + "<br/>";
-			$("#inputfields").scrollTo($(node), 100, {offset:-100});
-//			$("#inputfields div:eq("+i+") input").css("background-color","green");
-//			$("#inputfields").scrollTo($("#inputfields div:eq("+i+") input"), 800);
+	try{
+		highlight_current_title(i);
+
+		var node = document.getElementById("inputfields").childNodes[2*i].firstChild;
+		$("#inputfields").scrollTo($(node), 0, {offset:-100});
+	} catch(e){}
 
 }
 

@@ -36,3 +36,15 @@
   border: none;
   border-bottom:solid 1px #888;
 }
+
+div.current_title[silence="false"] input{
+	background-color:#444 !important;
+	color:#ff8 !important;
+	font-size:larger;
+}
+
+div.current_title[silence="true"] p{
+	background-color:#444 !important;
+	color:#ff8 !important;
+	font-size:larger;
+}
