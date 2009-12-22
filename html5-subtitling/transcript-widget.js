@@ -6,24 +6,14 @@ var transcript_disabled = false;
 function add_line(){
   if (current_line){
     current_line.style.background = "#ffd";
-
-    //insert a silence marker:
-    if (current_line.value.length==0){
-      var silence = document.createElement("p");
-      silence.innerHTML="(silence)";
-      silence["className"] = "silence_marker";
-      current_line.parentNode.insertBefore(silence, current_line);
-			current_line.focus();
-      return current_line;
-    }
   }
 
-  var line = document.createElement("input");
-  line.setAttribute("type", "text");
-  line.setAttribute("class", "inputline");
+  var line = document.createElement("div");
+	line.innerHTML='<input type="text" class="inputline"></input><p>(silence)</p>';
   input_fields.appendChild(line);
   input_fields.appendChild(document.createElement("br"));
-  line.focus();
+  line.firstChild.focus();
+	line.setAttribute("silence", "true");
   return line;
 }
 
@@ -46,10 +36,10 @@ function color_scale(i){
 
 function TranscriptWidgetKeyHandler(e){
   if (current_step !=1) return;
-  current_line.style.background=color_scale(current_line.value.length);
-  subtitles_p.innerHTML = check_and_prepare_for_double_line(current_line.value);
+  current_line.firstChild.style.background=color_scale(current_line.firstChild.value.length);
+  subtitles_p.innerHTML = check_and_prepare_for_double_line(current_line.firstChild.value);
 
-  if (((current_line.value.length > MAXCHARS) /* && e.type == "keypress" */ && e.keyCode == 32) ||
+  if (((current_line.firstChild.value.length > MAXCHARS) /* && e.type == "keypress" */ && e.keyCode == 32) ||
       (e.type == "keydown" && e.keyCode==13)){
     current_line = add_line();
   }
@@ -57,31 +47,37 @@ function TranscriptWidgetKeyHandler(e){
   var line = current_line;
   if (e.type == "keydown" && e.keyCode == 38){//up-arrow
     line = line.previousSibling;
-    while (line && line.tagName != "INPUT"){
+    while (line && line.tagName != "DIV"){
       line = line.previousSibling;
     }
 
     if (line){
       current_line.style.background = "#ffd";
       current_line = line;
-      current_line.focus();
+      current_line.firstChild.focus();
     }
 
   }
 
   if (e.type == "keydown" && e.keyCode == 40){//down-arrow
     line = line.nextSibling;
-    while (line && line.tagName != "INPUT"){
+    while (line && line.tagName != "DIV"){
       line = line.nextSibling;
     }
 
     if (line){
       current_line.style.background = "#ffd";
       current_line = line;
-      current_line.focus();
+      current_line.firstChild.focus();
     }
   }
 
+  if (e.type == "keyup"){
+		if (current_line.firstChild.value.length==0)
+			current_line.setAttribute("silence", "true");
+		else
+			current_line.setAttribute("silence", "false");
+	}
 }
 
 function init_transcript_widget(event){
