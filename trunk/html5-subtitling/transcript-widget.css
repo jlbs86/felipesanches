@@ -1,12 +1,4 @@
-.transcript_widget input
-{
-  width:500px;
-  padding: 5px;
-  border: none;
-  border-bottom:solid 1px #888;
-}
-
-.transcript_widget {
+#inputfields {
   padding:6px;
   width: 500px;
   height: 176px;
@@ -15,8 +7,29 @@
   overflow-y:auto;
 }
 
-.silence_marker
+#inputfields div input
 {
+  width:500px;
+  padding: 5px;
+  border: none;
+  border-bottom:solid 1px #888;
+}
+
+#inputfields div[silence="true"] input
+{
+	height:0px;
+	border-bottom:none;
+	visibility:none;
+}
+
+#inputfields div[silence="false"] p
+{
+	display:none;
+}
+
+#inputfields div[silence="true"] p
+{
+	display:block;
   text-align: center;
   color:#aaa;
   margin:0;

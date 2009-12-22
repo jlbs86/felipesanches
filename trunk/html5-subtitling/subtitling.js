@@ -168,13 +168,13 @@ function step2(){
 
   for (var i in input_fields.childNodes){
     node = input_fields.childNodes[i];
-    if (node.className == "silence_marker"){
-      transcript += "\n";
-    }
-
-    if (node.tagName == "INPUT"){
-      transcript += node.value + "\n"; 
-    }
+		if (node.tagName == "DIV"){
+		  if (node.getAttribute("silence") == "true"){
+		    transcript += "\n";
+		  } else {
+		    transcript += node.firstChild.value + "\n"; 
+		  }
+		}
   }
 
   if (current_step==1){
@@ -199,12 +199,13 @@ function step2(){
   current_subtitle = {"content":subs};
   current_title_sync = 0;
 
+//alert('current_subtitle["content"].length: '+current_subtitle["content"].length);
   //restart playback:
   video.currentTime = 0;
-	displaySubtitles_sync(0);
+	//displaySubtitles_sync(0);
 
   video.addEventListener('timeupdate', function(e){
-    displaySubtitles_sync(e.target.currentTime*1000)
+    displaySubtitles_sync(e.target.currentTime*1000);
   }, false);
 
 }
@@ -246,7 +247,7 @@ the fast, secure, and customizable web browser from Mozilla.";
 
   //restart playback:
 //  video.currentTime = 0;
-	displaySubtitles_sync(0);
+	//displaySubtitles_sync(0);
 
   video.addEventListener('timeupdate', function(e){
     displaySubtitles_sync(e.target.currentTime*1000);
@@ -299,7 +300,8 @@ function check_and_prepare_for_double_line(text){
   return "<p class='subtitles subtitleslines"+lines+"'>"+result+"</p>";
 }
 
-function displaySubtitles_sync(){
+//TODO: use the value passed to this function!
+function displaySubtitles_sync(current_time){
   if (current_subtitle == null){
     subtitles_textbox[0].innerHTML = "&nbsp;";
     subtitles_textbox[1].innerHTML = "&nbsp;";
@@ -316,7 +318,7 @@ function displaySubtitles_sync(){
   if (holding_key) currentTime = hold_start;
   if (subs[0].start>=0 && currentTime < subs[0].start) current_title_sync = 0;
 
-  for (i=0; i < subs.length; i++){
+  for (var i=0; i < subs.length; i++){
     if ((subs[i].start != -1) && (currentTime >= subs[i].start) && ((currentTime < subs[i].end) || (subs[i].end==-1))){
       current_title_sync = i+1;
       break;
@@ -362,6 +364,14 @@ function displaySubtitles_sync(){
     subtitles_time_out[index].innerHTML = get_time_out(index-2 + i);
   }
   subtitles_p.innerHTML = check_and_prepare_for_double_line(get_title(i));
+
+			var node = document.getElementById("inputfields").childNodes[2*i].firstChild;
+//			node.style.background = "blue"; 
+//			document.getElementById("debug").innerHTML = node.value + " " + i + "<br/>";
+			$("#inputfields").scrollTo($(node), 100, {offset:-100});
+//			$("#inputfields div:eq("+i+") input").css("background-color","green");
+//			$("#inputfields").scrollTo($("#inputfields div:eq("+i+") input"), 800);
+
 }
 
 function setup_autoskip(){
@@ -408,15 +418,6 @@ function reset_titles(start, end){
       break;
     }
   }
-
-/*
-  if (current_title_sync>0) subs[current_title_sync-1].end = now;
-  if (current_title_sync<subs.length){
-    subs[current_title_sync].start = now;
-    current_title_sync++;
-  }
-*/
-
 }
 
 function HOLD_handle_keydown(event){
@@ -517,17 +518,6 @@ function load(event){
 
   function KeyDownHandler(event){
     HOLD_handle_keydown(event);
-
-/*
-    if (event.which == 74){ //J
-      HOLD_handle_keydown(event);
-    }
-
-    if (event.which == 75){ //K
-      HOLD_handle_keyup(event);
-    }
-*/
-
 
     var rewind_key = select_key(document.getElementById("rewindhotkey").value);
     var playpause_key = select_key(document.getElementById("playpausehotkey").value);
