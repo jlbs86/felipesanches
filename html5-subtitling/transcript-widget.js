@@ -14,6 +14,9 @@ function add_line(){
   input_fields.appendChild(document.createElement("br"));
   line.firstChild.focus();
 	line.setAttribute("silence", "true");
+
+	//hack: when user clicks on (pause) the underlying input field should receive focus!
+	line.childNodes[1].onclick = function(e){ e.target.parentNode.firstChild.focus(); }
   return line;
 }
 
