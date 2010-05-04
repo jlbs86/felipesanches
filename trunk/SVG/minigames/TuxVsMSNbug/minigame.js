@@ -234,8 +234,9 @@ function new_tone(n) {
     return function() {audio.play();};
 }
 
-window.boop = new_tone(1);
-window.beep = new_tone(2);
+window.beep = new_tone(1);
+window.boop = new_tone(2);
+window.dang = new_tone(5);
 
 function game_loop(){
 	if(is_paused) return;
@@ -247,10 +248,11 @@ function game_loop(){
 	}
 
 	if (count_ticks%(ticks_per_level[level-1])==0){
-        boop();
+        beep();
+        var play_miss_sound=false;
 		for (i=0;i<5;i++){
 			//count buterflies that were missed (not slapped by tux)
-			if (butterfly[4][i]==1)	miss++;
+			if (butterfly[4][i]==1)	{miss++;play_miss_sound=true};
 
 			//Scroll down the butterflies:
 			for (j=4;j>0;j--){
@@ -262,6 +264,7 @@ function game_loop(){
 			else
 				butterfly[0][i]=0;
 		}
+        if (play_miss_sound) dang();
 
 		for (i=0;i<5;i++){
 			for (j=4;j>0;j--){
@@ -602,10 +605,10 @@ function tux_hit(){
 		turn_sprite_on("hit", position);
 		set_score(score+level);
 		hit++;
-        beep();
+        boop();
 	} else {
 		turn_sprite_on("miss", position);
-        boop();
+        beep();
 	}
 }
 
