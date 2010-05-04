@@ -139,6 +139,104 @@ function pause(){
 	}
 }
 
+(function() {
+
+var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+function base64encode(str) {
+    var out, i, len;
+    var c1, c2, c3;
+
+    len = str.length;
+    i = 0;
+    out = "";
+    while(i < len) {
+	c1 = str.charCodeAt(i++) & 0xff;
+	if(i == len)
+	{
+	    out += base64EncodeChars.charAt(c1 >> 2);
+	    out += base64EncodeChars.charAt((c1 & 0x3) << 4);
+	    out += "==";
+	    break;
+	}
+	c2 = str.charCodeAt(i++);
+	if(i == len)
+	{
+	    out += base64EncodeChars.charAt(c1 >> 2);
+	    out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+	    out += base64EncodeChars.charAt((c2 & 0xF) << 2);
+	    out += "=";
+	    break;
+	}
+	c3 = str.charCodeAt(i++);
+	out += base64EncodeChars.charAt(c1 >> 2);
+	out += base64EncodeChars.charAt(((c1 & 0x3)<< 4) | ((c2 & 0xF0) >> 4));
+	out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >>6));
+	out += base64EncodeChars.charAt(c3 & 0x3F);
+    }
+    return out;
+}
+
+if (!window.base64encode) window.base64encode = base64encode;
+
+})();
+
+var sampleRate = 44100;
+
+function encodeAudio8bit(data) {
+  var n = data.length;
+  var integer = 0, i;
+  
+  // 8-bit mono WAVE header template
+  var header = "RIFF<##>WAVEfmt \x10\x00\x00\x00\x01\x00\x01\x00<##><##>\x01\x00\x08\x00data<##>";
+
+  // Helper to insert a 32-bit little endian int.
+  function insertLong(value) {
+    var bytes = "";
+    for (i = 0; i < 4; ++i) {
+      bytes += String.fromCharCode(value % 256);
+      value = Math.floor(value / 256);
+    }
+    header = header.replace('<##>', bytes);
+  }
+
+  // ChunkSize
+  insertLong(36 + n);
+  
+  // SampleRate
+  insertLong(sampleRate);
+
+  // ByteRate
+  insertLong(sampleRate);
+
+  // Subchunk2Size
+  insertLong(n);
+  
+  // Output sound data
+  for (var i = 0; i < n; ++i) {
+    header += String.fromCharCode(data[i] * 255);
+  }
+  
+  return 'data:audio/wav;base64,' + base64encode(header);
+}
+
+function new_tone(n) {
+    var audio = new Audio();
+    var samples = [];
+    for (var i=0;i<sampleRate/30;i++){
+        samples.push( i%(n*50) > (n*25) ? 0 : 1);
+    }
+
+    audio.setAttribute("src",encodeAudio8bit(samples));
+
+    audio.load();
+    audio.autoplay = false;
+    return function() {audio.play();};
+}
+
+window.boop = new_tone(1);
+window.beep = new_tone(2);
+
 function game_loop(){
 	if(is_paused) return;
 
@@ -149,6 +247,7 @@ function game_loop(){
 	}
 
 	if (count_ticks%(ticks_per_level[level-1])==0){
+        boop();
 		for (i=0;i<5;i++){
 			//count buterflies that were missed (not slapped by tux)
 			if (butterfly[4][i]==1)	miss++;
@@ -503,8 +602,10 @@ function tux_hit(){
 		turn_sprite_on("hit", position);
 		set_score(score+level);
 		hit++;
+        beep();
 	} else {
 		turn_sprite_on("miss", position);
+        boop();
 	}
 }
 
