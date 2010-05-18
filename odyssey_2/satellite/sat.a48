@@ -1,0 +1,137 @@
+; Copyright (C) 1997-1999 by Soeren Gust, sgust@ithh.informationstheater.de
+; Copyright (C) 2010 by Felipe Corrêa da Sanches, juca@members.fsf.org
+
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+	cpu	8048
+
+	org	400h
+
+    include	"bitfuncs.inc"	
+	include	"g7000.h"
+
+	jmp	selectgame	; RESET
+	jmp	irq		; interrupt
+	jmp	timer		; timer
+	jmp	vsyncirq	; VSYNC-interrupt
+	jmp	start		; after selectgame
+	jmp	soundirq	; sound-interrupt
+
+timer	retr			; we don't need timer
+
+start
+	call	gfxoff
+
+;define shapes for the sprites:
+
+    mov r0,#vdc_spr1_shape
+    mov a,#0; use shape #0
+    call setshp
+
+    mov a,#1; use shape #1
+    call setshp
+
+    mov a,#2; use shape #2
+    call setshp
+
+    mov a,#3; use shape #3
+    call setshp
+
+    mov r1,#0
+
+main_loop
+
+    inc r1
+;define positioning of sprites:
+	mov	r0,#vdc_spr0_ctrl
+    mov a,r1
+	movx	@r0,a ;y
+	inc	r0
+    mov a,#6
+	movx	@r0,a ;x
+	inc	r0
+    mov a,#(6*8)
+	movx	@r0,a ;color
+	inc	r0
+	inc	r0
+
+	mov	r0,#vdc_spr1_ctrl
+    mov a,#32
+	movx	@r0,a ;y
+	inc	r0
+    mov a,r1
+	movx	@r0,a ;x
+	inc	r0
+    mov a,#(6*8)
+	movx	@r0,a ;color
+	inc	r0
+	inc	r0
+
+	mov	r0,#vdc_spr2_ctrl
+    mov a,r1
+	movx	@r0,a ;y
+	inc	r0
+    mov a,r1
+	movx	@r0,a ;x
+	inc	r0
+    mov a,#(6*8)
+	movx	@r0,a ;color
+	inc	r0
+	inc	r0
+
+	mov	r0,#vdc_spr3_ctrl
+    mov a,#22
+	movx	@r0,a ;y
+	inc	r0
+    mov a,#22
+	movx	@r0,a ;x
+	inc	r0
+    mov a,#(6*8)
+	movx	@r0,a ;color
+	inc	r0
+	inc	r0
+
+
+	call	gfxon
+
+    call waitvsync
+    jmp main_loop
+
+; Input
+;  A shape to set
+;  R0 target sprite
+; Alters
+;  R2 ROM pointer
+;  R7 loop counter
+setshp	section setshape
+	rl	a
+	rl	a
+	rl	a
+	add	a,#lo(shapedata)
+	mov	r2,a
+	mov	r7,#8
+.loop	mov	a,r2
+	movp	a,@a
+	movx	@r0,a
+	inc	r0
+	inc	r2
+	djnz	r7,.loop
+    ret
+	endsection setshape
+
+shapedata
+	; 0-3: satellite
+	include	"sat.i"
+
