@@ -1,0 +1,22 @@
+This code is the result of my ongoing experimentation with lowlevel programming for the Magnavox Odyssey² (a.k.a. VIDEOPAC G7000) video game.
+It is written in 8048 assembly language. You can learn more about it here: http://soeren.informationstheater.de/g7000/
+
+You can build it my running "make rom"
+By running "make" it will create a ROM file and load it into the o2em emulator
+
+== Dependancies ==
+* asl (8048 assembler): http://john.ccac.rwth-aachen.de:8000/as/download.html
+* python interpreter
+* perl interpreter to run the script that converts PNM images into include files
+
+== optional tools ==
+* you can use GIMP to edit the sprite shapes (PNM file)
+
+== Emulator ==
+You will need an Odyssey² emulator to run the compiled code.
+Get it here: http://www.guttenbrunner.com/videopac/o2emPort.html
+
+Obviously you can also write the ROM file to a real cartridge and use your old Odyssey² console, but that's certainly harder.
+
+== Licensing ==
+This code is released under the terms of the GNU General Public License version 2 or later.
