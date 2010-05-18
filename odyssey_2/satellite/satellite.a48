@@ -36,7 +36,7 @@ start
 
 ;define shapes for the sprites:
 
-    mov r0,#vdc_spr1_shape
+    mov r0,#vdc_spr0_shape
     mov a,#0; use shape #0
     call setshp
 
@@ -55,54 +55,24 @@ main_loop
 
     inc r1
 ;define positioning of sprites:
-	mov	r0,#vdc_spr0_ctrl
-    mov a,r1
-	movx	@r0,a ;y
-	inc	r0
-    mov a,#6
-	movx	@r0,a ;x
-	inc	r0
-    mov a,#(6*8)
-	movx	@r0,a ;color
-	inc	r0
-	inc	r0
-
 	mov	r0,#vdc_spr1_ctrl
-    mov a,#32
-	movx	@r0,a ;y
+	mov a,r1
+	anl a, #03fh
+	add	a,#lo(cos_table)
+	movp a,@a ;cos(2*pi*x/64)*128 + 128
+	;sub a, #128
+	anl a, #0f8h
+	rr a
+	rr a
+	add a, #20
+
+	movx	@r0,a ;y=20+cos(2*pi*x/64)*32
 	inc	r0
     mov a,r1
 	movx	@r0,a ;x
 	inc	r0
     mov a,#(6*8)
 	movx	@r0,a ;color
-	inc	r0
-	inc	r0
-
-	mov	r0,#vdc_spr2_ctrl
-    mov a,r1
-	movx	@r0,a ;y
-	inc	r0
-    mov a,r1
-	movx	@r0,a ;x
-	inc	r0
-    mov a,#(6*8)
-	movx	@r0,a ;color
-	inc	r0
-	inc	r0
-
-	mov	r0,#vdc_spr3_ctrl
-    mov a,#22
-	movx	@r0,a ;y
-	inc	r0
-    mov a,#22
-	movx	@r0,a ;x
-	inc	r0
-    mov a,#(6*8)
-	movx	@r0,a ;color
-	inc	r0
-	inc	r0
-
 
 	call	gfxon
 
@@ -134,4 +104,8 @@ setshp	section setshape
 shapedata
 	; 0-3: satellite
 	include	"satellite.i"
+
+
+cos_table
+	include	"cos_table.inc"
 

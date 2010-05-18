@@ -11,12 +11,15 @@ satellite.rom: satellite.p
 %.p: %.a48
 	asl -a -u -q -i .. $< -o $@
 
+cos_table.inc: cos_table.py
+	python cos_table.py >$@
+
 %.i: %.pnm
 	perl ppmtosprite.pl $< >$@
 
 clean:
-	rm -f satellite.p *.i
+	rm -f satellite.p *.i *.inc
 
 # dependencies
-satellite.p: g7000.h satellite.i
+satellite.p: g7000.h satellite.i cos_table.inc
 
