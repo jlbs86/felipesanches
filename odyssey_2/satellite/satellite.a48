@@ -17,6 +17,8 @@
 
 	cpu	8048
 
+sat_x equ 024h
+
 	org	400h
 
     include	"bitfuncs.inc"	
@@ -53,8 +55,26 @@ start
 
 main_loop
 
-    inc r1
-;define positioning of sprites:
+; play an explosion whenever the fire button is pressed.
+        call    getjoystick     ; get offsets
+        cpl     F0
+        jf0     nofire          ; skip next part
+                                ; if not fire
+
+        ; start playing the built-in tune for "explode"
+        ; the rest is done by the irq routines in ROM
+        mov     a,#tune_explode
+        call    playsound
+nofire
+
+; read x coordinate of the satellite into R1:
+	mov r0,#sat_x
+	mov a,@r0
+	mov r1,a
+
+;define positioning of sprite:
+	call	gfxoff
+
 	mov	r0,#vdc_spr1_ctrl
 	mov a,r1
 	anl a, #03fh
@@ -75,6 +95,14 @@ main_loop
 	movx	@r0,a ;color
 
 	call	gfxon
+
+	; vx=1
+	inc r1
+
+;save position of satellite
+	mov r0, #sat_x
+	mov a, r1
+	mov @r0,a
 
     call waitvsync
     jmp main_loop
@@ -104,7 +132,6 @@ setshp	section setshape
 shapedata
 	; 0-3: satellite
 	include	"satellite.i"
-
 
 cos_table
 	include	"cos_table.inc"
