@@ -17,7 +17,7 @@
 
 	cpu	8048
 
-sat_x equ 024h
+sat_time equ 024h
 
 	org	400h
 
@@ -67,8 +67,8 @@ main_loop
         call    playsound
 nofire
 
-; read x coordinate of the satellite into R1:
-	mov r0,#sat_x
+; read time parameter into R1:
+	mov r0,#sat_time
 	mov a,@r0
 	mov r1,a
 
@@ -79,19 +79,30 @@ nofire
 	mov a,r1
 	anl a, #03fh
 	add	a,#lo(cos_table)
-	movp a,@a ;cos(2*pi*x/64)*128 + 128
+	movp a,@a ;cos(2*pi*t/64)*128 + 128
 	;sub a, #128
 	anl a, #0f8h
-	rr a
+	;rr a
 	rr a
 	add a, #20
 
-	movx	@r0,a ;y=20+cos(2*pi*x/64)*32
+	movx	@r0,a ;y=20+cos(2*pi*t/64)*32
 	inc	r0
+
     mov a,r1
-	movx	@r0,a ;x
+	add a,#010h ; shift 90 degrees (256 = 360 degrees)
+	anl a, #03fh
+	add	a,#lo(cos_table)
+	movp a,@a ;sin(2*pi*t/64)*128 + 128
+	;sub a, #128
+	anl a, #0f8h
+	;rr a
+	rr a
+	add a, #20
+	movx	@r0,a ;x=20+sin(2*pi*t/64)*32
+
 	inc	r0
-    mov a,#(6*8)
+    mov a,#(6*8) ;color #6. TODO: check whether this is correct!
 	movx	@r0,a ;color
 
 	call	gfxon
@@ -99,8 +110,8 @@ nofire
 	; vx=1
 	inc r1
 
-;save position of satellite
-	mov r0, #sat_x
+;save time parameter for satellite animation
+	mov r0, #sat_time
 	mov a, r1
 	mov @r0,a
 
