@@ -1,0 +1,157 @@
+; Copyright (C) 1997-1999 by Soeren Gust, sgust@ithh.informationstheater.de
+; Copyright (C) 2010 by Felipe Corrêa da Sanches, juca@members.fsf.org
+
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+	cpu	8048
+
+sat_time equ 024h
+
+	org	400h
+
+    include	"bitfuncs.inc"	
+	include	"g7000.h"
+
+	jmp	selectgame	; RESET
+	jmp	irq		; interrupt
+	jmp	timer		; timer
+	jmp	vsyncirq	; VSYNC-interrupt
+	jmp	start		; after selectgame
+	jmp	soundirq	; sound-interrupt
+
+timer	retr			; we don't need timer
+
+start
+
+main_loop
+
+; read time parameter into R1:
+	mov r0,#sat_time
+	inc @r0
+	mov a,@r0
+
+	;half speed:
+	anl a, #0feh
+	rr a
+
+	mov r1,a
+
+    mov     r2,#0Bh             ; length
+    mov     r7,#lo(hellostr)    ; the string to print
+                                ; must be in the same page
+	call print_string_in_circles
+
+    call waitvsync
+    jmp main_loop
+
+
+;input:
+;   R1 <-- initial angle
+;   R7 <-- string address
+;   R2 <-- string length
+;output:
+;   NONE
+;alters:
+;   A (R0) R1 R2 (R3) (R4) R5 R6 R7
+
+print_string_in_circles
+	call	gfxoff
+
+	mov     r0,#vdc_char0
+loop
+	mov     a,r7
+    movp    a,@a
+    mov     r5,a
+    inc     r7
+    mov     r6,#col_chr_white   ; colour
+	call calc_char_position
+	inc r1
+	inc r1
+    call    printchar           ; print it
+    djnz    r2,loop             ; do it again
+
+	call	gfxon
+	ret
+
+
+
+;input:
+;   R1 <- alpha
+;output:
+;	R3 -> x = 8 + 64 + 64*sin(alpha*2*pi/64)
+;	R4 -> y = 8 + 64 + 64*cos(alpha*2*pi/64)
+;alters:
+;   A, R3, R4
+;
+calc_char_position
+	mov a,r1
+	call calc_cos
+	anl a, #0feh ;mask out lower bits
+	rr a; divide by 2
+
+	add a, #8 ; 8 pixel away from the border
+
+	mov r4,a ;y-coordinate for char
+
+    mov a,r1
+	call calc_sin
+	anl a, #0feh
+	rr a
+
+	add a, #8 ; 8 pixel away from the border
+
+	mov r3,a ;x-coordinate for char
+	ret
+
+; Input
+;  A shape to set
+;  R0 target sprite
+; Alters
+;  R2 ROM pointer
+;  R7 loop counter
+setshp	section setshape
+	rl	a
+	rl	a
+	rl	a
+	add	a,#lo(shapedata)
+	mov	r2,a
+	mov	r7,#8
+.loop	mov	a,r2
+	movp	a,@a
+	movx	@r0,a
+	inc	r0
+	inc	r2
+	djnz	r7,.loop
+    ret
+	endsection setshape
+
+hellostr db     1Dh, 12h, 0Eh, 0Eh, 17h, 0Ch
+         db     11h, 17h, 13h, 0Eh, 1Ah
+
+shapedata
+	; 0-3: satellite
+	include	"satellite.i"
+
+calc_sin
+	add a,#16*3 ; shift -90 degrees = +270 degrees (64 steps = 2pi radians = 360 degrees)
+calc_cos
+	anl a, #03fh ;mask 6 lower bits (limit to range 0-63)
+	add	a,#lo(cos_table)
+	movp a,@a
+	ret
+
+cos_table
+	include	"cos_table.inc"
+
