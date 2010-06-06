@@ -182,12 +182,12 @@ sub process_urb {
     }
     if ($text =~ m/URB_FUNCTION_GET_DESCRIPTOR_FROM_DEVICE/) {
 	print "\tret = libusb_get_descriptor(devh, $DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
-	print "\tprintf(\"$urbnumber get descriptor returned %d, bytes: \\n \", ret);\n";
+	print "\tprintf(\"$urbnumber get descriptor returned %d bytes: \\n \", ret);\n";
 	print "\tprint_bytes(buf, ret);\n";
 	print "\tprintf(\"\\n\");\n";
     } elsif ($text =~ m/URB_FUNCTION_GET_DESCRIPTOR_FROM_INTERFACE/) {
 	printf "ret = libusb_get_descriptor(devh, $DescriptorType, 0x$Index, buf, 0x$TransferBufferLength);\n";
-	print "\tprintf(\"$urbnumber get descriptor returned %d, bytes: \\n \", ret);\n";
+	print "\tprintf(\"$urbnumber get descriptor returned %d bytes: \\n \", ret);\n";
 	print "\tprint_bytes(buf, ret);\n";
 	print "\tprintf(\"\\n\");\n";
     } elsif ($text =~ m/URB_FUNCTION_SELECT_CONFIGURATION/) {
@@ -215,7 +215,7 @@ sub process_urb {
 	print "\tret = libusb_control_transfer(devh, $requesttype, 0x$Request, 0x$Value, 0x$Index, buf, 0x$TransferBufferLength, 1000);\n";
 
 	if ($text =~ m/USBD_TRANSFER_DIRECTION_IN/) {
-	    print "\tprintf(\"$urbnumber control msg returned %d, bytes: \\n \", ret);\nprint_bytes(buf, ret);\n";
+	    print "\tprintf(\"$urbnumber control msg returned %d bytes: \\n \", ret);\nprint_bytes(buf, ret);\n";
 	} else {
 	    print "\tprintf(\"$urbnumber control msg returned %d\", ret);\n";
 	}
@@ -230,7 +230,7 @@ sub process_urb {
 	    print "\tmemcpy(buf, \"$bytes\", 0x$TransferBufferLength);\n";
 	}
 	print "\tret = libusb_control_transfer(devh, $requesttype, 0x$Request, 0x$Value, 0x$Index, buf, 0x$TransferBufferLength, 1000);\n";
-	print "\tprintf(\"$urbnumber control msg returned %d, bytes: \\n \", ret);\n";
+	print "\tprintf(\"$urbnumber control msg returned %d bytes: \\n \", ret);\n";
 	print "\tprint_bytes(buf, ret);\n";
 	print "\tprintf(\"\\n\");\n";
     } elsif ($text =~ m/URB_FUNCTION_BULK_OR_INTERRUPT_TRANSFER/) {
@@ -263,7 +263,7 @@ sub process_urb {
 	    $timeout = sprintf("%.0d", $timeout); # round to integer
 	}
 	print "\tret = usb_".$mode."_$method(devh, 0x$endpoint, buf, 0x$TransferBufferLength, $timeout);\n";
-	print "\tprintf(\"$urbnumber $mode $method returned %d, bytes: \\n \", ret);\n";
+	print "\tprintf(\"$urbnumber $mode $method returned %d bytes: \\n \", ret);\n";
 # sounds weird but write requests can actually also return data
 #	if ($method eq "read") {
 	    print "\tprint_bytes(buf, ret);\n";
@@ -283,7 +283,7 @@ sub process_urb {
 	    print "\tmemcpy(buf, \"$bytes\", 0x$TransferBufferLength);\n";
 	}
 	print "\tret = libusb_control_transfer(devh, $requesttype, 0x$Request, 0x$Value, 0x$Index, buf, 0x$TransferBufferLength, 1000);\n";
-	print "\tprintf(\"$urbnumber control msg returned %d, bytes: \\n \", ret);\n";
+	print "\tprintf(\"$urbnumber control msg returned %d bytes: \\n \", ret);\n";
 	print "\tprint_bytes(buf, ret);\n";
 	print "\tprintf(\"\\n\");\n";
     } elsif ($text =~ m/URB_FUNCTION_GET_CURRENT_FRAME_NUMBER/) {
