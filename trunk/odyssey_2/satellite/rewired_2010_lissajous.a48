@@ -1,0 +1,365 @@
+; Copyright (C) 1997-1999 by Soeren Gust, sgust@ithh.informationstheater.de
+; Copyright (C) 2010 by Felipe Corrêa da Sanches, juca@members.fsf.org
+
+; This program is free software; you can redistribute it and/or modify
+; it under the terms of the GNU General Public License as published by
+; the Free Software Foundation; either version 2 of the License, or
+; (at your option) any later version.
+;
+; This program is distributed in the hope that it will be useful,
+; but WITHOUT ANY WARRANTY; without even the implied warranty of
+; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+; GNU General Public License for more details.
+;
+; You should have received a copy of the GNU General Public License
+; along with this program; if not, write to the Free Software
+; Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+	cpu	8048
+
+parameter equ 20h
+yoffs equ 21h
+
+N1 equ 00h
+N2 equ 04h
+N3 equ 08h
+N4 equ 0ch
+N5 equ 10h
+N6 equ 14h
+N7 equ 18h
+N8 equ 1ch
+N9 equ 20h
+N10 equ 24h
+
+TONE equ 80h
+PAUSE equ 20h
+JUMPTO equ 10h
+
+	org	400h
+
+    include	"bitfuncs.inc"	
+	include	"g7000.h"
+
+	jmp	selectgame	; RESET
+	jmp	irq		; interrupt
+	jmp	timer		; timer
+	jmp	vsyncirq	; VSYNC-interrupt
+	jmp	start		; after selectgame
+	jmp	mysoundirq	; sound-interrupt
+
+timer	retr			; we don't need timer
+
+start
+;	mov a, #lo(rewired_tune)
+	mov a, #76h
+	;call playsound
+
+main_loop
+
+    call waitvsync
+
+	mov r0, #lo(yoffs)
+	mov @r0, #0
+
+; read time parameter into R1:
+	mov r0,#parameter
+	inc @r0
+	mov a,@r0
+
+	;half speed:
+	anl a, #0fch
+	rr a
+	rr a
+
+	mov r1,a
+    mov     r7,#lo(rewired_str)    ; the string to print
+                                ; must be in the same page
+	call print_string_in_circles
+
+;-----------------
+
+;    jmp main_loop ;cometario de bloco
+
+;	call wait_half_vsync
+
+	mov r0, #0ffh
+here0
+	mov r1, #02h
+here1
+	djnz r1, here1
+	djnz r0, here0
+
+
+	mov r0, #lo(yoffs)
+	mov @r0, #80
+
+	mov r0,#parameter
+	mov a,@r0
+
+	;half speed:
+	anl a, #0fch
+	rr a
+	rr a
+
+	mov r1,a
+    mov     r7,#lo(_2010_str)    ; the string to print
+                                ; must be in the same page
+	call print_string_in_circles
+
+    jmp main_loop
+
+
+;input:
+;   R1 <-- initial angle
+;   R7 <-- string address
+;output:
+;   NONE
+;alters:
+;   A (R0) R1 R2 (R3) (R4) R5 R6 R7
+
+print_string_in_circles
+	call	gfxoff
+
+	mov a, r7
+	movp a,@a
+	mov r2,a
+	inc r7
+
+	mov     r0,#vdc_char0
+loop
+	mov     a,r7
+    movp    a,@a
+    mov     r5,a
+    inc     r7
+
+	mov a, #lo(string_colors)
+	add a, r2
+	movp a,@a
+	mov r6, a
+
+	call calc_char_position
+
+	dec r1
+	dec r1
+;	dec r1
+    call    printchar           ; print it
+    djnz    r2,loop             ; do it again
+
+	call	gfxon
+	ret
+
+string_colors
+	db col_chr_green, col_chr_red, col_chr_white
+	db col_chr_green, col_chr_red, col_chr_white
+	db col_chr_green, col_chr_red, col_chr_white
+	db col_chr_green, col_chr_red, col_chr_white
+
+
+	db col_chr_violet, col_chr_green, col_chr_red, col_chr_blue, col_chr_yellow, col_chr_cyan
+	db col_chr_violet, col_chr_green, col_chr_red, col_chr_blue, col_chr_yellow, col_chr_cyan
+
+;input:
+;   R1 <- alpha
+;output:
+;	R3 -> x = 8 + 64 + 64*sin(alpha*2*pi/64)
+;	R4 -> y = yoffset + 8 + 64 + 64*cos(alpha*2*pi/64)
+;alters:
+;   A, R3, R4
+;
+calc_char_position
+
+	;add y offset to char coordinates (double sprites hack)
+;	mov r4,r0
+	mov a, r0
+	mov r4, a
+
+	mov r0, #lo(yoffs)
+	mov a, @r0
+	mov r3, a
+
+	;mov r0, r4
+	mov a,r4
+	mov r0,a
+
+	mov a, r3
+
+	mov r4, a ; r4=yoffs
+
+	mov a,r1
+	add a,r1
+	add a,r1
+
+	call calc_cos
+	anl a, #0fch ;mask out lower bits
+	rr a; divide by 2
+	rr a
+
+	add a, #48 ; 8 pixel away from the border
+
+	add a, r4; add the initial yoffset
+	mov r4,a ;y-coordinate for char
+
+    mov a,r1
+	add a,r1
+
+	call calc_sin
+	anl a, #0fch
+	rr a
+	rr a
+
+	add a, #48 ; 8 pixel away from the border
+
+	mov r3,a ;x-coordinate for char
+	ret
+
+rewired_str
+	db 7
+	db _R, _E, _W, _I, _R, _E, _D
+
+_2010_str
+	db 4
+	db _2, _0, _1, _0
+
+calc_sin
+	add a,#16*3 ; shift -90 degrees = +270 degrees (64 steps = 2pi radians = 360 degrees)
+calc_cos
+	anl a, #03fh ;mask 6 lower bits (limit to range 0-63)
+	add	a,#lo(cos_table)
+	movp a,@a
+	ret
+
+cos_table
+	include	"cos_table.inc"
+
+	org	0700h
+
+mysoundirq
+	; check if BIOS sound or custom sound
+	mov	a,r4
+	add	a,#08ah		; >= 076h
+	jc	.custom
+	jmp	soundirq	; BIOS tune
+
+.custom	; custom sound handler, read sound opcodes from current page
+	mov	a,r4
+	movp	a,@a
+	mov	r1,a		; command byte
+	inc	r4
+	xrl	a,#0fh
+	jz	.op0f		; test for new opcode
+	mov	a,r4
+	movp	a,@a
+	mov	r2,a		; parameter byte
+	jmp	parsesnd	; let BIOS sound IRQ handle opcode
+
+	; opcode 0F: sound off, copy next 3 bytes into A7/8/9
+.op0f	mov	r0,#vdc_soundctrl
+	clr	a
+	movx	@r0,a		; old sound off
+	mov	r0,#vdc_sound0
+	mov	r1,#3		; number of bytes to copy
+.loop	mov	a,r4
+	movp	a,@a
+	movx	@r0,a
+	inc	r0
+	inc	r4
+	djnz	r1,.loop
+	jmp	mysoundirq	; restart sound handler
+
+	org 776h
+
+rewired_tune
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N3
+	db TONE|6, N7
+	db TONE|6, N3
+	db TONE|6, N7
+
+	db TONE|6, N4
+	db TONE|6, N9
+	db TONE|6, N4
+	db TONE|6, N9
+;----
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N9
+	db TONE|6, N7
+	db TONE|6, N8
+	db TONE|6, N6
+
+	db TONE|6, N5
+	db TONE|6, N2
+	db TONE|6, N3
+	db TONE|6, N1
+;----
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N3
+	db TONE|6, N7
+	db TONE|6, N3
+	db TONE|6, N7
+
+	db TONE|6, N4
+	db TONE|6, N9
+	db TONE|6, N4
+	db TONE|6, N9
+;----
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N1
+	db TONE|6, N5
+	db TONE|6, N1
+	db TONE|6, N5
+
+	db TONE|6, N9
+	db TONE|6, N7
+	db TONE|6, N8
+	db TONE|6, N6
+
+	db TONE|6, N5
+	db TONE|6, N2
+	db TONE|6, N3
+	db TONE|6, N1
+
+	db TONE|6, N1
+	db TONE|6, N3
+	db TONE|6, N2
+	db TONE|6, N5
+
+	db TONE|6, N6
+	db TONE|6, N8
+	db TONE|6, N7
+	db TONE|6, N9
+;----
+	db JUMPTO, lo(rewired_tune)
+
