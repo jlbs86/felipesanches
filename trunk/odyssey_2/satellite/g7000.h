@@ -230,6 +230,45 @@ col_bck_white	equ	07h << 3
 ; use this to make the grid brighter
 col_grd_lum	equ	040h
 
+_ARROW equ 36h
+_A equ 20h
+_B equ 25h
+_C equ 23h
+_D equ 1Ah
+_E equ 12h
+_F equ 1Bh
+_G equ 1Ch
+_H equ 1Dh
+_I equ 16h
+_J equ 1Eh
+_K equ 1Fh
+_L equ 0Eh
+_M equ 26h
+_N equ 2Dh
+_O equ 17h
+_P equ 0Fh
+_Q equ 18h
+_R equ 13h
+_S equ 19h
+_T equ 14h
+_U equ 15h
+_V equ 24h
+_X equ 22h
+_W equ 11h
+_Y equ 2Ch
+_Z equ 21h
+_0 equ 0h
+_1 equ 1h
+_2 equ 2h
+_3 equ 3h
+_4 equ 4h
+_5 equ 5h
+_6 equ 6h
+_7 equ 7h
+_8 equ 8h
+_9 equ 9h
+_10 equ 30h
+
 ; the locations in internal ram
 iram_collision	equ	03Dh
 iram_clock	equ	03Eh
