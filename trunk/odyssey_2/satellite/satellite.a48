@@ -30,6 +30,7 @@ N7 equ 18h
 N8 equ 1ch
 N9 equ 20h
 N10 equ 24h
+N11 equ 12h
 
 TONE equ 80h
 PAUSE equ 20h
@@ -49,10 +50,27 @@ JUMPTO equ 10h
 
 timer	retr			; we don't need timer
 
+;calc_cos:
+;	input:
+;A <-- alpha
+;	output:
+;A --> 128 + 128*cos(alpha)
+
+calc_sin
+	add a,#16*3 ; shift -90 degrees = +270 degrees (64 steps = 2pi radians = 360 degrees)
+calc_cos
+	anl a, #03fh ;mask-in 6 lower bits (limit to range 0-63)
+	add	a,#lo(cos_table)
+	movp a,@a
+	ret
+
+cos_table
+	include	"cos_table.inc"
+
 start
-;	mov a, #lo(rewired_tune)
+	mov a, #lo(rewired_tune)
 	mov a, #76h
-	;call playsound
+	call playsound
 
 main_loop
 
@@ -182,7 +200,7 @@ loop
 string_colors
 	db col_chr_green, col_chr_red, col_chr_white
 	db col_chr_green, col_chr_red, col_chr_white
-	db col_chr_green
+	db col_chr_green, col_chr_red, col_chr_white
 
 ;old-colorful pallete
 ;	db col_chr_violet, col_chr_green, col_chr_red, col_chr_blue, col_chr_yellow, col_chr_cyan
@@ -250,23 +268,6 @@ _2010_str
 	db 4
 	db _2, _0, _1, _0
 
-;calc_cos:
-;	input:
-;A <-- alpha
-;	output:
-;A --> 128 + 128*cos(alpha)
-
-calc_sin
-	add a,#16*3 ; shift -90 degrees = +270 degrees (64 steps = 2pi radians = 360 degrees)
-calc_cos
-	anl a, #03fh ;mask-in 6 lower bits (limit to range 0-63)
-	add	a,#lo(cos_table)
-	movp a,@a
-	ret
-
-cos_table
-	include	"cos_table.inc"
-
 	org	0700h
 
 mysoundirq
@@ -306,96 +307,69 @@ mysoundirq
 
 rewired_tune
 
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
+	db TONE|1, N2
+	db TONE|1, N4
 
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
+	db TONE|6, N11
 
-	db TONE|6, N3
-	db TONE|6, N7
-	db TONE|6, N3
-	db TONE|6, N7
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	db TONE|1, N3
+	db TONE|1, N5
+	
+	db TONE|6, N11
 
-	db TONE|6, N4
-	db TONE|6, N9
-	db TONE|6, N4
-	db TONE|6, N9
-;----
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	db TONE|1, N8
+	db TONE|1, N6
+	db TONE|1, N4
+	
+	db TONE|6, N11
 
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
-
-	db TONE|6, N9
-	db TONE|6, N7
-	db TONE|6, N8
-	db TONE|6, N6
-
-	db TONE|6, N5
-	db TONE|6, N2
-	db TONE|6, N3
-	db TONE|6, N1
-;----
-
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
-
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
-
-	db TONE|6, N3
-	db TONE|6, N7
-	db TONE|6, N3
-	db TONE|6, N7
-
-	db TONE|6, N4
-	db TONE|6, N9
-	db TONE|6, N4
-	db TONE|6, N9
-;----
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
-
-	db TONE|6, N1
-	db TONE|6, N5
-	db TONE|6, N1
-	db TONE|6, N5
-
-	db TONE|6, N9
-	db TONE|6, N7
-	db TONE|6, N8
-	db TONE|6, N6
-
-	db TONE|6, N5
-	db TONE|6, N2
-	db TONE|6, N3
-	db TONE|6, N1
-
-	db TONE|6, N1
-	db TONE|6, N3
-	db TONE|6, N2
-	db TONE|6, N5
-
-	db TONE|6, N6
-	db TONE|6, N8
-	db TONE|6, N7
-	db TONE|6, N9
 ;----
 	db JUMPTO, lo(rewired_tune)
 
