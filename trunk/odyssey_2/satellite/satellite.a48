@@ -67,6 +67,14 @@ calc_cos
 cos_table
 	include	"cos_table.inc"
 
+rewired_str
+	db 7
+	db _R, _E, _W, _I, _R, _E, _D
+
+_2010_str
+	db 4
+	db _2, _0, _1, _0
+
 start
 	mov a, #lo(rewired_tune)
 	mov a, #76h
@@ -259,14 +267,6 @@ calc_char_position
 
 	mov r3,a ;x-coordinate for char
 	ret
-
-rewired_str
-	db 7
-	db _R, _E, _W, _I, _R, _E, _D
-
-_2010_str
-	db 4
-	db _2, _0, _1, _0
 
 	org	0700h
 
