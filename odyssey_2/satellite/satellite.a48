@@ -361,20 +361,25 @@ chord macro note1,note2
 	db TONE|1, note2
 	endm
 
+
+noise macro length
+	db NOISE|length, 0FFh
+	endm
+
 	org 776h
 
 rewired_tune
 
-	db NOISE|1, 0FFh
+	noise 1
 	chord N2,N4
 	db PAUSE|8
-	db NOISE|1, 0FFh
+	noise 1
 	chord N3,N5
 	db PAUSE|8
-	db NOISE|1, 0FFh
+	noise 1
 	chord N7,N9
 	db PAUSE|8
-	db NOISE|1, 0FFh
+	noise 1
 	db PAUSE|8
 
 ;----
