@@ -34,6 +34,7 @@ N10 equ 24h
 N11 equ 12h
 
 TONE equ 80h
+NOISE equ 40h 
 PAUSE equ 20h
 JUMPTO equ 10h
 
@@ -364,11 +365,16 @@ chord macro note1,note2
 
 rewired_tune
 
+	db NOISE|1, 0FFh
 	chord N2,N4
 	db PAUSE|8
+	db NOISE|1, 0FFh
 	chord N3,N5
 	db PAUSE|8
+	db NOISE|1, 0FFh
 	chord N7,N9
+	db PAUSE|8
+	db NOISE|1, 0FFh
 	db PAUSE|8
 
 ;----
