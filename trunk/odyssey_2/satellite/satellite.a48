@@ -98,7 +98,7 @@ main_loop
 ;-----------------
 
 ;routine to wait for the middle of the screen:
-	mov r0, #0ffh
+	mov r0, #0c0h
 here0
 	mov r1, #02h
 here1
