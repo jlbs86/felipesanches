@@ -17,8 +17,9 @@
 
 	cpu	8048
 
-parameter equ 20h
+time_parameter equ 20h
 yoffs equ 21h
+snow_x0 equ 22h
 
 N1 equ 00h
 N2 equ 04h
@@ -76,6 +77,23 @@ _2010_str
 	db _2, _0, _1, _0
 
 start
+	mov r0, #lo(snow_x0)
+
+	mov a, #0
+	mov @r0, a
+	inc r0
+
+	mov a, #80
+	mov @r0, a
+	inc r0
+
+	mov a, #30
+	mov @r0, a
+	inc r0
+
+	mov a, #60
+	mov @r0, a
+
 	mov a, #lo(rewired_tune)
 	mov a, #76h
 	call playsound
@@ -84,8 +102,8 @@ main_loop
 
     call waitvsync
 
-	;increment time parameter:
-	mov r0,#parameter
+	;increment time time_parameter:
+	mov r0,#time_parameter
 	inc @r0
 
 	mov r0, #lo(yoffs)
@@ -114,43 +132,60 @@ here1
 
     jmp main_loop
 
-
 setup_snow_char
 	mov r5, #29h	; char "x"
 	;is it odd?
 	anl a, #04h
-	jz odd_parameter
+	jz odd_time_parameter
 	inc r5 			; char "%"
-odd_parameter
+odd_time_parameter
 	ret
 
 print_snowflakes
-	mov r0,#parameter
+	mov r0,#time_parameter
 	mov a,@r0
-	mov r1,a; r1 = parameter
+	mov r1,a; r1 = time_parameter
 
-	mov     r0,#vdc_char8
+	mov r0,#vdc_char8
 	mov r2,#4; four snowflakes
 snowflake
 	mov a, r1
 	call setup_snow_char
 
 	mov a, r1
-	mov r4, a ; y=parameter
+	mov r4, a ; y=time_parameter
 	call calc_cos
 
 	anl a, #0fch
 	rr a
 	rr a
 
-	add a, #20
-	mov r3,a ; x = 30 + 32 + 32*cos(parameter*2*pi/64)
+	mov r3,a ; x = 30 + 32 + 32*cos(time_parameter*2*pi/64)
+
+	;store copy of R0
+	mov a, r0
+	mov r7, a
+
+	mov a, r2
+	dec a
+	add a, #lo(snow_x0)
+	mov r0, a
+	mov a,@r0
+
+	;add initial x-offset to the calculated x-offset
+	add a, r3
+	mov r3, a
+
+	;restore R0
+	mov a, r7
+	mov r0, a
+
 	mov r6, #col_chr_white
 	call printchar
 
 	mov a, r1
 	add a, #60
-	mov r1, a ; different parameter for each snowflake	
+	mov r1, a ; different time_parameter for each snowflake	
 
 	djnz r2, snowflake
 	ret
@@ -164,8 +199,8 @@ snowflake
 
 print_string_in_circles
 	;ret
-; read time parameter into R1:
-	mov r0,#parameter
+; read time time_parameter into R1:
+	mov r0,#time_parameter
 	mov a,@r0
 
 	;speed/4:
@@ -173,7 +208,7 @@ print_string_in_circles
 	rr a
 	rr a
 
-	mov r1,a ; r1=parameter/4
+	mov r1,a ; r1=time_parameter/4
 
 	call	gfxoff
 
@@ -286,7 +321,7 @@ mysoundirq
 	jz	.op0f		; test for new opcode
 	mov	a,r4
 	movp	a,@a
-	mov	r2,a		; parameter byte
+	mov	r2,a		; time_parameter byte
 	jmp	parsesnd	; let BIOS sound IRQ handle opcode
 
 	; opcode 0F: sound off, copy next 3 bytes into A7/8/9
