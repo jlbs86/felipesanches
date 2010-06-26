@@ -303,72 +303,38 @@ mysoundirq
 	djnz	r1,.loop
 	jmp	mysoundirq	; restart sound handler
 
+
+chord macro note1,note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	db TONE|1, note1
+	db TONE|1, note2
+	endm
+
 	org 776h
 
 rewired_tune
 
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-	db TONE|1, N2
-	db TONE|1, N4
-
-	db TONE|6, N11
-
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	db TONE|1, N3
-	db TONE|1, N5
-	
-	db TONE|6, N11
-
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	db TONE|1, N8
-	db TONE|1, N6
-	db TONE|1, N4
-	
-	db TONE|6, N11
+	chord N2,N4
+	db PAUSE|8
+	chord N3,N5
+	db PAUSE|8
+	chord N7,N9
+	db PAUSE|8
 
 ;----
 	db JUMPTO, lo(rewired_tune)
