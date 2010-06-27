@@ -341,26 +341,13 @@ mysoundirq
 
 
 chord macro note1,note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	db TONE|1, note1
-	db TONE|1, note2
-	endm
-
+        db TONE|2, note1
+        db TONE|2, note2
+        db TONE|2, note1
+        db TONE|2, note2
+        db TONE|2, note1
+        db TONE|2, note2
+        endm
 
 noise macro length
 	db NOISE|length, 0FFh
@@ -370,17 +357,62 @@ noise macro length
 
 rewired_tune
 
-	noise 1
-	chord N2,N4
-	db PAUSE|8
-	noise 1
-	chord N3,N5
-	db PAUSE|8
-	noise 1
-	chord N7,N9
-	db PAUSE|8
-	noise 1
-	db PAUSE|8
+        db TONE|12,N1
+        db PAUSE|4
+	noise 3
+	db PAUSE|3
+        db TONE|10,N2
+        db PAUSE|8
+	noise 3
+        db PAUSE|9
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+
+;----2
+
+        db TONE|12,N1
+        db PAUSE|4
+        noise 3
+        db PAUSE|3
+        db PAUSE|10
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+        db TONE|10,N4
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+;----3
+
+        chord N6,N7
+        db PAUSE|4
+        noise 3
+        db PAUSE|3
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+;----4
+
+        chord N4,N5
+        db PAUSE|4
+        noise 3
+        db PAUSE|3
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
+        db TONE|10,N2
+        db PAUSE|8
+        noise 3
+        db PAUSE|9
 
 ;----
 	db JUMPTO, lo(rewired_tune)
