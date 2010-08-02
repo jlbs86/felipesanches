@@ -5,6 +5,7 @@
 var linhas=32;
 var colunas=32;
 var matriz = new Array();
+var mapa = {}
 
 function set_val(x,y, val){
 	matriz[y][x].innerHTML=val;
@@ -39,14 +40,10 @@ function init(){
 		}
 	}
 
-	var mapa = {}
-
 	for (x=0;x<colunas;x++){
 		for (y=0;y<linhas;y++){
-			//mapa[values[y][x]] = {"node": matriz[y][x], value:0}
 			d = Math.floor(linhas*colunas*hilbert_2d_to_1d(x/colunas,y/linhas,28));
 			mapa[d] = {"node": matriz[y][x], value:0}
-			//alert(d);
 		}
 	}
 
@@ -56,10 +53,10 @@ function init(){
 	}
 */
 
-	setInterval(function(){update_display(mapa);}, 100);
+	setInterval(function(){update_display();}, 100);
 }
 
-function decrement_all_nodes(mapa){
+function decrement_all_nodes(){
 	for (i=0;i<colunas*linhas;i++){
 		if (mapa[i].value>0) mapa[i].value--;
 	}
@@ -80,8 +77,10 @@ function color_value(i){
 
 var index=colunas*linhas/2;
 var maxstep = 10;
-function update_display(mapa){
+function update_display(){
+	ajaxFunction();
 
+/*
 	for (var i=0;i<40;i++){	
 		var step = Math.random()*maxstep;
 		index += (step-maxstep/2);
@@ -96,7 +95,39 @@ function update_display(mapa){
 	for (var i=0;i<linhas*colunas;i++){
 		mapa[i].node.style.backgroundColor = color_value(mapa[i].value);
 	}
+*/
 }
+
+function ajax_callback(text){
+	histogram = text.split("\n");
+	for (index=0;index<linhas*colunas;index++){
+		mapa[index].value += parseInt(histogram[index]);
+	}
+
+	decrement_all_nodes(mapa);
+
+	for (var i=0;i<linhas*colunas;i++){
+		mapa[i].node.style.backgroundColor = color_value(mapa[i].value);
+	}
+}
+
+function ajaxFunction()
+{
+var xmlHttp;
+  // Firefox, Opera 8.0+, Safari
+  xmlHttp=new XMLHttpRequest();
+  xmlHttp.onreadystatechange=function(){
+    if(xmlHttp.readyState==4){
+		ajax_callback(xmlHttp.responseText);
+    }
+  }
+
+  xmlHttp.open("GET","http://localhost:91/histogram.txt",true);
+  xmlHttp.send(null);
+}
+
+
+
   </script>
 
   <body  onload="init();">
