@@ -1,0 +1,105 @@
+<html>
+  <script src="hilbert.js"></script>
+  <script>
+
+var linhas=32;
+var colunas=32;
+var matriz = new Array();
+
+function set_val(x,y, val){
+	matriz[y][x].innerHTML=val;
+}
+
+function calc_color(l,c){
+	if ((l+c)%2){
+		return "black";
+	} else {
+		return "gray";
+	}
+}
+
+function init(){
+	var size=16;
+	var body = document.getElementsByTagName("body")[0];
+	for (var l=0;l<linhas;l++){
+		matriz.push(new Array())
+		for (var c=0;c<colunas;c++){
+			var new_div = document.createElement("div");
+			matriz[l].push(new_div);
+			//new_div.style.backgroundColor = calc_color(l,c);
+			new_div.style.border = "solid 1px black";
+			new_div.style.position = "absolute";
+			new_div.style.width = size + "px";
+			new_div.style.height = size + "px";
+			new_div.style.left = c*size + "px";
+			new_div.style.top = l*size + "px";
+			new_div.style.textAlign = "center";
+			new_div.style.color = "white";
+			body.appendChild(new_div);
+		}
+	}
+
+	var mapa = {}
+
+	for (x=0;x<colunas;x++){
+		for (y=0;y<linhas;y++){
+			//mapa[values[y][x]] = {"node": matriz[y][x], value:0}
+			d = Math.floor(linhas*colunas*hilbert_2d_to_1d(x/colunas,y/linhas,28));
+			mapa[d] = {"node": matriz[y][x], value:0}
+			//alert(d);
+		}
+	}
+
+/*
+	for (i=0;i<colunas*linhas;i++){
+		mapa[i].node.innerHTML = i;
+	}
+*/
+
+	setInterval(function(){update_display(mapa);}, 100);
+}
+
+function decrement_all_nodes(mapa){
+	for (i=0;i<colunas*linhas;i++){
+		if (mapa[i].value>0) mapa[i].value--;
+	}
+}
+
+function color_value(i){
+	if (i<1) return "#fff";
+	if (i<2) return "#aff";
+	if (i<3) return "#8af";
+	if (i<4) return "#88f";
+	if (i<5) return "#88a";
+	if (i<6) return "#488";
+	if (i<7) return "#448";
+	if (i<8) return "#048";
+	if (i<9) return "#008";
+	return "#000";
+}
+
+var index=colunas*linhas/2;
+var maxstep = 10;
+function update_display(mapa){
+
+	for (var i=0;i<40;i++){	
+		var step = Math.random()*maxstep;
+		index += (step-maxstep/2);
+		while(index < 0) index += (linhas*colunas);
+		while(index > (linhas*colunas)) index -= (linhas*colunas);
+
+		mapa[Math.floor(index)].value++;
+	}
+
+	decrement_all_nodes(mapa);
+
+	for (var i=0;i<linhas*colunas;i++){
+		mapa[i].node.style.backgroundColor = color_value(mapa[i].value);
+	}
+}
+  </script>
+
+  <body  onload="init();">
+  </body>
+</html>
+
