@@ -221,17 +221,100 @@ function init_molecules(gl)
   }
 
 //WebGL:
+
 var do_labels;
 var do_atoms;
 var do_bonds;
 var do_shells;
 var wireframe;
 
+
+//TODO: use WebGLU instead perhaps?
+/*
+typedef struct { GLfloat x, y, z; } XYZ;
+
+int
+unit_sphere (int stacks, int slices, int wire_p)
+{
+  int polys = 0;
+  int i,j;
+  double theta1, theta2, theta3;
+  XYZ e, p;
+  XYZ la = { 0, 0, 0 }, lb = { 0, 0, 0 };
+  XYZ c = {0, 0, 0};  // center
+  double r = 1.0;     // radius
+  int stacks2 = stacks * 2;
+
+  if (r < 0)
+    r = -r;
+  if (slices < 0)
+    slices = -slices;
+
+  if (slices < 4 || stacks < 2 || r <= 0)
+    {
+      glBegin (GL_POINTS);
+      glVertex3f (c.x, c.y, c.z);
+      glEnd();
+      return 1;
+    }
+
+  glFrontFace(GL_CW);
+
+  for (j = 0; j < stacks; j++)
+    {
+      theta1 = j       * (M_PI+M_PI) / stacks2 - M_PI_2;
+      theta2 = (j + 1) * (M_PI+M_PI) / stacks2 - M_PI_2;
+
+      glBegin (wire_p ? GL_LINE_LOOP : GL_TRIANGLE_STRIP);
+      for (i = 0; i <= slices; i++)
+        {
+          theta3 = i * (M_PI+M_PI) / slices;
+
+          if (wire_p && i != 0)
+            {
+              glVertex3f (lb.x, lb.y, lb.z);
+              glVertex3f (la.x, la.y, la.z);
+            }
+
+          e.x = cos (theta2) * cos(theta3);
+          e.y = sin (theta2);
+          e.z = cos (theta2) * sin(theta3);
+          p.x = c.x + r * e.x;
+          p.y = c.y + r * e.y;
+          p.z = c.z + r * e.z;
+
+          glNormal3f (e.x, e.y, e.z);
+          glTexCoord2f (i       / (double)slices,
+                        2*(j+1) / (double)stacks2);
+          glVertex3f (p.x, p.y, p.z);
+          if (wire_p) la = p;
+
+          e.x = cos(theta1) * cos(theta3);
+          e.y = sin(theta1);
+          e.z = cos(theta1) * sin(theta3);
+          p.x = c.x + r * e.x;
+          p.y = c.y + r * e.y;
+          p.z = c.z + r * e.z;
+
+          glNormal3f (e.x, e.y, e.z);
+          glTexCoord2f (i   / (double)slices,
+                        2*j / (double)stacks2);
+          glVertex3f (p.x, p.y, p.z);
+          if (wire_p) lb = p;
+          polys++;
+        }
+      glEnd();
+    }
+  return polys;
+}
+
+*/
+
 function generate_molecule_dlists(gl, m)
   {
     m.polygon_count = 0;
 
-    gl.NewList (m.molecule_dlist, GL_COMPILE);
+    gl.NewList (m.molecule_dlist, gl.COMPILE);
     //ensure_bounding_box_visible (mi);
 
     do_labels = orig_do_labels;
