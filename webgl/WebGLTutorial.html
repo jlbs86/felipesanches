@@ -206,7 +206,7 @@
 				//     More info about the modelview matrix: http://3dengine.org/Modelview_matrix
 				//     More info about the identity matrix: http://en.wikipedia.org/wiki/Identity_matrix
 				var modelViewMatrix = [
-					1, 0, 0, 0,
+					2, 0, 0, 0,
 					0, 1, 0, 0,
 					0, 0, 1, 0,
 					0, 0, 0, 1
@@ -217,20 +217,30 @@
 				gl.vertexAttribPointer(vertexPosAttribLocation, 3.0, gl.FLOAT, false, 0, 0);
 				//     Get the location of the "modelViewMatrix" uniform variable from the 
 				//     shader program
-				var uModelViewMatrix = gl.getUniformLocation(gl.program, "modelViewMatrix");
+//				var uModelViewMatrix = gl.getUniformLocation(gl.program, "modelViewMatrix");
 				//     Get the location of the "perspectiveMatrix" uniform variable from the 
 				//     shader program
-				var uPerspectiveMatrix = gl.getUniformLocation(gl.program, "perspectiveMatrix");
-				//     Set the values
-				gl.uniformMatrix4fv(uModelViewMatrix, false, new WebGLFloatArray(perspectiveMatrix));
-				gl.uniformMatrix4fv(uPerspectiveMatrix, false, new WebGLFloatArray(modelViewMatrix));
-				//     Draw the triangles in the vertex buffer. The first parameter specifies what
-				//     drawing mode to use. This can be GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, 
-				//     GL_LINES, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES, GL_QUAD_STRIP, 
-				//     GL_QUADS, and GL_POLYGON
-				gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3.0);
-				gl.flush();
-			}
+
+			  var uPerspectiveMatrix = gl.getUniformLocation(gl.program, "perspectiveMatrix");
+			  gl.uniformMatrix4fv(uPerspectiveMatrix, false, new WebGLFloatArray(modelViewMatrix));
+
+        document.setInterval(
+        function (gl, vertices){
+            modelViewMatrix = [
+					  1+i, 0, 0, 0,
+					  0, 1, 0, 0,
+					  0, 0, 1, 0,
+					  0, 0, 0, 1
+				  ];
+
+  				var uModelViewMatrix = gl.getUniformLocation(gl.program, "modelViewMatrix");
+				  gl.uniformMatrix4fv(uModelViewMatrix, false, new WebGLFloatArray(perspectiveMatrix));
+				  gl.drawArrays(gl.TRIANGLES, 0, vertices.length / 3.0);
+				  gl.flush();
+        }
+        , 200};
+
+}
 		</script>
 	</head>
 	<body>

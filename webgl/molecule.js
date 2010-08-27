@@ -130,14 +130,14 @@ function parse_pdb_data (molecule, data)
         if ((!molecule.label) && ((keyword == "HEADER") || (keyword == "COMPND")))
           {
             molecule.label = fields.join(" ");
-            //alert(molecule.label);
           }
         else if (keyword == "ATOM")
         {
+          //TODO
           id = 42;
           x=1;y=2;z=3;
           name="nome";
-          //push_atom (molecule, id, name, x, y, z);
+          push_atom (molecule, id, name, x, y, z);
         }
       else if (keyword == "HETATM")
         {
@@ -217,111 +217,151 @@ function init_molecules(gl)
   {
     parse_pdb_data (molecule, molecules_pdb[0])
     var formula = generate_molecule_formula (molecule);
-    generate_molecule_dlists(gl, molecule);
+    generate_molecule_vertex_buffers(gl, molecule);
   }
 
 //WebGL:
 
-var do_labels;
-var do_atoms;
-var do_bonds;
-var do_shells;
-var wireframe;
+var perspectiveMatrix;
+var modelViewMatrix;
 
+var do_labels = true;
+var do_atoms = true;
+var do_bonds = true;
+var do_shells = true;
+var wireframe = false;
+
+/* saved to reset */
+var orig_do_labels = do_labels;
+var orig_do_atoms = do_atoms;
+var orig_do_bonds = do_bonds;
+var orig_do_shells = do_shells;
+var orig_wireframe = wireframe;
 
 //TODO: use WebGLU instead perhaps?
-/*
-typedef struct { GLfloat x, y, z; } XYZ;
+//typedef struct { GLfloat x, y, z; } XYZ;
 
-int
-unit_sphere (int stacks, int slices, int wire_p)
-{
-  int polys = 0;
-  int i,j;
-  double theta1, theta2, theta3;
-  XYZ e, p;
-  XYZ la = { 0, 0, 0 }, lb = { 0, 0, 0 };
-  XYZ c = {0, 0, 0};  // center
-  double r = 1.0;     // radius
-  int stacks2 = stacks * 2;
+function unit_sphere (vertexData, stacks, slices, wire_p)
+  {
+    var M_PI = 3.1415;
+    var M_PI_2 = M_PI*M_PI;
 
-  if (r < 0)
-    r = -r;
-  if (slices < 0)
-    slices = -slices;
+    var polys = 0;
+    var i,j;
+    var theta1, theta2, theta3;
+    var e = {"x":0, "y":0, "z":0}, p = {"x":0, "y":0, "z":0};
+    var la = {"x":0, "y":0, "z":0}, lb = {"x":0, "y":0, "z":0};
+    var c = {"x":0, "y":0, "z":0};  // center
+    var r = 1.0;     // radius
+    var stacks2 = stacks * 2;
 
-  if (slices < 4 || stacks < 2 || r <= 0)
-    {
-      glBegin (GL_POINTS);
-      glVertex3f (c.x, c.y, c.z);
-      glEnd();
-      return 1;
-    }
+    if (r < 0)
+      r = -r;
+    if (slices < 0)
+      slices = -slices;
 
-  glFrontFace(GL_CW);
+  /*
+    if (slices < 4 || stacks < 2 || r <= 0)
+      {
+        glBegin (GL_POINTS);
+        glVertex3f (c.x, c.y, c.z);
+        glEnd();
+        return 1;
+      }
+  */
+    vertexData.push_point = function (point)
+      {
+        this.push(point.x);
+        this.push(point.y);
+        this.push(point.z);
+      }
 
-  for (j = 0; j < stacks; j++)
-    {
-      theta1 = j       * (M_PI+M_PI) / stacks2 - M_PI_2;
-      theta2 = (j + 1) * (M_PI+M_PI) / stacks2 - M_PI_2;
+    //glFrontFace(GL_CW);
 
-      glBegin (wire_p ? GL_LINE_LOOP : GL_TRIANGLE_STRIP);
-      for (i = 0; i <= slices; i++)
-        {
-          theta3 = i * (M_PI+M_PI) / slices;
+    for (j = 0; j < stacks; j++)
+      {
+        theta1 = j       * (M_PI+M_PI) / stacks2 - M_PI_2;
+        theta2 = (j + 1) * (M_PI+M_PI) / stacks2 - M_PI_2;
 
-          if (wire_p && i != 0)
-            {
-              glVertex3f (lb.x, lb.y, lb.z);
-              glVertex3f (la.x, la.y, la.z);
-            }
+  //      glBegin (wire_p ? GL_LINE_LOOP : GL_TRIANGLE_STRIP);
+        for (i = 0; i <= slices; i++)
+          {
+            theta3 = i * (M_PI+M_PI) / slices;
+            if (wire_p && i != 0)
+              {
+                vertexData.push_point(lb);
+                vertexData.push_point(la);
+  //              glVertex3f (lb.x, lb.y, lb.z);
+  //              glVertex3f (la.x, la.y, la.z);
+              }
 
-          e.x = cos (theta2) * cos(theta3);
-          e.y = sin (theta2);
-          e.z = cos (theta2) * sin(theta3);
-          p.x = c.x + r * e.x;
-          p.y = c.y + r * e.y;
-          p.z = c.z + r * e.z;
+            e.x = Math.cos (theta2) * Math.cos(theta3);
+            e.y = Math.sin (theta2);
+            e.z = Math.cos (theta2) * Math.sin(theta3);
+            p.x = c.x + r * e.x;
+            p.y = c.y + r * e.y;
+            p.z = c.z + r * e.z;
 
-          glNormal3f (e.x, e.y, e.z);
-          glTexCoord2f (i       / (double)slices,
-                        2*(j+1) / (double)stacks2);
-          glVertex3f (p.x, p.y, p.z);
-          if (wire_p) la = p;
+  //          glNormal3f (e.x, e.y, e.z);
+  //          glTexCoord2f (i       / (double)slices,
+  //                        2*(j+1) / (double)stacks2);
 
-          e.x = cos(theta1) * cos(theta3);
-          e.y = sin(theta1);
-          e.z = cos(theta1) * sin(theta3);
-          p.x = c.x + r * e.x;
-          p.y = c.y + r * e.y;
-          p.z = c.z + r * e.z;
+            vertexData.push_point(p);
+  //          glVertex3f (p.x, p.y, p.z);
 
-          glNormal3f (e.x, e.y, e.z);
-          glTexCoord2f (i   / (double)slices,
-                        2*j / (double)stacks2);
-          glVertex3f (p.x, p.y, p.z);
-          if (wire_p) lb = p;
-          polys++;
-        }
-      glEnd();
-    }
-  return polys;
-}
+            if (wire_p) la = p;
 
-*/
+            e.x = Math.cos(theta1) * Math.cos(theta3);
+            e.y = Math.sin(theta1);
+            e.z = Math.cos(theta1) * Math.sin(theta3);
+            p.x = c.x + r * e.x;
+            p.y = c.y + r * e.y;
+            p.z = c.z + r * e.z;
 
-function generate_molecule_dlists(gl, m)
+  //          glNormal3f (e.x, e.y, e.z);
+  //          glTexCoord2f (i   / (double)slices,
+  //                        2*j / (double)stacks2);
+
+            vertexData.push_point(p);
+  //          glVertex3f (p.x, p.y, p.z);
+
+            if (wire_p) lb = p;
+            polys++;
+          }
+  //      glEnd();
+      }
+    return polys;
+  }
+
+
+SPHERE_SLICES = 24  /* how densely to render spheres */
+SPHERE_STACKS = 12
+
+//controi nossa molécula e retorna uma lista de coordenadas de vertices
+function build_molecule (m)
+  { //TODO: wireframe
+    
+    var vertexData = []
+    m.count_verts = unit_sphere (vertexData, SPHERE_STACKS, SPHERE_SLICES, false);
+    return vertexData;
+  }
+
+var vert_array;
+var vertex_buffer = {"numItems": 0};
+function generate_molecule_vertex_buffers(gl, m)
   {
     m.polygon_count = 0;
 
-    gl.NewList (m.molecule_dlist, gl.COMPILE);
-    //ensure_bounding_box_visible (mi);
+		vertexBuffer = gl.createBuffer();
+		//    Bind the buffer object to the ARRAY_BUFFER target.
+		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+		//    Specify the vertex positions (x, y, z)
 
     do_labels = orig_do_labels;
     do_atoms  = orig_do_atoms;
     do_bonds  = orig_do_bonds;
     do_shells = orig_do_shells;
-    wireframe = orig_wire;
+    wireframe = orig_wireframe;
 
 //  if (m.molecule_size > m.no_label_threshold)
 //    do_labels = 0;
@@ -342,21 +382,23 @@ function generate_molecule_dlists(gl, m)
         do_bonds = 1;
       }
 
-    build_molecule (m, False);
-    glEndList();
+    var vertices = build_molecule (m, false);
+    vertex_buffer.numItems = vertices.length;
+		vert_array = new WebGLFloatArray(vertices);
+		gl.bufferData(gl.ARRAY_BUFFER, vert_array, gl.STATIC_DRAW);
 
     if (do_shells)
       {
-        glNewList (m.shell_dlist, GL_COMPILE);
+//        glNewList (m.shell_dlist, GL_COMPILE);
 //        ensure_bounding_box_visible (mi);
 
         do_labels = 0;
         do_atoms  = 1;
         do_bonds  = 0;
 
-        build_molecule (mi, True);
+//        build_molecule (m, true);
 
-        glEndList();
+//        glEndList();
         do_bonds  = orig_do_bonds;
         do_atoms  = orig_do_atoms;
         do_labels = orig_do_labels;
@@ -382,6 +424,86 @@ function init_webgl()
 	var height=canvas.clientHeight;
 
 	gl.viewport(0,0,width,height);
+
+	var vertexShaderScript = document.getElementById("shader-vs");
+	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+	gl.shaderSource(vertexShader, vertexShaderScript.text);
+	gl.compileShader(vertexShader);
+	if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
+		alert("Couldn't compile the vertex shader");
+		gl.deleteShader(vertexShader);
+		return;
+	}
+
+	var fragmentShaderScript = document.getElementById("shader-fs");
+	var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+	gl.shaderSource(fragmentShader, fragmentShaderScript.text);
+	gl.compileShader(fragmentShader);
+	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
+		alert("Couldn't compile the fragment shader");
+		gl.deleteShader(fragmentShader);
+		return;
+	}
+
+
+	gl.program = gl.createProgram();
+	gl.attachShader(gl.program, vertexShader);
+	gl.attachShader(gl.program, fragmentShader);
+	gl.linkProgram(gl.program);
+
+	if (!gl.getProgramParameter(gl.program, gl.LINK_STATUS)) {
+		alert("Unable to initialise shaders");
+		gl.deleteProgram(gl.program);
+		gl.deleteProgram(vertexShader);
+		gl.deleteProgram(fragmentShader);
+		return;
+	}
+
+	gl.useProgram(gl.program);
+	var vertexPosition = gl.getAttribLocation(gl.program, "vertexPosition");
+	gl.enableVertexAttribArray(vertexPosition);
+	
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+
+
+	//    Define the viewing frustum parameters
+	//    More info: http://en.wikipedia.org/wiki/Viewing_frustum
+	//    More info: http://knol.google.com/k/view-frustum
+	var fieldOfView = 30.0;
+	var aspectRatio = canvas.width / canvas.height;
+	var nearPlane = 1.0;
+	var farPlane = 10000.0;
+	var top = nearPlane * Math.tan(fieldOfView * Math.PI / 360.0);
+	var bottom = -top;
+	var right = top * aspectRatio;
+	var left = -right;
+
+	//     Create the perspective matrix. The OpenGL function that's normally used for this,
+	//     glFrustum() is not included in the WebGL API. That's why we have to do it manually here.
+	//     More info: http://www.cs.utk.edu/~vose/c-stuff/opengl/glFrustum.html
+	var a = (right + left) / (right - left);
+	var b = (top + bottom) / (top - bottom);
+	var c = (farPlane + nearPlane) / (farPlane - nearPlane);
+	var d = (2 * farPlane * nearPlane) / (farPlane - nearPlane);
+	var x = (2 * nearPlane) / (right - left);
+	var y = (2 * nearPlane) / (top - bottom);
+	perspectiveMatrix = [
+		x, 0, a, 0,
+		0, y, b, 0,
+		0, 0, c, d,
+		0, 0, -1, 0
+	];
+	
+	//     Create the modelview matrix
+	//     More info about the modelview matrix: http://3dengine.org/Modelview_matrix
+	//     More info about the identity matrix: http://en.wikipedia.org/wiki/Identity_matrix
+	modelViewMatrix = [
+		1, 0, 0, 0,
+		0, 1, 0, 0,
+		0, 0, 1, 0,
+		0, 0, 0, 1
+	];
+
 	return gl;
 }
 
@@ -437,20 +559,23 @@ function draw_molecule ()
 
   if (do_shells)
     {
-      glColorMask (GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
-      glPushMatrix();
-      glCallList (m.shell_dlist);
-      glPopMatrix();
-      glColorMask (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+      gl.ColorMask (GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+      gl.PushMatrix();
 
-      glDepthFunc (GL_EQUAL);
-      glEnable (GL_BLEND);
-      glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-      glPushMatrix();
-      glCallList (m.shell_dlist);
-      glPopMatrix();
-      glDepthFunc (GL_LESS);
-      glDisable (GL_BLEND);
+      render_shell(m);
+//      glCallList (m.shell_dlist);
+      gl.PopMatrix();
+      gl.ColorMask (GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+
+      gl.DepthFunc (GL_EQUAL);
+      gl.Enable (GL_BLEND);
+      gl.BlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+      gl.PushMatrix();
+      render_shell(m);
+//     glCallList (m.shell_dlist);
+      gl.PopMatrix();
+      gl.DepthFunc (GL_LESS);
+      gl.Disable (GL_BLEND);
     }
 
   glPopMatrix ();
@@ -465,9 +590,26 @@ function draw_molecule ()
 
 function draw(gl,t)
 {
+
+	//     Get the vertex position attribute location from the shader program
+	var vertexPosAttribLocation = gl.getAttribLocation(gl.program, "vertexPosition");
+	//     Specify the location and format of the vertex position attribute
+	gl.vertexAttribPointer(vertexPosAttribLocation, vertex_buffer.numItems, gl.FLOAT, false, 0, 0);
+	//     Get the location of the "modelViewMatrix" uniform variable from the 
+	//     shader program
+	var uModelViewMatrix = gl.getUniformLocation(gl.program, "modelViewMatrix");
+	//     Get the location of the "perspectiveMatrix" uniform variable from the 
+	//     shader program
+	var uPerspectiveMatrix = gl.getUniformLocation(gl.program, "perspectiveMatrix");
+	//     Set the values
+	gl.uniformMatrix4fv(uModelViewMatrix, false, new WebGLFloatArray(perspectiveMatrix));
+	gl.uniformMatrix4fv(uPerspectiveMatrix, false, new WebGLFloatArray(modelViewMatrix));
+
 //TODO
-	gl.drawElements(gl.TRIANGLE_STRIP,4,gl.UNSIGNED_SHORT,0);
-	gl.flush();
+//	gl.drawElements(gl.TRIANGLE_STRIP,4,gl.UNSIGNED_SHORT,0);
+		//gl.drawArrays(gl.TRIANGLES_STRIP, 0, vert_array.length - 1);
+		gl.drawArrays(gl.TRIANGLES_STRIP,4,gl.UNSIGNED_SHORT,0);
+		gl.flush();
 }
 
 function start()
