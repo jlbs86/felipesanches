@@ -236,6 +236,56 @@ var orig_do_bonds = do_bonds;
 var orig_do_shells = do_shells;
 var orig_wireframe = wireframe;
 
+var mvMatrix;
+var mvMatrixStack = [];
+
+function mvPushMatrix(m) {
+  if (m) {
+    mvMatrixStack.push(m.dup());
+    mvMatrix = m.dup();
+  } else {
+    mvMatrixStack.push(mvMatrix.dup());
+  }
+}
+
+function mvPopMatrix() {
+  if (mvMatrixStack.length == 0) {
+    throw "Invalid popMatrix!";
+  }
+  mvMatrix = mvMatrixStack.pop();
+  return mvMatrix;
+}
+
+function loadIdentity() {
+  mvMatrix = Matrix.I(4);
+}
+
+
+function multMatrix(m) {
+  mvMatrix = mvMatrix.x(m);
+}
+
+function mvTranslate(v) {
+  var m = Matrix.Translation($V([v[0], v[1], v[2]])).ensure4x4();
+  multMatrix(m);
+}
+
+function mvRotate(ang, v) {
+  var arad = ang * Math.PI / 180.0;
+  var m = Matrix.Rotation(arad, $V([v[0], v[1], v[2]])).ensure4x4();
+  multMatrix(m);
+}
+
+var pMatrix;
+function perspective(fovy, aspect, znear, zfar) {
+  pMatrix = makePerspective(fovy, aspect, znear, zfar);
+}
+
+function setMatrixUniforms(){
+  gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uPMatrix"), false, new Float32Array(pMatrix.flatten()));
+  gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uMVMatrix"), false, new Float32Array(mvMatrix.flatten()));
+}
+
 //TODO: use WebGLU instead perhaps?
 function unit_sphere (vertexData, stacks, slices, wire_p)
   {
@@ -377,6 +427,27 @@ function generate_molecule_vertex_buffers(m)
       }
 
     var vertices = build_molecule (m, false);
+
+    vertices = [
+        // Front face
+         0.0,  1.0,  0.0,
+        -1.0, -1.0,  1.0,
+         1.0, -1.0,  1.0,
+        // Right face
+         0.0,  1.0,  0.0,
+         1.0, -1.0,  1.0,
+         1.0, -1.0, -1.0,
+        // Back face
+         0.0,  1.0,  0.0,
+         1.0, -1.0, -1.0,
+        -1.0, -1.0, -1.0,
+        // Left face
+         0.0,  1.0,  0.0,
+        -1.0, -1.0, -1.0,
+        -1.0, -1.0,  1.0
+    ];
+
+
     vbuf.numItems = vertices.length/3;
     vbuf.itemSize = 3;
     vbuf.buffer = vertexBuffer;
@@ -412,10 +483,8 @@ function initGL(canvas){
   if (!gl)
     return gl;
 
-	var width=canvas.clientWidth;
-	var height=canvas.clientHeight;
-
-	gl.viewport(0,0,width,height);
+  gl.viewportWidth = canvas.width;
+  gl.viewportHeight = canvas.height;
 }
 
 function initShaders(){
@@ -464,60 +533,19 @@ function initBuffers(){
   generate_molecule_vertex_buffers(molecule);
 }
 
-
-
-function initMatrices(canvas){
-
-	//    Define the viewing frustum parameters
-	//    More info: http://en.wikipedia.org/wiki/Viewing_frustum
-	//    More info: http://knol.google.com/k/view-frustum
-	var fieldOfView = 30.0;
-	var aspectRatio = canvas.width / canvas.height;
-	var nearPlane = 1.0;
-	var farPlane = 10000.0;
-	var top = nearPlane * Math.tan(fieldOfView * Math.PI / 360.0);
-	var bottom = -top;
-	var right = top * aspectRatio;
-	var left = -right;
-
-	//     Create the perspective matrix. The OpenGL function that's normally used for this,
-	//     glFrustum() is not included in the WebGL API. That's why we have to do it manually here.
-	//     More info: http://www.cs.utk.edu/~vose/c-stuff/opengl/glFrustum.html
-	var a = (right + left) / (right - left);
-	var b = (top + bottom) / (top - bottom);
-	var c = (farPlane + nearPlane) / (farPlane - nearPlane);
-	var d = (2 * farPlane * nearPlane) / (farPlane - nearPlane);
-	var x = (2 * nearPlane) / (right - left);
-	var y = (2 * nearPlane) / (top - bottom);
-	perspectiveMatrix = [
-		x, 0, a, 0,
-		0, y, b, 0,
-		0, 0, c, d,
-		0, 0, -1, 0
-	];
-	
-	//     Create the modelview matrix
-	//     More info about the modelview matrix: http://3dengine.org/Modelview_matrix
-	//     More info about the identity matrix: http://en.wikipedia.org/wiki/Identity_matrix
-	modelViewMatrix = [
-		1, 0, 0, 0,
-		0, 1, 0, 0,
-		0, 0, 1, 0,
-		0, 0, 0, 1
-	];
-
-}
-
-function setMatrixUniforms(){
-	gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uMVMatrix"),
-   false, new WebGLFloatArray(modelViewMatrix));
-
-	gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uPMatrix"),
-   false, new WebGLFloatArray(perspectiveMatrix));
-}
-
 function drawScene()
 {
+  gl.viewport(0, 0, gl.viewportWidth, gl.viewportHeight);
+  gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+  perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0);
+  loadIdentity();
+
+  mvTranslate([-1.5, 0.0, -8.0])
+
+  mvPushMatrix();
+//  mvRotate(rPyramid, [0, 1, 0]);
+
   gl.bindBuffer(gl.ARRAY_BUFFER, vbuf.buffer);
   gl.vertexAttribPointer(vertexPositionAttribute, vbuf.itemSize, gl.FLOAT, false, 0, 0);
   setMatrixUniforms();
@@ -530,7 +558,6 @@ function webGLStart()
   initGL(canvas);
   initShaders();
   initBuffers();
-  initMatrices(canvas);
 
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
   gl.clearDepth(1.0)
