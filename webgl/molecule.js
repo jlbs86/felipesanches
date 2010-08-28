@@ -1,4 +1,6 @@
-molecules_pdb = [
+//PDB parsing:
+var molecule={"atoms": [], "bonds": []};
+var molecules_pdb = [
 "HEADER    Caffeine: Trimethylxanthine; a cardiac stimulant and diuretic\n\
 AUTHOR    Created by Dave Woodcock at Okanagan University College\n\
 AUTHOR    email:woodcock@okanagan.bc.ca\n\
@@ -103,8 +105,6 @@ function push_bond (m, from, to)
     m.bonds.push({"from": from, "to": to, "strength": 1});
   }
 
-/* This function is crap.
- */
 function parse_pdb_data (molecule, data)
   {
     var lines = data.split("\n");
@@ -212,16 +212,14 @@ function generate_molecule_formula (molecule)
     return string;
   }
 
-var molecule={"atoms": [], "bonds": []};
-function init_molecules(gl)
-  {
-    parse_pdb_data (molecule, molecules_pdb[0])
-    var formula = generate_molecule_formula (molecule);
-    generate_molecule_vertex_buffers(gl, molecule);
-  }
 
 //WebGL:
 
+//Globals:
+var gl;
+var vbuf = {}; //dict that holds vertex buffer and numitems
+
+var vertexPositionAttribute;
 var perspectiveMatrix;
 var modelViewMatrix;
 
@@ -239,8 +237,6 @@ var orig_do_shells = do_shells;
 var orig_wireframe = wireframe;
 
 //TODO: use WebGLU instead perhaps?
-//typedef struct { GLfloat x, y, z; } XYZ;
-
 function unit_sphere (vertexData, stacks, slices, wire_p)
   {
     var M_PI = 3.1415;
@@ -346,9 +342,7 @@ function build_molecule (m)
     return vertexData;
   }
 
-var vert_array;
-var vertex_buffer = {"numItems": 0};
-function generate_molecule_vertex_buffers(gl, m)
+function generate_molecule_vertex_buffers(m)
   {
     m.polygon_count = 0;
 
@@ -383,9 +377,11 @@ function generate_molecule_vertex_buffers(gl, m)
       }
 
     var vertices = build_molecule (m, false);
-    vertex_buffer.numItems = vertices.length;
-		vert_array = new WebGLFloatArray(vertices);
-		gl.bufferData(gl.ARRAY_BUFFER, vert_array, gl.STATIC_DRAW);
+    vbuf.numItems = vertices.length/3;
+    vbuf.itemSize = 3;
+    vbuf.buffer = vertexBuffer;
+
+		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
     if (do_shells)
       {
@@ -407,15 +403,11 @@ function generate_molecule_vertex_buffers(gl, m)
 
 function get_context(canvas)
 {
-	var gl;
 	try { gl=canvas.getContext("webkit-3d"); } catch(e) {}
 	if(!gl) try { gl=canvas.getContext("moz-webgl"); } catch(e) {}
-	return gl;
 }
 
-function init_webgl()
-{
-	var canvas=document.getElementById("canvas");
+function initGL(canvas){
 	var gl=get_context(canvas);
   if (!gl)
     return gl;
@@ -424,7 +416,9 @@ function init_webgl()
 	var height=canvas.clientHeight;
 
 	gl.viewport(0,0,width,height);
+}
 
+function initShaders(){
 	var vertexShaderScript = document.getElementById("shader-vs");
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, vertexShaderScript.text);
@@ -460,11 +454,19 @@ function init_webgl()
 	}
 
 	gl.useProgram(gl.program);
-	var vertexPosition = gl.getAttribLocation(gl.program, "vertexPosition");
-	gl.enableVertexAttribArray(vertexPosition);
-	
-	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  vertexPositionAttribute = gl.getAttribLocation(gl.program, "aVertexPosition");
+	gl.enableVertexAttribArray(vertexPositionAttribute);
+}
 
+function initBuffers(){
+  parse_pdb_data (molecule, molecules_pdb[0])
+  var formula = generate_molecule_formula (molecule);
+  generate_molecule_vertex_buffers(molecule);
+}
+
+
+
+function initMatrices(canvas){
 
 	//    Define the viewing frustum parameters
 	//    More info: http://en.wikipedia.org/wiki/Viewing_frustum
@@ -504,8 +506,59 @@ function init_webgl()
 		0, 0, 0, 1
 	];
 
-	return gl;
 }
+
+function setMatrixUniforms(){
+	gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uMVMatrix"),
+   false, new WebGLFloatArray(modelViewMatrix));
+
+	gl.uniformMatrix4fv(gl.getUniformLocation(gl.program, "uPMatrix"),
+   false, new WebGLFloatArray(perspectiveMatrix));
+}
+
+function drawScene()
+{
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbuf.buffer);
+  gl.vertexAttribPointer(vertexPositionAttribute, vbuf.itemSize, gl.FLOAT, false, 0, 0);
+  setMatrixUniforms();
+	gl.drawArrays(gl.TRIANGLES_STRIP, 0, vbuf.numItems);
+}
+
+function webGLStart()
+{
+  var canvas = document.getElementById("canvas");
+  initGL(canvas);
+  initShaders();
+  initBuffers();
+  initMatrices(canvas);
+
+  gl.clearColor(0.0, 0.0, 0.0, 1.0);
+  gl.clearDepth(1.0)
+  gl.enable(gl.DEPTH_TEST);
+  gl.depthFunc(gl.LEQUAL);
+
+  //setInterval(drawScene, 15);
+  drawScene();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 function draw_molecule ()
@@ -586,44 +639,5 @@ function draw_molecule ()
   glFinish();
 
   //glXSwapBuffers(dpy, window);
-}
-
-function draw(gl,t)
-{
-
-	//     Get the vertex position attribute location from the shader program
-	var vertexPosAttribLocation = gl.getAttribLocation(gl.program, "vertexPosition");
-	//     Specify the location and format of the vertex position attribute
-	gl.vertexAttribPointer(vertexPosAttribLocation, vertex_buffer.numItems, gl.FLOAT, false, 0, 0);
-	//     Get the location of the "modelViewMatrix" uniform variable from the 
-	//     shader program
-	var uModelViewMatrix = gl.getUniformLocation(gl.program, "modelViewMatrix");
-	//     Get the location of the "perspectiveMatrix" uniform variable from the 
-	//     shader program
-	var uPerspectiveMatrix = gl.getUniformLocation(gl.program, "perspectiveMatrix");
-	//     Set the values
-	gl.uniformMatrix4fv(uModelViewMatrix, false, new WebGLFloatArray(perspectiveMatrix));
-	gl.uniformMatrix4fv(uPerspectiveMatrix, false, new WebGLFloatArray(modelViewMatrix));
-
-//TODO
-//	gl.drawElements(gl.TRIANGLE_STRIP,4,gl.UNSIGNED_SHORT,0);
-		//gl.drawArrays(gl.TRIANGLES_STRIP, 0, vert_array.length - 1);
-		gl.drawArrays(gl.TRIANGLES_STRIP,4,gl.UNSIGNED_SHORT,0);
-		gl.flush();
-}
-
-function start()
-{
-	var gl=init_webgl();
-	if(!gl) return;
-  init_molecules(gl);
-
-	var start=new Date().getTime();
-
-	draw(gl);
-	setInterval(function() {
-		var t=(new Date().getTime()-start)/1000.0;
-		draw(gl,t);
-	},10);
 }
 
