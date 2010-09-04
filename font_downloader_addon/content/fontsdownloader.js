@@ -33,13 +33,50 @@
  * ***** END LICENSE BLOCK ***** */
 
 var FontsDownloader = {
+  FONTS_DIR: ".fonts", //TODO: support other operating systems  
+
   init : function () {
     var appcontent = document.getElementById("appcontent");   // browser  
     if(appcontent)  
-      appcontent.addEventListener("DOMContentLoaded", FontsDownloader.onPageLoad, true);  
+      appcontent.addEventListener("DOMContentLoaded", FontsDownloader.onPageLoad, true);
+
+      FontsDownloader.create_fonts_dir();
   },
 
-  onPageLoad: function(aEvent) {
+  create_fonts_dir : function (){
+    var dirService = Components.classes["@mozilla.org/file/directory_service;1"].
+                      getService(Components.interfaces.nsIProperties);
+    var fontsDirFile = dirService.get("Home", Components.interfaces.nsIFile);
+    fontsDirFile.append(this.FONTS_DIR);
+
+    if( !fontsDirFile.exists() || !fontsDirFile.isDirectory() ) {
+        // if it doesn't exist, create
+      alert("Creating fonts directory: "+fontsDirFile.path);
+      fontsDirFile.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);  
+    }
+  },
+
+  download_it: function (url, filename) {
+
+    var dirService = Components.classes["@mozilla.org/file/directory_service;1"].  
+                      getService(Components.interfaces.nsIProperties);   
+    var homeDirFile = dirService.get("Home", Components.interfaces.nsIFile);
+
+    var file = Components.classes["@mozilla.org/file/local;1"]  
+            .createInstance(Components.interfaces.nsILocalFile);  
+
+    file.initWithPath(homeDirFile.path + "/" + this.FONTS_DIR + "/" + filename);
+
+    var wbp = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1']  
+          .createInstance(Components.interfaces.nsIWebBrowserPersist);  
+    var ios = Components.classes['@mozilla.org/network/io-service;1']  
+          .getService(Components.interfaces.nsIIOService);  
+    var uri = ios.newURI(url, null, null);  
+    wbp.persistFlags &= ~Components.interfaces.nsIWebBrowserPersist.PERSIST_FLAGS_NO_CONVERSION; // don't save gzipped  
+    wbp.saveURI(uri, null, null, null, null, file);
+  },
+
+  onPageLoad: function (aEvent) {
     var doc = aEvent.originalTarget;
 
     for (var ss in doc.styleSheets){
@@ -47,10 +84,16 @@ var FontsDownloader = {
       for (var r in rules){
         var rule = rules[r];
         if (rule instanceof CSSFontFaceRule){
+          var fontfamily = rule.style.getPropertyValue("font-family");
           var src = rule.style.getPropertyValue("src");
           try{
             var url = src.split("url(\"")[1].split("\"")[0];
-            alert(url);
+            var filename = fontfamily.split("\"")[1];
+            //filename = filename.replace( new RegExp( " ", "g" ), "_" )  //do we need to sanitize?
+            //filename += "." + FONT_FORMAT_EXTENSION;
+
+            //alert(filename);
+            FontsDownloader.download_it(url, filename);
           } catch(err){/*ignore*/}
         } 
       }
