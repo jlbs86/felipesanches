@@ -88,9 +88,8 @@ var FontsDownloader = {
   download_it: function (font_info) {
 		var whatfont = font_info.url;
 		if (whatfont.indexOf("base64")>=0)
-			whatfont = "base64-encoded font";
-		//alert("Downloading "+whatfont+" to your fonts directory!");
-		var reply = confirm("This will copy " + whatfont + " to your font directory. Are you sure the fonts licence permits this?");
+			whatfont = "a base64-encoded font from this webpage (font family: \""+font_info.fontfamily+"\")";
+		var reply = confirm("This will copy " + whatfont + " to your fonts directory.\n\nPlease inspect the font to ensure it is free software or you are otherwise legally permitted to use this font on your computer. If it is not free software you may not be permitted to do so without paying for a license.");
 		if (reply==false)
 			return;
 
