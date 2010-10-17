@@ -49,7 +49,7 @@ function FontMenuItem(info, downloader){
 
   const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
   var item = document.createElementNS(XUL_NS, "menuitem");
-	item.addEventListener("click", function(){ var w = window.open("chrome://fontsdownloader/content/fontpreview.xul", "configure", "chrome,width=600,height=300"); w.info = info; }, false);
+	item.addEventListener("click", function(){ var w = window.open("chrome://fontsdownloader/content/fontpreview.xul", "configure", "chrome,width=600,height=300"); w.info = info; w.FontsDownloader = FontsDownloader}, false);
 
 
   item.setAttribute("label", info.fontfamily+" AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz");
@@ -88,13 +88,6 @@ var FontsDownloader = {
   },
 
   download_it: function (font_info) {
-		var whatfont = font_info.url;
-		if (whatfont.indexOf("base64")>=0)
-			whatfont = "a base64-encoded font from this webpage (font family: \""+font_info.fontfamily+"\")";
-		var reply = confirm("This will copy " + whatfont + " to your fonts directory.\n\nPlease inspect the font to ensure it is free software or you are otherwise legally permitted to use this font on your computer. If it is not free software you may not be permitted to do so without paying for a license.");
-		if (reply==false)
-			return;
-
     var dirService = Components.classes["@mozilla.org/file/directory_service;1"].  
                       getService(Components.interfaces.nsIProperties);   
     var homeDirFile = dirService.get("Home", Components.interfaces.nsIFile);
