@@ -131,7 +131,7 @@ var FontsDownloader = {
         var rule = rules[r];
         if (rule instanceof CSSFontFaceRule){
           if (!css_path){
-            css_path = new String(doc.location) + "/";
+            css_path = new String(doc.location);
 					}
           css_path = css_path.split("/");
           css_path.pop()
@@ -165,8 +165,8 @@ var FontsDownloader = {
 							"fontfamily": fontfamily
 						};
 
-						if (!detected_fonts[fontfamily]){
-							detected_fonts[fontfamily] = font_info;
+						if (!detected_fonts[[fontfamily, format]]){
+							detected_fonts[[fontfamily, format]] = font_info;
 							var fmi = FontMenuItem(font_info, FontsDownloader);
 							var popup = document.getElementById("webfonts-popup");
 							popup.appendChild(fmi);
