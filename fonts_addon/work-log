@@ -1,0 +1,37 @@
+oct 11 2010
+3:39am-5:33am
+* Code's been published in my personal svn repo at Google Code. I like the idea of using Gitorious, but I am not confortable with git yet. I'll probably reconsider it in the future. Right now, code is here: http://code.google.com/p/felipesanches/source/list
+ 
+* updated the warning message to say:
+
+This will copy " + whatfont + " to your fonts directory.
+Please inspect the font to ensure it is free software or you are otherwise legally permitted to use this font on your computer. If it is not free software you may not be permitted to do so without paying for a license.
+
+* studied a bit of XUL
+* started to work on a "Configure..." dialog and a "Font Preview" window.
+
+I'm planning on a tabbed window with these tabs: "Font Metadata", "Lore Ipsum", "Live Preview".
+
+oct 16 2010
+5:40pm-6:35
+
+* font preview dialog (CSS and layout tweaks + menu eventhandler)
+
+oct 17 2010
+8:06am-10am
+
+* Lore Ipsum dialog in preview dialog is working
+
+oct 18th 2010
+12:48-13:24
+* fix css_path detection
+* detect several formats declared in a page using the same fontfamily name
+* TODO: prioritize certain formats
+* TODO: detect 2 formats declared in the same src attribute: 
+@font-face {
+  font-family: mplus;
+  src: url(fonts/mplus-2p-black.woff) format("woff"), url(fonts/mplus-2p-black.ttf) format("truetype");
+}
+
+ 
+
