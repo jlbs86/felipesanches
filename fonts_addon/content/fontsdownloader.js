@@ -49,7 +49,7 @@ function FontMenuItem(info, downloader){
 
   const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
   var item = document.createElementNS(XUL_NS, "menuitem");
-	item.addEventListener("click", function(){ var w = window.open("chrome://fontsdownloader/content/fontpreview.xul", "configure", "chrome,width=600,height=300"); w.info = info; w.FontsDownloader = FontsDownloader}, false);
+	item.addEventListener("click", function(){ var w = window.open("chrome://fontsdownloader/content/fontpreview.xul", "configure", "chrome,fullscreen=yes"); w.info = info; w.FontsDownloader = FontsDownloader}, false);
 
 
   item.setAttribute("label", info.fontfamily+" AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz");

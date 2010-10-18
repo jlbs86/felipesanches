@@ -33,5 +33,9 @@ oct 18th 2010
   src: url(fonts/mplus-2p-black.woff) format("woff"), url(fonts/mplus-2p-black.ttf) format("truetype");
 }
 
- 
+oct 18th 2010
+14:23-16:26
+* implemented live preview tab
+* CSS tweaks
+* font preview dialog is now fully functional
 
