@@ -1,0 +1,30 @@
+.metadata_attr {
+	font-weight: bold;
+	text-align: right;
+}
+
+.preview {
+  padding: 10px 15px;
+  -moz-border-radius: 10px;
+  -moz-box-shadow: 3px 3px 8px rgba(0,0,0,0.2);
+}
+
+#preview-in-black {
+  background: black;
+  color: white;
+}
+
+#preview-in-white {
+  Xmargin-top: 12px;
+  background: white;
+  color: black;
+}
+
+row {
+  padding: 10px 0px;
+}
+
+.link {
+  color: blue;
+  text-decoration: underline;
+}
