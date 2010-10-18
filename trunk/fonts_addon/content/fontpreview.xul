@@ -64,7 +64,19 @@
       </tabpanel>
 
       <tabpanel flex="1" id="live-preview" orient="vertical">
-        <label value="TODO"/>
+        <hbox>
+          <label value="text for preview:"/>
+          <textbox id="livepreview-input" flex="1" onkeyup="update_livepreview(this.value);"/>
+        </hbox>
+        <vbox id="livepreview-box">
+          <label class="livepreview" id="livepreview-12px" />
+          <label class="livepreview" id="livepreview-16px" />
+          <label class="livepreview" id="livepreview-22px" />
+          <label class="livepreview" id="livepreview-28px" />
+          <label class="livepreview" id="livepreview-34px" />
+          <label class="livepreview" id="livepreview-42px" />
+          <label class="livepreview" id="livepreview-50px" />
+        </vbox>
       </tabpanel>
 
     </tabpanels>
@@ -78,7 +90,8 @@
 
   <script>
 window.$ = function(id) { return document.getElementById(id); };
-const INITIAL_FONT_SIZE = 12;
+const INITIAL_FONT_SIZE = 22;
+const INITIAL_LIVEPREVIEW_TEXT = "Live Text Preview. Type Something!";
 
 /* //for debugging purposes: 
 window.info = {
@@ -89,16 +102,33 @@ window.info = {
 };
 */
 
-	//preview the webfont
-	const HTML_NS = "http://www.w3.org/1999/xhtml";
-	var sheet = document.createElementNS(HTML_NS, "style");
-	sheet.setAttribute("type", "text/css");
-	sheet.innerHTML = '@font-face {\n\tfont-family: "'+window.info.fontfamily+'";\n\tsrc: url("'+window.info.url+'")';
-	if (window.info.format) sheet.innerHTML += ' format("'+window.info.format+'")';
-	sheet.innerHTML += ';\n}\n\n';
-  document.documentElement.appendChild(sheet);
-  $("preview-in-black").style.fontFamily = info.fontfamily;
-  $("preview-in-white").style.fontFamily = info.fontfamily;
+//preview the webfont
+const HTML_NS = "http://www.w3.org/1999/xhtml";
+var sheet = document.createElementNS(HTML_NS, "style");
+sheet.setAttribute("type", "text/css");
+sheet.innerHTML = '@font-face {\n\tfont-family: "'+window.info.fontfamily+'";\n\tsrc: url("'+window.info.url+'")';
+if (window.info.format) sheet.innerHTML += ' format("'+window.info.format+'")';
+sheet.innerHTML += ';\n}\n\n';
+document.documentElement.appendChild(sheet);
+$("preview-in-black").style.fontFamily = info.fontfamily;
+$("preview-in-white").style.fontFamily = info.fontfamily;
+$("livepreview-12px").style.fontFamily = info.fontfamily;
+$("livepreview-16px").style.fontFamily = info.fontfamily;
+$("livepreview-22px").style.fontFamily = info.fontfamily;
+$("livepreview-28px").style.fontFamily = info.fontfamily;
+$("livepreview-34px").style.fontFamily = info.fontfamily;
+$("livepreview-42px").style.fontFamily = info.fontfamily;
+$("livepreview-50px").style.fontFamily = info.fontfamily;
+
+function update_livepreview(v){
+  $("livepreview-12px").value = v;
+  $("livepreview-16px").value = v;
+  $("livepreview-22px").value = v;
+  $("livepreview-28px").value = v;
+  $("livepreview-34px").value = v;
+  $("livepreview-42px").value = v;
+  $("livepreview-50px").value = v;
+}
 
 function set_font_size(s){
   $("preview-in-black").style.fontSize = s+"px";
@@ -108,6 +138,8 @@ function set_font_size(s){
 
 $("fontsizeslider").value = INITIAL_FONT_SIZE;
 set_font_size(INITIAL_FONT_SIZE);
+$("livepreview-input").value = INITIAL_LIVEPREVIEW_TEXT;
+update_livepreview(INITIAL_LIVEPREVIEW_TEXT);
 
 function ask_download(){ 
 	var whatfont = window.info.url;

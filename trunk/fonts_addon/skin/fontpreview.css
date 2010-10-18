@@ -20,6 +20,23 @@
   color: black;
 }
 
+#livepreview-box {
+  background: white;  
+}
+
+.livepreview {
+  padding: 10px 15px;
+  color: black;  
+}
+
+#livepreview-12px { font-size:12px; }
+#livepreview-16px { font-size:16px; }
+#livepreview-22px { font-size:22px; }
+#livepreview-28px { font-size:28px; }
+#livepreview-34px { font-size:34px; }
+#livepreview-42px { font-size:42px; }
+#livepreview-50px { font-size:50px; }
+
 row {
   padding: 10px 0px;
 }
