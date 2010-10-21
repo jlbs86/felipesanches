@@ -62,8 +62,6 @@ function FontMenuItem(info, downloader){
 
 var detected_fonts = {};
 var FontsDownloader = {
-	FONTS_DIR: "Desktop", //TODO: support other operating systems  
-
   init : function () {
 		Components.utils.import("resource://gre/modules/ctypes.jsm")
 
@@ -75,6 +73,7 @@ var FontsDownloader = {
   },
 
   create_fonts_dir : function (){
+  /* TODO: fix-me!
     var dirService = Components.classes["@mozilla.org/file/directory_service;1"].
                       getService(Components.interfaces.nsIProperties);
     var fontsDirFile = dirService.get("Home", Components.interfaces.nsIFile);
@@ -85,9 +84,12 @@ var FontsDownloader = {
       //alert("Creating fonts directory: "+fontsDirFile.path);
       fontsDirFile.create(Components.interfaces.nsIFile.DIRECTORY_TYPE, 0777);  
     }
+    */
   },
 
   download_it: function (font_info) {
+    var file = Components.classes["@mozilla.org/file/local;1"]  
+            .createInstance(Components.interfaces.nsILocalFile);
     file.initWithPath(getPref("installfolder", getDownloadsDir) + "/" + font_info.filename);
 
     var wbp = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1']  
