@@ -3,8 +3,10 @@ zip fontsdownloader-svn.xpi \
 		content/overlay.xul \
 		content/configure.xul \
 		content/fontpreview.xul \
-		skin/fontpreview.css \
 		content/fontsdownloader.js \
+		content/utils.js \
+		defaults/preferences/webfontdownloader.js \
+		skin/fontpreview.css \
 		install.rdf \
 		LICENSE.TXT \
 		chrome.manifest

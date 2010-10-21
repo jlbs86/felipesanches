@@ -88,14 +88,7 @@ var FontsDownloader = {
   },
 
   download_it: function (font_info) {
-    var dirService = Components.classes["@mozilla.org/file/directory_service;1"].  
-                      getService(Components.interfaces.nsIProperties);   
-    var homeDirFile = dirService.get("Home", Components.interfaces.nsIFile);
-
-    var file = Components.classes["@mozilla.org/file/local;1"]  
-            .createInstance(Components.interfaces.nsILocalFile);  
-
-    file.initWithPath(homeDirFile.path + "/" + this.FONTS_DIR + "/" + font_info.filename);
+    file.initWithPath(getPref("installfolder", getDownloadsDir) + "/" + font_info.filename);
 
     var wbp = Components.classes['@mozilla.org/embedding/browser/nsWebBrowserPersist;1']  
           .createInstance(Components.interfaces.nsIWebBrowserPersist);  
@@ -104,20 +97,6 @@ var FontsDownloader = {
     var uri = ios.newURI(font_info.url, null, null);  
     wbp.persistFlags &= ~Components.interfaces.nsIWebBrowserPersist.PERSIST_FLAGS_NO_CONVERSION; // don't save gzipped  
     wbp.saveURI(uri, null, null, null, null, file);
-
-/*
-		if (font_info.format=="woff"){
-			var lib_woff2sfnt = ctypes.open("lib_woff2sfnt.so");   
-			var woff2sfnt = lib_woff2sfnt.declare("woff2sfnt",  
-						                     ctypes.default_abi,  
-						                     ctypes.void_t,
-						                     ctypes.char.ptr,
-																 ctypes.char.ptr  
-			);  
-			woff2sfnt(filename, filename+".ttf");
-			//todo: remove woff file
-		}
-*/
   },
 
   onPageLoad: function (aEvent) {

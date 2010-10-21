@@ -39,3 +39,10 @@ oct 18th 2010
 * CSS tweaks
 * font preview dialog is now fully functional
 
+oct 21th 2010
+17h45-18h51 + 19h28-
+* refactoring: utils.js (helper functions & preferences handling)
+* preferences: folder to download fonts
+
+* create account at gitorious
+
