@@ -1,27 +1,49 @@
-var Display = function(mosaic, col, row){
+function ajaxGet(url, callBack) {
+  // Signature: callBack(success, xmlhttp)
+  var req = new XMLHttpRequest();
+  req.open("GET", url, true);
+  req.onreadystatechange = function(){
+    if ( req.readyState == 4 ) {
+      var success = (req.status == 200) || (req.status == 0);
+      callBack( success, req );
+    }
+  };
+  req.send(null);
+}
+
+var Display = function(svg, template_filename, col, row){
   this.shapes = new Array();
 
 //todo. calc these values instead of using hardcoded width&height
   this.x0 = col*172;
   this.y0 = row*218;
 
-  var svg = mosaic.ownerDocument;
-  var theDisplay = mosaic.cloneNode(true);
+  var self = this;
+  this.load_template(template_filename, function(template){self.init(svg, template)});
+}
+
+Display.prototype.init = function(svg, template){
+  svg.appendChild(template);
+  template.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
   
-  svg.getElementsByTagName("svg")[0].appendChild(theDisplay);
-  theDisplay.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
-  
-  var group = theDisplay.getElementsByTagName("g")[0];
+  var group = template.getElementsByTagName("g")[0];
   for (var n in group.childNodes){
     var node = group.childNodes[n];
     if (node.tagName == "path") this.shapes.push(node);
   }
+}
 
-/*
-  var delta_t = 50; //frequency = 1/200ms = 5Hz
+Display.prototype.load_template = function(filename, callback){
   var self = this;
-	window.setInterval(function(){self.timer()}, delta_t);
-*/
+  ajaxGet(
+    filename,
+    function(success, req){
+      if ( success ) {
+        callback( req.responseXML.getElementById("display").cloneNode(true) );
+      } else {
+        alert("error while loading display template.");
+      }
+    });
 }
 
 Display.prototype.timer = function(){
