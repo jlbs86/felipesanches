@@ -1,47 +1,12 @@
-var modules = new Array();
-
-function init(evt){
-	var O=evt.target;
-	var svgDoc=O.ownerDocument;
-
-  for (var i=0;i<5;i++){
-    modules.push(new Display(svgDoc, i, 0));
-  }
-  for (var i=0;i<5;i++){
-    modules.push(new Display(svgDoc, i, 1));
-  }
-
-  var delta_t = 100;
-   //frequency = 1/200ms = 5Hz
-	window.setInterval(timer, delta_t);
-}
-
-var xx=0;
-function drawing_function(p){
-  var middle = p[p.length-1];
-  var x=middle[0];
-  var y=middle[1];
-
-  return (x+y<xx);
-}
-
-function timer(){
-  for (m in modules){
-    var mod = modules[m];
-    mod.draw(drawing_function);
-  }
-  xx+=20;
-  if (xx>1500) xx=0;
-}
-
-var Display = function(svg, col, row){
+var Display = function(mosaic, col, row){
   this.shapes = new Array();
 
 //todo. calc these values instead of using hardcoded width&height
   this.x0 = col*172;
   this.y0 = row*218;
 
-  var theDisplay = svg.getElementById("display").cloneNode(true);
+  var svg = mosaic.ownerDocument;
+  var theDisplay = mosaic.cloneNode(true);
   
   svg.getElementsByTagName("svg")[0].appendChild(theDisplay);
   theDisplay.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
@@ -129,17 +94,15 @@ Display.prototype.draw = function(func){
         }
       }
 
-      shape.points.push([this.x0 + mx*scale/shape.points.length,this.y0 + my*scale/shape.points.length]);
+      shape.middle_point = [this.x0 + mx*scale/shape.points.length,this.y0 + my*scale/shape.points.length];
     }
 
-    if (func(shape.points))
+    if (func(shape.points, shape.middle_point))
       this.turn_on_shape(shape);
     else
       this.turn_off_shape(shape);
 
 	}
-
-
 }
 
 
