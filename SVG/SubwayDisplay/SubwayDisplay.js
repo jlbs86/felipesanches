@@ -13,10 +13,8 @@ function ajaxGet(url, callBack) {
 
 var Display = function(svg, template_filename, col, row){
   this.shapes = new Array();
-
-//todo. calc these values instead of using hardcoded width&height
-  this.x0 = col*172;
-  this.y0 = row*218;
+  this.col = col;
+  this.row = row;
 
   var self = this;
   this.load_template(template_filename, function(template){self.init(svg, template)});
@@ -24,9 +22,14 @@ var Display = function(svg, template_filename, col, row){
 
 Display.prototype.init = function(svg, template){
   svg.appendChild(template);
-  template.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
   
   var group = template.getElementsByTagName("g")[0];
+  var rect = template.getElementsByTagName("rect")[0];
+
+  this.x0 = this.col*(rect.width.baseVal.value + 2);
+  this.y0 = this.row*(rect.height.baseVal.value + 2);
+
+  template.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
   
   var transforms = group.transform.baseVal;
   for (var t=0; t<transforms.numberOfItems; t++){
