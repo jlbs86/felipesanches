@@ -27,6 +27,13 @@ Display.prototype.init = function(svg, template){
   template.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
   
   var group = template.getElementsByTagName("g")[0];
+  
+  var transforms = group.transform.baseVal;
+  for (var t=0; t<transforms.numberOfItems; t++){
+    transform = transforms.getItem(t);
+    this.scale = transform.matrix.a;
+  }
+
   for (var n in group.childNodes){
     var node = group.childNodes[n];
     if (node.tagName == "path") this.shapes.push(node);
@@ -81,7 +88,6 @@ Display.prototype.draw = function(func){
 
       var x=0,y=0;
       var mx=0,my=0;
-      var scale = 0.2038;
 	    for (var i = 0; i < shape.pathSegList.numberOfItems; i++){
         var seg = shape.pathSegList.getItem(i);
 
@@ -97,26 +103,26 @@ Display.prototype.draw = function(func){
           case seg.PATHSEG_LINETO_REL:
             mx+=x;
             my+=y;
-            shape.points.push([this.x0 + x*scale,this.y0 + y*scale]);
+            shape.points.push([this.x0 + x*this.scale,this.y0 + y*this.scale]);
             x += seg.x;
             y += seg.y;
             break;
           case seg.PATHSEG_LINETO_ABS:
             mx+=x;
             my+=y;
-            shape.points.push([this.x0 + x*scale,this.y0 + y*scale]);
+            shape.points.push([this.x0 + x*this.scale,this.y0 + y*this.scale]);
             x = seg.x;
             y = seg.y;
             break;
           case seg.PATHSEG_CLOSE:
             mx+=x;
             my+=y;
-            shape.points.push([this.x0 + x*scale,this.y0 + y*scale]);
+            shape.points.push([this.x0 + x*this.scale,this.y0 + y*this.scale]);
           default:
         }
       }
 
-      shape.middle_point = [this.x0 + mx*scale/shape.points.length,this.y0 + my*scale/shape.points.length];
+      shape.middle_point = [this.x0 + mx*this.scale/shape.points.length,this.y0 + my*this.scale/shape.points.length];
     }
 
     if (func(shape.points, shape.middle_point))
