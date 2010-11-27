@@ -25,7 +25,7 @@ function init(evt){
 	var svgDoc=O.ownerDocument;
 	var svg = svgDoc.getElementsByTagName("svg")[0];
 
-  modules.push(new Display(svg, "MessOfTriangles.svg", 0, 0));
+  modules.push(new Display({svg:svg, template:"MessOfTriangles.svg", col:0, row:0}));
 
   var delta_t = 100; //frequency = 1/100ms = 10Hz
 	window.setInterval(timer, delta_t);

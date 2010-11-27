@@ -26,10 +26,10 @@ function init(evt){
 	var svg = svgDoc.getElementsByTagName("svg")[0];
 
   for (var i=0;i<5;i++){
-    modules.push(new Display(svg, "SquareGrid.svg", i, 0));
+    modules.push(new Display({svg:svg, template:"SquareGrid.svg", col:i, row:0}));
   }
   for (var i=0;i<5;i++){
-    modules.push(new Display(svg, "SquareGrid.svg", i, 1));
+    modules.push(new Display({svg:svg, template:"SquareGrid.svg", col:i, row:1}));
   }
 
   var delta_t = 100; //frequency = 1/100ms = 10Hz

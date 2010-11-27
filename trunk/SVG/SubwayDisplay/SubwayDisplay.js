@@ -11,23 +11,40 @@ function ajaxGet(url, callBack) {
   req.send(null);
 }
 
-var Display = function(svg, template_filename, col, row){
+var Display = function(config){
+  this.svg = config.svg;
+  this.col = config.col;
+  this.row = config.row;
+  //alert(config.display)
+  var template_filename = config["template"];
   this.shapes = new Array();
-  this.col = col;
-  this.row = row;
 
-  var self = this;
-  this.load_template(template_filename, function(template){self.init(svg, template)});
+  if (template_filename){
+    var self = this;
+    this.load_template(template_filename, function(template){self.init(template)});
+  } else {
+    if (config.display){
+      this.init(config.display);
+    } else {
+      alert("you should provide in the configuration dictionary at least a template filename or a reference to an svg:group that holds the geometry of your desired segmented-display.");
+    }
+  }
 }
 
-Display.prototype.init = function(svg, template){
-  svg.appendChild(template);
+Display.prototype.init = function(template){
+  if (this.svg)
+    this.svg.appendChild(template);
   
   var group = template.getElementsByTagName("g")[0];
   var rect = template.getElementsByTagName("rect")[0];
 
-  this.x0 = this.col*(rect.width.baseVal.value + 2);
-  this.y0 = this.row*(rect.height.baseVal.value + 2);
+  if (rect){
+    this.x0 = this.col*(rect.width.baseVal.value + 2);
+    this.y0 = this.row*(rect.height.baseVal.value + 2);
+  } else {
+    this.x0 = 0;//this.col*(this.width + 2);
+    this.y0 = 0;//this.row*(this.height + 2);  
+  }
 
   template.setAttribute("transform", "translate("+this.x0+","+this.y0+")");
   
@@ -36,10 +53,14 @@ Display.prototype.init = function(svg, template){
     transform = transforms.getItem(t);
     this.scale = transform.matrix.a;
   }
+  
+  if (!this.scale)
+    this.scale=1;
 
   for (var n in group.childNodes){
     var node = group.childNodes[n];
-    if (node.tagName == "path") this.shapes.push(node);
+    if (node.tagName == "path")
+      this.shapes.push(node);
   }
 }
 
@@ -69,18 +90,11 @@ Display.prototype.turn_off = function(i){
 }
 
 Display.prototype.turn_on_shape = function(s){
-	if (s) s.setAttribute("style", "fill:#fcfb79");
+	if (s) s.style.fill = "#fcfb79";
 }
 
 Display.prototype.turn_off_shape = function(s){
-	if (s) s.setAttribute("style", "fill:#4d1908");
-}
-
-Display.prototype.random_flashing = function(){
-	for (var i=0;i<20;i++){
-		this.turn_on(Math.floor(Math.random()*this.shapes.length));
-		this.turn_off(Math.floor(Math.random()*this.shapes.length));
-	}
+	if (s) s.style.fill = "#4d1908";
 }
 
 Display.prototype.draw = function(func){
@@ -93,7 +107,6 @@ Display.prototype.draw = function(func){
       var mx=0,my=0;
 	    for (var i = 0; i < shape.pathSegList.numberOfItems; i++){
         var seg = shape.pathSegList.getItem(i);
-
         switch(seg.pathSegType){
           case seg.PATHSEG_MOVETO_REL:
             x += seg.x;
