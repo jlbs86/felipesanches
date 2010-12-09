@@ -20,21 +20,33 @@ clock = pygame.time.Clock()
 FPS = 30
 cont = 1
 
+numbers = []
+
 curve = []
 curvelen = 0
+snap = 1
 
 LD = LaserDisplay()
 
 while cont == 1:
-  clock.tick(FPS)
+#  clock.tick(FPS)
 
   for event in pygame.event.get():
     if event.type == pygame.KEYDOWN:
       if event.key == pygame.K_ESCAPE:
         cont = 0
+      if event.key == pygame.K_r:
+        curve = []
+        curvelen = 0
+      if event.key == pygame.K_a:
+        numbers.append(curve)
+        print numbers
     if event.type == pygame.MOUSEBUTTONDOWN:
       curvelen += 1
-      curve.append( [ 255-(float)(event.pos[0])/WIDTH*255, 255-(float)(event.pos[1])/HEIGHT*255 ] )
+      if snap:
+        curve.append( [ int(255-(float)(event.pos[0])/WIDTH*255), int(255-(float)(event.pos[1])/HEIGHT*255 ) ] )
+      else:
+        curve.append( [ 255-(float)(event.pos[0])/WIDTH*255, 255-(float)(event.pos[1])/HEIGHT*255 ] )
 
   m_x = (float)(pygame.mouse.get_pos()[0])/WIDTH
   m_x = 1.0 - m_x
@@ -53,11 +65,28 @@ while cont == 1:
   if m_y > 249:
     m_y = 249
 
+  MIN_BORDER = 64
+  MAX_BORDER = 192
+
   LD.set_color([0xff, 0x00, 0xff])
+  mouse = gen_circle(MIN_BORDER, MIN_BORDER, 1)
+  LD.draw_bezier(mouse, 2)
+  mouse = gen_circle(MIN_BORDER, MAX_BORDER, 1)
+  LD.draw_bezier(mouse, 2)
+  mouse = gen_circle(MAX_BORDER, MAX_BORDER, 1)
+  LD.draw_bezier(mouse, 2)
+  mouse = gen_circle(MAX_BORDER, MIN_BORDER, 1)
+  LD.draw_bezier(mouse, 2)
 
   mouse = gen_circle(m_x, m_y, 3)
-  LD.draw_bezier(mouse, 5)
+  LD.draw_bezier(mouse, 2)
 
   LD.set_color([0xff, 0x00, 0x00])
   if curvelen >= 3:
     LD.draw_bezier(curve, 8);
+
+  if curvelen % 2 == 0 and curvelen > 0:
+    circle = gen_circle(curve[curvelen-1][0], curve[curvelen-1][1], 2)
+    LD.set_color([0x00,0xff,0xff])
+    LD.draw_bezier(circle,4)
+    LD.draw_bezier(curve[-2:]+[[m_x,m_y]], 5)
