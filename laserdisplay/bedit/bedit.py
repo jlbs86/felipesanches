@@ -14,7 +14,7 @@ def gen_circle(x, y, r):
     points.append([(int)(x + (CIRCLE[i][0]-0.5)*r*2), (int)(y + (CIRCLE[i][1]-0.5)*r*2-0.5)])
   return points
 
-size=WIDTH,HEIGHT;screen=pygame.display.set_mode(size);
+size=WIDTH,HEIGHT;screen=pygame.display.set_mode(size, pygame.FULLSCREEN);
 clock = pygame.time.Clock()
 
 FPS = 30
@@ -27,6 +27,11 @@ curvelen = 0
 snap = 1
 
 LD = LaserDisplay()
+
+def clamp_int(value, min, max):
+  if value > max: return max
+  if value < min: return min
+  return value
 
 while cont == 1:
 #  clock.tick(FPS)
@@ -43,27 +48,20 @@ while cont == 1:
         print numbers
     if event.type == pygame.MOUSEBUTTONDOWN:
       curvelen += 1
+      x = clamp_int(255-(float)(event.pos[0])/WIDTH*255, 3, 252)
+      y = clamp_int(255-(float)(event.pos[1])/HEIGHT*255, 3, 252)
       if snap:
-        curve.append( [ int(255-(float)(event.pos[0])/WIDTH*255), int(255-(float)(event.pos[1])/HEIGHT*255 ) ] )
+        curve.append( [ int(x), int(y) ] )
       else:
-        curve.append( [ 255-(float)(event.pos[0])/WIDTH*255, 255-(float)(event.pos[1])/HEIGHT*255 ] )
+        curve.append( [ x, y ] )
 
   m_x = (float)(pygame.mouse.get_pos()[0])/WIDTH
   m_x = 1.0 - m_x
   m_y = (float)(pygame.mouse.get_pos()[1])/HEIGHT
   m_y = 1.0 - m_y
 
-  m_x *= 255
-  m_y *= 255
-
-  if m_x < 6:
-    m_x = 6
-  if m_x > 249:
-    m_x = 249
-  if m_y < 6:
-    m_y = 6
-  if m_y > 249:
-    m_y = 249
+  m_x = clamp_int(m_x * 255, 6, 249)
+  m_y = clamp_int(m_y * 255, 6, 249)
 
   MIN_BORDER = 64
   MAX_BORDER = 192
