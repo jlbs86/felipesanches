@@ -6,9 +6,14 @@ import math
 PI=3.1415
 
 class LaserDisplay():
-  # Configuration flags
+#------ Configuration flags ------
+
+  # Note that these are named according to what we think they do.
+  # Maybe they do something completely different. 
   ALWAYS_ON = 1
   SOMETHING = 2
+
+#------ Initialization of the device ------
 
   def __init__(self):
     # find our device
@@ -34,28 +39,37 @@ class LaserDisplay():
 
     assert self.ep is not None
 
-    self.flags = self.ALWAYS_ON
+    self.initflags = 0
+    self.deinitflags = 0
 
+    # Just a configuration to have a stable laser output. We have to look into this
     self.ep.write([0xca, 0x2a]);
 
     self.set_color([0xFF,0x00,0x00])
 
-  def set_flags(self, flags):
-    self.flags = flags
+#------ Configuration functions that affect the message generation ------
+
+  def set_init_flags(self, flags):
+    self.init_flags = flags
+
+  def set_deinit_flags(self, flags):
+    self.deinit_flags = flags
 
   def set_color(self, c):
     self.color = {"R": c[0], "G": c[1], "B": c[2]}
+
+#------ Message generation methods. You can use the generated messages to draw something ------
   
-  def line_message(self, x1,y1,x2,y2):
-    return [x1, 0x00, y1, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x03, x2, 0x00, y2, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x02]
+  def line_message(self, x1, y1, x2, y2):
+    return [x1, 0x00, y1, 0x00,                                                 # First DWord is point one position
+            self.color["R"], self.color["G"], self.color["B"], self.init_flags, # Configuration for the first point
+            x2, 0x00, y2, 0x00,                                                 # Position of the second point
+            self.color["R"], self.color["G"], self.color["B"], deinit_flags]    # Second point's config
 
   def point_message(self, x, y):
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
 
-  def draw_line(self, x1,y1,x2,y2):
-    self.ep.write(self.line_message(x1, y1, x2, y2))
-
-  def draw_bezier(self, points, steps):
+  def bezier_message(self, points, steps):
     if len(points) < 3:
       print "Quadratic Bezier curves have to have at least three points"
       return
@@ -80,7 +94,15 @@ class LaserDisplay():
                                        t_1 * (t_1 * points[i]  [1] + t * points[i+1][1]) + \
                                        t   * (t_1 * points[i+1][1] + t * points[i+2][1])))
 
+#------ Message generation methods. You can use the generated messages to draw something ------
+
+  def draw(message):
     self.ep.write(message)
+
+  def draw_line(self, x1, y1, x2, y2):
+    self.ep.write(self.line_message(x1, y1, x2, y2))
+
+#------ XXX: Are the following methods needed? ------
 
   #TODO: refactor it. It should not be in our API
   def draw_dashed_circle(self, x,y,r, c1, c2):
