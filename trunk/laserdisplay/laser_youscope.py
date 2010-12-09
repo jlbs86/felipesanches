@@ -11,7 +11,7 @@ import struct
 import pygame
 import sys
 import math
-import LaserDisplay
+from LaserDisplay import LaserDisplay
 
 SIZE = (1.5*640,1.5*480)
 DOTCOLOR  = (0,255,0)
@@ -59,7 +59,9 @@ y_old=0
 
 for _ in range(1000):
     frames = wro.readframes(READ_LENGTH)
-LaserDisplay.set_color(0xff, 0xff, 0xff)
+
+display = LaserDisplay()
+display.set_color([0xff, 0xff, 0xff])
 
 while True:
     clock.tick(FPS)
@@ -74,17 +76,17 @@ while True:
     surface.fill(BGCOLOR)
     surface.blit(grid, grid.get_rect())
     
-    LaserDisplay.start_frame()
+    display.start_frame()
     for i in range(0,READ_LENGTH,4):
         r = struct.unpack('hh', frames[i:i+4])
         x = int(r[1]*SIZE[0]/65536) + SIZE[0]/2 
         y = int(-r[0]*SIZE[1]/65536) + SIZE[1]/2
         surface.set_at((x,y), DOTCOLOR)
-        LaserDisplay.add_line(x_old*256/SIZE[0],255-y_old*256/SIZE[1],x*256/SIZE[0],255-y*256/SIZE[1])
+        display.schedule(display.line_message(x_old*256/SIZE[0],255-y_old*256/SIZE[1],x*256/SIZE[0],255-y*256/SIZE[1]))
         x_old=x
         y_old=y
 
-    LaserDisplay.end_frame()
+    display.end_frame()
     screen.blit(surface, surface.get_rect())
         
     pygame.display.flip()
