@@ -33,3 +33,12 @@ while True:
   r *= 2.0/3
   LD.draw_line(WIDTH/2, HEIGHT/2, WIDTH/2 + r*math.cos(angle), HEIGHT/2 + r*math.sin(angle))
 
+
+  r1 = 2.0/3 * (WIDTH/2)
+  r2 = 1.9/3 * (WIDTH/2)
+
+  LD.set_color(WHITE)  
+  for i in range(12):
+    angle = i * 2*PI/12
+    LD.draw_line(WIDTH/2 + r1*math.cos(angle), HEIGHT/2 + r1*math.sin(angle), WIDTH/2 + r2*math.cos(angle), HEIGHT/2 + r2*math.sin(angle))
+
