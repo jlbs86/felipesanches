@@ -3,15 +3,17 @@ from LaserDisplay import *
 import math
 import random
 
-WIDTH = 200
-HEIGHT = 200
+WIDTH = 100
+HEIGHT = 100
 
 NUM_POINTS = 6
 NUM_SHAPES = 4
 PI = 3.1415
-MAXSPEED = 16
+MAXSPEED = 8
+NOISE = 3
 PROBAB_COLOR_CHANGE=0.05
 COLOR_CHANGE_MAXSTEP = 256
+
 
 class Particle:
   def __init__(self, display):
@@ -37,13 +39,13 @@ class Particle:
     self.vx += self.ax
     self.vy += self.ay
 
-    if self.x < self.r or self.x > 255-self.r or self.y < self.r or self.y > 255-self.r:
+    if self.x < self.r or self.x > WIDTH-self.r or self.y < self.r or self.y > HEIGHT-self.r:
       self.reset()
 
     if random.random()<PROBAB_COLOR_CHANGE:
       self.color[0] = clamp(self.color[0] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
       self.color[1] = clamp(self.color[1] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
-      self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
+      self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)    
 
 LD = LaserDisplay()
 
@@ -56,7 +58,7 @@ for _ in range (NUM_SHAPES):
     
   shapes.append(particles)
 
-LD.set_noise(15)
+LD.set_noise(NOISE)
   
 while True:
   for particles in shapes:
