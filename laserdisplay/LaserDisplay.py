@@ -65,11 +65,15 @@ class LaserDisplay():
         )
 
     assert self.ep is not None    
+
+    self.adjust_glyphs()
+
+    #default values
+    self.blanking_delay = 157
+    self.scan_rate = 34000
+    self.set_color(RED)   
     self.flags = self.ALWAYS_ON
     self.MaxNoise = 0
-    self.ep.write([0xca, 0x2a]);
-    self.set_color(RED)   
-    self.adjust_glyphs()
     
   def adjust_glyphs(self):
     for k in self.GLYPHS.keys():
@@ -132,21 +136,27 @@ class LaserDisplay():
   def set_color(self, c):
     self.color = {"R": c[0], "G": c[1], "B": c[2]}
   
-  def set_scan_rate(self, value=34000):
+  def set_scan_rate(self, value):
     if value<5000:
       value = 5000
       print "minimum allowed scan rate value is 5000"
     if value>45000:
       value = 45000
       print "maximum allowed scan rate value is 45000"
+    self.scan_rate = value
     
-  def set_blanking_delay(self, value=157):
-    #range: 0 -> 255
-    pass
+  def set_blanking_delay(self, value):
+    if value<0:
+      value = 0
+      print "minimum allowed blanking delay value is 0"
+    if value>255:
+      value = 255
+      print "maximum allowed blanking delay value is 255"
 
-  def set_something_else(self, value):
-    #range: 5000 -> 45000
-    pass
+    self.blanking_delay = value
+
+  def send_configuration():
+    self.ep.write([self.blanking_delay, 0xc8 - (45000 - self.scan_rate)/200])
 
   def apply_context_transforms(self, x,y):
     vector = self.ctm*matrix([x,y,1]).transpose()
@@ -249,7 +259,7 @@ class LaserDisplay():
       else:
         self.set_color(c2)
         
-      self.ep.write(self.line_message(x + r*math.cos(alpha*2*PI/step), y + r*math.sin(alpha*2*PI/step), x + r*math.cos((alpha+1)*2*PI/step), y + r*math.sin((alpha+1)*2*PI/step)))
+      self.draw_line(x + r*math.cos(alpha*2*PI/step), y + r*math.sin(alpha*2*PI/step), x + r*math.cos((alpha+1)*2*PI/step), y + r*math.sin((alpha+1)*2*PI/step))
 
   def start_frame(self):
     self.messageBuffer = []
