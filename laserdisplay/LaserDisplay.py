@@ -16,6 +16,19 @@ class LaserDisplay():
   ALWAYS_ON = 1
   SOMETHING = 2
 
+  # Shapes for our characher rendering routine
+  GLYPHS = {"0": [[191, 130], [194, 194], [127, 191], [65, 191], [62, 129], [64, 62], [125, 62], [195, 65], [192, 131]],
+  "1": [[178, 133], [130, 149], [119, 191], [118, 116], [121, 62]],
+  "2": [[187, 131], [192, 189], [125, 192], [66, 190], [64, 149], [95, 97], [191, 66], [122, 63], [62, 64]],
+  "3": [[189, 161], [192, 197], [120, 193], [12, 188], [111, 126], [21, 64], [120, 60], [189, 64], [189, 96]],
+  "4": [[66, 127], [121, 128], [193, 125], [134, 156], [124, 194], [123, 128], [122, 64]],
+  "5": [[65, 192], [122, 192], [192, 192], [192, 161], [190, 133], [64, 137], [63, 99], [65, 63], [192, 64]],
+  "6": [[62, 160], [62, 193], [119, 194], [192, 194], [193, 133], [193, 65], [127, 62], [63, 64], [62, 99], [63, 130], [120, 131], [186, 125], [183, 93]],
+  "7": [[194, 191], [124, 191], [64, 191], [146, 142], [188, 63]],
+  "8": [[192, 164], [192, 193], [126, 195], [67, 192], [64, 165], [65, 137], [119, 133], [190, 134], [193, 102], [195, 64], [122, 60], [62, 64], [60, 89], [58, 119], [121, 132], [189, 134], [192, 166]],
+  "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
+  ":": []}
+
   def __init__(self):  
     #self.ReplayInitLog()
 
@@ -49,6 +62,12 @@ class LaserDisplay():
     self.ep.write([0xca, 0x2a]);
 
     self.set_color([0xFF,0x00,0x00])
+    
+    self.adjust_glyphs()
+    
+  def adjust_glyphs(self):
+    for k in self.GLYPHS.keys():
+      self.GLYPHS[k] = map(lambda(p):([p[0]/255.0,p[1]/255.0]),self.GLYPHS[k])
 
   def ReplayInitLog(self):
     # find our device
@@ -129,6 +148,18 @@ class LaserDisplay():
 
   def draw_line(self, x1,y1,x2,y2):
     self.ep.write(self.line_message(x1, y1, x2, y2))
+
+  def gen_glyph_data(self, char, x, y, rx, ry):
+    glyph_data = []
+    for i in range(len(self.GLYPHS[char])):
+      glyph_data.append([(int)(x + (self.GLYPHS[char][i][0])*rx),(int)(y + (self.GLYPHS[char][i][1])*ry)]);
+    return glyph_data
+
+  def draw_text(self, string, x, y, size, kerning_percentage = -0.3):
+    for char in string:
+      glyph_curve = self.gen_glyph_data(char, x, y, size, size*2)
+      self.draw_bezier(glyph_curve, 5)
+      x -= int(size + size * kerning_percentage)
 
   def draw_bezier(self, points, steps):
     if len(points) < 3:
