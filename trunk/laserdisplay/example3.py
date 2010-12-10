@@ -1,15 +1,10 @@
 #!/usr/bin/env python
-from LaserDisplay import LaserDisplay
+from LaserDisplay import *
 import math
 import random
 
 WIDTH = 200
 HEIGHT = 200
-
-def clamp(value, min, max):
-  if value > max: return max
-  if value < min: return min
-  return int(value)
 
 NUM_POINTS = 6
 NUM_SHAPES = 4
@@ -51,9 +46,6 @@ class Particle:
       self.color[1] = clamp(self.color[1] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
       self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
 
-  def render(self):
-    self.d.draw_dashed_circle(self.x, self.y, self.r, self.color, self.color)
-
 LD = LaserDisplay()
 
 shapes = []
@@ -70,18 +62,7 @@ while True:
     points = []
     for p in particles:
       p.update_position()
-      #p.render()
       points.append([p.x,p.y])
       LD.set_color(p.color)
     LD.draw_bezier(points, 10)
 
-LD.draw_bezier(circle, 10)
-LD.set_color(GREEN)
-LD.draw_bezier(circle2, 6)
-LD.set_color([0xff,0x00,0x20])
-LD.draw_line(PLAYER1_X, player1-20, PLAYER1_X, player1+20)
-LD.set_color([0x20,0xff,0xff])
-LD.draw_line(PLAYER2_X, player2-20, PLAYER2_X, player2+20)
-
-draw_text("%02i"%(score1), 20, 220, 20)
-draw_text("%02i"%(score2), 235, 220, 20)
