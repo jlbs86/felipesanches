@@ -4,24 +4,27 @@ import usb.core
 import usb.util
 import math
 PI=3.1415
+from random import random
+
+def clamp(value, min, max):
+  if value > max: return max
+  if value < min: return min
+  return int(value)
 
 class LaserDisplay():
-#------ Configuration flags ------
-
-  # Note that these are named according to what we think they do.
-  # Maybe they do something completely different. 
+  # Configuration flags
   ALWAYS_ON = 1
   SOMETHING = 2
 
-#------ Initialization of the device ------
+  def __init__(self):  
+    #self.ReplayInitLog()
 
-  def __init__(self):
     # find our device
     self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
 
     # was it found?
     if self.usbdev is None:
-        raise ValueError('Device not found')
+        raise ValueError('Device (9999:5555) not found')
 
     # set the active configuration. With no arguments, the first
     # configuration will be the active one
@@ -38,38 +41,93 @@ class LaserDisplay():
         )
 
     assert self.ep is not None
+    
+    self.flags = self.ALWAYS_ON
 
-    self.initflags = 0
-    self.deinitflags = 0
+    self.MaxNoise = 0
 
-    # Just a configuration to have a stable laser output. We have to look into this
     self.ep.write([0xca, 0x2a]);
 
     self.set_color([0xFF,0x00,0x00])
 
-#------ Configuration functions that affect the message generation ------
+  def ReplayInitLog(self):
+    # find our device
+    self.usbdev=None
+    for bus in usb.busses():
+      for dev in bus.devices:
+        if dev.idVendor == 0x3333:
+          self.usbdev = dev
+    
+    # was it found?
+    if self.usbdev is None:
+        raise ValueError('Device (3333:5555) not found')
 
-  def set_init_flags(self, flags):
-    self.init_flags = flags
+    handle = self.usbdev.open() 
+  
+    print "Initializing device using data collected with USBSnoop"
+    snifferlog = open("usbinit.log")
 
-  def set_deinit_flags(self, flags):
-    self.deinit_flags = flags
+    for line in snifferlog.readlines():
+      setup_packet = line.split("|")[0]
+      buf = line.split("|")[-1]
+      if len(buf):
+        values = setup_packet.strip().split(" ")
+        reqType = int(values[0],16)
+        req = int(values[1],16)
+ 
+        value = int(values[3],16)*256+int(values[2],16)
+        index = int(values[5],16)*256+int(values[4],16)
+        length = int(values[7],16)*256+int(values[6],16)
+
+        value = int(values[2],16)*256+int(values[3],16)
+        index = int(values[4],16)*256+int(values[5],16)
+        length = int(values[6],16)*256+int(values[7],16)
+ 
+        print "=== sending ==="
+        print "bmRequestType: "+hex(reqType)
+        print "bRequest: "+hex(req)
+        print "wValue: "+hex(value)
+        print "wIndex: "+hex(index)
+        print "buffer: "+buf
+
+        buf = "".join([chr(int(byte,16)) for byte in buf.strip().split(" ")])
+        handle.controlMsg(reqType,req,buf,value,index)   
+
+    print "done."
+
+  def set_noise(self, value):
+    self.MaxNoise = value
+    
+  def set_flags(self, flags):
+    self.flags = flags
 
   def set_color(self, c):
     self.color = {"R": c[0], "G": c[1], "B": c[2]}
-
-#------ Message generation methods. You can use the generated messages to draw something ------
   
-  def line_message(self, x1, y1, x2, y2):
-    return [x1, 0x00, y1, 0x00,                                                 # First DWord is point one position
-            self.color["R"], self.color["G"], self.color["B"], self.init_flags, # Configuration for the first point
-            x2, 0x00, y2, 0x00,                                                 # Position of the second point
-            self.color["R"], self.color["G"], self.color["B"], deinit_flags]    # Second point's config
+  def line_message(self, x1,y1,x2,y2):
+    x1+=random()*self.MaxNoise-self.MaxNoise/2
+    y1+=random()*self.MaxNoise-self.MaxNoise/2
+    x2+=random()*self.MaxNoise-self.MaxNoise/2
+    y2+=random()*self.MaxNoise-self.MaxNoise/2
+
+    x1 = clamp(x1,0,255)
+    y1 = clamp(y1,0,255)
+    x2 = clamp(x2,0,255)
+    y2 = clamp(y2,0,255)
+    return [x1, 0x00, y1, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x03, x2, 0x00, y2, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x02]
 
   def point_message(self, x, y):
+    x+=random()*self.MaxNoise-self.MaxNoise/2
+    y+=random()*self.MaxNoise-self.MaxNoise/2
+    x = clamp(x,0,255)
+    y = clamp(y,0,255)
+
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
 
-  def bezier_message(self, points, steps):
+  def draw_line(self, x1,y1,x2,y2):
+    self.ep.write(self.line_message(x1, y1, x2, y2))
+
+  def draw_bezier(self, points, steps):
     if len(points) < 3:
       print "Quadratic Bezier curves have to have at least three points"
       return
@@ -94,15 +152,7 @@ class LaserDisplay():
                                        t_1 * (t_1 * points[i]  [1] + t * points[i+1][1]) + \
                                        t   * (t_1 * points[i+1][1] + t * points[i+2][1])))
 
-#------ Message generation methods. You can use the generated messages to draw something ------
-
-  def draw(message):
     self.ep.write(message)
-
-  def draw_line(self, x1, y1, x2, y2):
-    self.ep.write(self.line_message(x1, y1, x2, y2))
-
-#------ XXX: Are the following methods needed? ------
 
   #TODO: refactor it. It should not be in our API
   def draw_dashed_circle(self, x,y,r, c1, c2):
