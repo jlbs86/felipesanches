@@ -6,10 +6,18 @@ import random
 WIDTH = 200
 HEIGHT = 200
 
-NUM_POINTS = 10
-NUM_SHAPES = 3
+def clamp(value, min, max):
+  if value > max: return max
+  if value < min: return min
+  return int(value)
+
+NUM_POINTS = 6
+NUM_SHAPES = 4
 PI = 3.1415
-MAXSPEED = 2
+MAXSPEED = 16
+PROBAB_COLOR_CHANGE=0.05
+COLOR_CHANGE_MAXSTEP = 256
+
 RED = [255,0,0]
 class Particle:
   def __init__(self, display):
@@ -29,7 +37,7 @@ class Particle:
     self.ax=0
     self.ay=0
 
-  def update_position(self):
+  def update_position(self):      
     self.x += self.vx
     self.y += self.vy
     self.vx += self.ax
@@ -37,6 +45,11 @@ class Particle:
 
     if self.x < self.r or self.x > 255-self.r or self.y < self.r or self.y > 255-self.r:
       self.reset()
+
+    if random.random()<PROBAB_COLOR_CHANGE:
+      self.color[0] = clamp(self.color[0] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
+      self.color[1] = clamp(self.color[1] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
+      self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
 
   def render(self):
     self.d.draw_dashed_circle(self.x, self.y, self.r, self.color, self.color)
@@ -60,7 +73,7 @@ while True:
       #p.render()
       points.append([p.x,p.y])
       LD.set_color(p.color)
-    LD.draw_bezier(points, 5)
+    LD.draw_bezier(points, 10)
 
 LD.draw_bezier(circle, 10)
 LD.set_color(GREEN)
