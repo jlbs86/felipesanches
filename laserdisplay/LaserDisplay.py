@@ -19,7 +19,7 @@ def clamp(value, min, max):
   if value > max: return max
   if value < min: return min
   return int(value)
-
+  
 class LaserDisplay():
   # Configuration flags
   ALWAYS_ON = 1
@@ -178,8 +178,8 @@ class LaserDisplay():
     x2+=random()*self.MaxNoise-self.MaxNoise/2
     y2+=random()*self.MaxNoise-self.MaxNoise/2
     
-    x1,y1 = apply_context_transforms(x1,y1)
-    x2,y2 = apply_context_transforms(x2,y2)
+    x1,y1 = self.apply_context_transforms(x1,y1)
+    x2,y2 = self.apply_context_transforms(x2,y2)
 
     x1 = clamp(x1,0,255)
     y1 = clamp(y1,0,255)
