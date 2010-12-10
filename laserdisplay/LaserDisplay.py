@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from numpy import *
 import usb.core
 import usb.util
 import math
@@ -37,7 +38,9 @@ class LaserDisplay():
   "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
   ":": []}
 
-  def __init__(self):  
+  def __init__(self):
+    self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
+    
     #self.ReplayInitLog()
 
     # find our device
@@ -61,16 +64,11 @@ class LaserDisplay():
                     usb.util.ENDPOINT_OUT
         )
 
-    assert self.ep is not None
-    
+    assert self.ep is not None    
     self.flags = self.ALWAYS_ON
-
     self.MaxNoise = 0
-
     self.ep.write([0xca, 0x2a]);
-
-    self.set_color([0xFF,0x00,0x00])
-    
+    self.set_color(RED)   
     self.adjust_glyphs()
     
   def adjust_glyphs(self):
@@ -134,21 +132,64 @@ class LaserDisplay():
   def set_color(self, c):
     self.color = {"R": c[0], "G": c[1], "B": c[2]}
   
+  def set_scan_rate(self, value=34000):
+    if value<5000:
+      value = 5000
+      print "minimum allowed scan rate value is 5000"
+    if value>45000:
+      value = 45000
+      print "maximum allowed scan rate value is 45000"
+    
+  def set_blanking_delay(self, value=157):
+    #range: 0 -> 255
+    pass
+
+  def set_something_else(self, value):
+    #range: 5000 -> 45000
+    pass
+
+  def apply_context_transforms(self, x,y):
+    vector = self.ctm*matrix([x,y,1]).transpose()
+    return vector[0], vector[1]
+
+  def save(self):
+    self.saved_matrix = self.ctm
+
+  def restore(self):
+    self.ctm = self.saved_matrix
+    
+  def rotate(self, angle):
+    self.ctm = matrix([[math.cos(angle), -math.sin(angle), 0.0], [math.sin(angle), math.cos(angle), 0.0], [0.0, 0.0, 1.0]])*self.ctm
+
+  def translate(self, x, y):
+    self.ctm = matrix([[1.0, 0.0, float(x)], [0.0, 1.0, float(y)], [0.0, 0.0, 1.0]])*self.ctm
+    
+  def rotate_at(self,cx,cy,angle):
+    self.translate(-cx,-cy)
+    self.rotate(angle)
+    self.translate(cx,cy)
+    
   def line_message(self, x1,y1,x2,y2):
     x1+=random()*self.MaxNoise-self.MaxNoise/2
     y1+=random()*self.MaxNoise-self.MaxNoise/2
     x2+=random()*self.MaxNoise-self.MaxNoise/2
     y2+=random()*self.MaxNoise-self.MaxNoise/2
+    
+    x1,y1 = apply_context_transforms(x1,y1)
+    x2,y2 = apply_context_transforms(x2,y2)
 
     x1 = clamp(x1,0,255)
     y1 = clamp(y1,0,255)
     x2 = clamp(x2,0,255)
     y2 = clamp(y2,0,255)
+    
     return [x1, 0x00, y1, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x03, x2, 0x00, y2, 0x00, self.color["R"], self.color["G"], self.color["B"], 0x02]
 
   def point_message(self, x, y):
     x+=random()*self.MaxNoise-self.MaxNoise/2
     y+=random()*self.MaxNoise-self.MaxNoise/2
+    
+    x,y = self.apply_context_transforms(x,y)
     x = clamp(x,0,255)
     y = clamp(y,0,255)
 
