@@ -13,7 +13,6 @@ MAXSPEED = 16
 PROBAB_COLOR_CHANGE=0.05
 COLOR_CHANGE_MAXSTEP = 256
 
-RED = [255,0,0]
 class Particle:
   def __init__(self, display):
     self.d = display
@@ -56,6 +55,8 @@ for _ in range (NUM_SHAPES):
     particles.append(p)
     
   shapes.append(particles)
+
+LD.set_noise(15)
   
 while True:
   for particles in shapes:
