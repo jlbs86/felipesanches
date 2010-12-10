@@ -14,11 +14,32 @@ cx,cy = WIDTH/2, HEIGHT/2
 
 angle=0
 while True:
-    angle+=0.1
-    LD.set_color(RED)
+    angle+=0.01
     LD.save()
+    LD.scale(0.2)
     LD.rotate_at(cx,cy,angle)
+    LD.set_color(RED)
+    LD.draw_bezier(ship, 10)
+    LD.translate(10,0)
+    LD.set_color(GREEN)
     LD.draw_bezier(ship, 10)
     LD.restore()
+    
+    
+    LD.save()
+    LD.scale(0.4)
+    LD.rotate_at(cx,cy,angle+2*PI*0.4)
+
+    LD.translate(30,50)
+    LD.set_color(RED)
+    LD.draw_bezier(ship, 10)
+
+    LD.translate(30,0)
+    LD.set_color(GREEN)
+    LD.draw_bezier(ship, 10)
+    LD.restore()
+    
+    
+    
 
 
