@@ -6,15 +6,15 @@ from twisted.internet.task import LoopingCall
 from twisted.internet import reactor
 
 def update_laser (connections):
-#  print connections
-
+  LD.start_frame()
   for con in connections:
     for cmd in con.buffered_commands:
-      #print cmd
       if cmd[0] == "line":
-        LD.draw_line(int(cmd[1]), int(cmd[2]), int(cmd[3]), int(cmd[4]))
+        msg = LD.line_message(int(cmd[1]), int(cmd[2]), int(cmd[3]), int(cmd[4]))
+        LD.schedule(msg)
       if cmd[0] == "color":
         LD.set_color([int(cmd[1]), int(cmd[2]), int(cmd[3])])
+  LD.end_frame()
 
 connections = []
 loop = LoopingCall(update_laser, connections)
