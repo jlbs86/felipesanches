@@ -90,7 +90,10 @@ class LaserDisplay():
         print "wIndex: "+hex(index)
         print "buffer: "+buf
 
-        buf = "".join([chr(int(byte,16)) for byte in buf.strip().split(" ")])
+        buf = ""
+        for byte in buf.strip().split(" "):
+          buf+=chr(int(byte,16))
+
         handle.controlMsg(reqType,req,buf,value,index)   
 
     print "done."
