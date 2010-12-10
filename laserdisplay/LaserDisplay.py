@@ -163,7 +163,10 @@ class LaserDisplay():
 
   def translate(self, x, y):
     self.ctm = matrix([[1.0, 0.0, float(x)], [0.0, 1.0, float(y)], [0.0, 0.0, 1.0]])*self.ctm
-    
+  
+  def scale(self, s):
+    self.ctm = matrix([[float(s), 0.0, 0.0], [0.0, float(s), 0.0], [0.0, 0.0, 1.0]])*self.ctm
+
   def rotate_at(self,cx,cy,angle):
     self.translate(-cx,-cy)
     self.rotate(angle)
@@ -257,4 +260,13 @@ class LaserDisplay():
   def schedule(self, message):
     for byte in message:
       self.messageBuffer.append(byte)
+
+
+class Laser3D(LaserDisplay):
+  def Draw_line(self, x1,y1,z1,x2,y2,z3):
+    self.set_color(RED)
+    self.draw_line(x1,y1,x2,y2)
+    self.set_color(GREEN)
+    self.draw_line(x1+z1,y1,x2+z2,y2)
+    
 
