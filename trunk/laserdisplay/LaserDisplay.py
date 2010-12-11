@@ -259,6 +259,35 @@ class LaserDisplay():
 
     self.device.write(message)
 
+  def cubic_bezier_message(self, points, steps):
+    if len(points) < 4:
+      print "Cubic Bezier curves have to have at least four points"
+      return
+
+    step_inc = 1.0/(steps)
+
+    self.set_flags(0x03)
+    message = self.point_message(points[0][0], points[0][1])
+    self.set_flags(0x00)
+
+    for i in range(0, len(points) - 3, 2):
+      t = 0.0
+      t_1 = 1.0
+      for s in range(steps):
+        t += step_inc
+        t_1 = 1.0 - t
+        if s == steps - 1 and i >= len(points) - 3:
+          self.set_flags(0x02)
+        message += self.point_message(t_1* (t_1 * (t_1 * points[i]  [0] + t * points[i+1][0]) + \
+                                             t   * (t_1 * points[i+1][0] + t * points[i+2][0])) +
+                                       t * (t_1 * (t_1 * points[i+1]  [0] + t * points[i+2][0]) + \
+                                            t   * (t_1 * points[i+2][0] + t * points[i+3][0])),  \
+                                       t_1 * (t_1 * (t_1 * points[i]  [1] + t * points[i+1][1]) + \
+                                              t   * (t_1 * points[i+1][1] + t * points[i+2][1])) +
+                                       t * (t_1 * (t_1 * points[i+1]  [1] + t * points[i+2][1]) + \
+                                              t   * (t_1 * points[i+2][1] + t * points[i+3][1])))
+    return message
+
   #TODO: refactor it. It should not be in our API
   def draw_dashed_circle(self, x,y,r, c1, c2):
     step = 32
