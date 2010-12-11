@@ -235,6 +235,10 @@ class LaserDisplay():
       x -= int(size + size * kerning_percentage)
 
   def draw_bezier(self, points, steps):
+    message = self.quadratic_bezier_message(points, steps)
+    self.device.write(message)
+    
+  def quadratic_bezier_message(self, points, steps):
     if len(points) < 3:
       print "Quadratic Bezier curves have to have at least three points"
       return
@@ -259,7 +263,7 @@ class LaserDisplay():
                                        t_1 * (t_1 * points[i]  [1] + t * points[i+1][1]) + \
                                        t   * (t_1 * points[i+1][1] + t * points[i+2][1])))
 
-    self.device.write(message)
+    return message
 
   def cubic_bezier_message(self, points, steps):
     if len(points) < 4:
