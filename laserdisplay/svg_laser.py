@@ -68,7 +68,7 @@ class SVGHandler(ContentHandler):
           ctrl1=tokens[i].split(",")
           ctrl2=tokens[i+1].split(",")
           delta=tokens[i+2].split(",")
-          #LD.schedule(LD.cubic_bezier_message(x,y,x+float(ctrl1[0]),y+float(ctrl1[1]),x+float(ctrl2[0]),y+float(ctrl2[1]),x+float(delta[0]),y+float(delta[1])))
+          LD.schedule(LD.cubic_bezier_message([[x,y],[x+float(ctrl1[0]),y+float(ctrl1[1])],[x+float(ctrl2[0]),y+float(ctrl2[1])],[x+float(delta[0]),y+float(delta[1])]],5))
           x+=float(delta[0])
           y+=float(delta[1])
           i+=2
@@ -76,7 +76,7 @@ class SVGHandler(ContentHandler):
           ctrl1=tokens[i].split(",")
           ctrl2=tokens[i+1].split(",")
           delta=tokens[i+2].split(",")
-#          LD.schedule(LD.cubic_bezier_message(x,y,float(ctrl1[0]),float(ctrl1[1]),float(ctrl2[0]),float(ctrl2[1]),float(delta[0]),float(delta[1])))
+          LD.schedule(LD.cubic_bezier_message([[x,y],[float(ctrl1[0]),float(ctrl1[1])],[float(ctrl2[0]),float(ctrl2[1])],[float(delta[0]),float(delta[1])]],5))
           x+=float(delta[0])
           y+=float(delta[1])
           i+=2
