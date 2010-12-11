@@ -99,7 +99,6 @@ class LaserDisplayDevice():
 
   def send_configuration(self, blanking_delay, scan_rate):
     self.ep.write([blanking_delay, (45000 - scan_rate)/200])
-#    self.ep.write([0xca, 0x2a]);
 
   def write(self, message):
     self.ep.write(message)
@@ -236,7 +235,8 @@ class LaserDisplay():
 
   def draw_bezier(self, points, steps):
     message = self.quadratic_bezier_message(points, steps)
-    self.device.write(message)
+    if message:
+      self.device.write(message)
     
   def quadratic_bezier_message(self, points, steps):
     if len(points) < 3:
@@ -312,8 +312,7 @@ class LaserDisplay():
     self.device.write(self.messageBuffer)
 
   def schedule(self, message):
-    for byte in message:
-      self.messageBuffer.append(byte)
+    self.messageBuffer += message
 
 
 class Laser3D(LaserDisplay):
