@@ -11,7 +11,7 @@ c2 = [0x00,0xFF,0x00] #green
 LD = LaserDisplay()
 while True:
   r+=1
-  if r>0x30:
+  if r>0x100:
     r=0
   LD.draw_dashed_circle(x, y, r, c1, c2)
 
