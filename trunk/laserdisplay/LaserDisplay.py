@@ -3,8 +3,6 @@
 import time
 import telnetlib
 from numpy import *
-import usb.core
-import usb.util
 import math
 from random import random
 PI=3.1415
@@ -38,6 +36,9 @@ class LaserDisplayDevice():
         self.localDevice = False
 
     if self.localDevice:
+      import usb.core
+      import usb.util
+
       #self.ReplayInitLog()
 
       # find our device
