@@ -9,21 +9,37 @@ QUAD_BEZ_QUALITY = 8
 CUBIC_BEZ_QUALITY = 8
 
 def update_laser (connections):
-  LD.start_frame()
+#  if len(connections):
+#    print "\n\n"+str(len(connections)) + " user(s) connected!"
   for con in connections:
+#    print "-----"
     for cmd in con.buffered_commands:
+      if len(cmd)==0:
+        break
       if cmd[0] == "line":
-        msg = LD.line_message(int(cmd[1]), int(cmd[2]), int(cmd[3]), int(cmd[4]))
+        msg = LD.line_message(float(cmd[1]), float(cmd[2]), float(cmd[3]), float(cmd[4]))
         LD.schedule(msg)
-      if cmd[0] == "quadratic":
-        msg = LD.quadratic_bezier_message([[int(cmd[1]), int(cmd[2])], [int(cmd[3]), int(cmd[4])], [int(cmd[5]), int(cmd[6])]], QUAD_BEZ_QUALITY)
+      elif cmd[0] == "quadratic":
+        cmd.pop(0)
+        points = []
+        while len(cmd)>=2:
+          x=float(cmd.pop(0))
+          y=float(cmd.pop(0))
+          points.append([x,y])
+        msg = LD.quadratic_bezier_message(points, QUAD_BEZ_QUALITY)
         LD.schedule(msg)
-      if cmd[0] == "cubic":
-        msg = LD.cubic_bezier_message([[int(cmd[1]), int(cmd[2])], [int(cmd[3]), int(cmd[4])], [int(cmd[5]), int(cmd[6])], [int(cmd[7]), int(cmd[8])]], CUBIC_BEZ_QUALITY)
+      elif cmd[0] == "cubic":
+        cmd.pop(0)
+        points = []
+        while len(cmd)>=2:
+          x=float(cmd.pop(0))
+          y=float(cmd.pop(0))
+          points.append([x,y])
+        msg = LD.cubic_bezier_message(points, CUBIC_BEZ_QUALITY)
         LD.schedule(msg)
-      if cmd[0] == "color":
+      elif cmd[0] == "color":
         LD.set_color([int(cmd[1]), int(cmd[2]), int(cmd[3])])
-  LD.end_frame()
+  LD.show_frame()
 
 connections = []
 loop = LoopingCall(update_laser, connections)
@@ -41,21 +57,22 @@ class SendContent(Protocol):
         self.transport.write(self.factory.text)
 
     def dataReceived(self, data):
-        self.transport.write("resposta: "+data)
-        cmd = data.split(" ")
+        lines = data.split("\n")
+        for line in lines:
+          cmd = line.split(" ")
 
-        if cmd[0].strip() == "show":
-          self.buffered_commands = self.incoming_commands
-          self.incoming_commands = []
-          return
+          if cmd[0].strip() == "show":
+            self.buffered_commands = self.incoming_commands
+            self.incoming_commands = []
+            return
 
-        if cmd[0].strip() == "quit":
-          self.buffered_commands = []
-          self.transport.loseConnection()
-          return
-          
-        if cmd[0].strip() in self.valid_commands:
-          self.incoming_commands.append(cmd)
+          if cmd[0].strip() == "quit":
+            self.buffered_commands = []
+            self.transport.loseConnection()
+            return
+            
+          if cmd[0].strip() in self.valid_commands:
+            self.incoming_commands.append(cmd)
 
 class SendContentFactory(Factory):
     protocol = SendContent

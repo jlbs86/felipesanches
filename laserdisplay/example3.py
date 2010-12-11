@@ -47,7 +47,8 @@ class Particle:
       self.color[1] = clamp(self.color[1] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
       self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)    
 
-LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
+#LD = LaserDisplay()
 
 shapes = []
 for _ in range (NUM_SHAPES):
@@ -61,13 +62,12 @@ for _ in range (NUM_SHAPES):
 LD.set_noise(NOISE)
   
 while True:
-  LD.start_frame()
   for particles in shapes:
     points = []
     for p in particles:
       p.update_position()
       points.append([p.x,p.y])
       LD.set_color(p.color)
-    LD.schedule(LD.quadratic_bezier_message(points, 10))
-  LD.end_frame()
+    LD.draw_quadratic_bezier(points, 10)
+  LD.show_frame()
 

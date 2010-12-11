@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import time
+import telnetlib
 from numpy import *
 import usb.core
 import usb.util
@@ -21,33 +23,45 @@ def clamp(value, min, max):
   if value > max: return max
   if value < min: return min
   return int(value)
-  
+
 class LaserDisplayDevice():
-  def __init__(self):
-    #self.ReplayInitLog()
+  def __init__(self, config=None):
+    self.localDevice = True
+    self.remoteDevice = None
+    if config:
+      if "server" in config:
+        if not "port" in config:
+          config["port"]=50000
 
-    # find our device
-    self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
+        print "remote laser server config: "+ str(config)
+        self.remoteDevice = telnetlib.Telnet(config["server"], config["port"])
+        self.localDevice = False
 
-    # was it found?
-    if self.usbdev is None:
-        raise ValueError('Device (9999:5555) not found')
+    if self.localDevice:
+      #self.ReplayInitLog()
 
-    # set the active configuration. With no arguments, the first
-    # configuration will be the active one
-    self.usbdev.set_configuration()
+      # find our device
+      self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
 
-    # get an endpoint instance
-    self.ep = usb.util.find_descriptor(
-            self.usbdev.get_interface_altsetting(),   # first interface
-            # match the first OUT endpoint
-            custom_match = \
-                lambda e: \
-                    usb.util.endpoint_direction(e.bEndpointAddress) == \
-                    usb.util.ENDPOINT_OUT
-        )
+      # was it found?
+      if self.usbdev is None:
+          raise ValueError('Device (9999:5555) not found')
 
-    assert self.ep is not None    
+      # set the active configuration. With no arguments, the first
+      # configuration will be the active one
+      self.usbdev.set_configuration()
+
+      # get an endpoint instance
+      self.ep = usb.util.find_descriptor(
+              self.usbdev.get_interface_altsetting(),   # first interface
+              # match the first OUT endpoint
+              custom_match = \
+                  lambda e: \
+                      usb.util.endpoint_direction(e.bEndpointAddress) == \
+                      usb.util.ENDPOINT_OUT
+          )
+
+      assert self.ep is not None    
 
   def ReplayInitLog(self):
     # find our device
@@ -98,10 +112,17 @@ class LaserDisplayDevice():
     print "done."
 
   def send_configuration(self, blanking_delay, scan_rate):
-    self.ep.write([blanking_delay, (45000 - scan_rate)/200])
+    if self.localDevice:
+      self.ep.write([blanking_delay, (45000 - scan_rate)/200])
+    else:
+      pass #TODO: add it to the protocol
 
   def write(self, message):
-    self.ep.write(message)
+    if self.localDevice:
+      self.ep.write(message)
+    else:
+      pass #TODO: add it to the protocol
+
 
 class LaserDisplay():
   # Configuration flags
@@ -121,15 +142,16 @@ class LaserDisplay():
   "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
   ":": []}
 
-  def __init__(self):
-    self.device = LaserDisplayDevice()
+  def __init__(self, config=None):
+    self.messageBuffer = []
+    self.device = LaserDisplayDevice(config)
     self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
    
     self.adjust_glyphs()
 
     #default values
     self.blanking_delay = 202
-    self.scan_rate = 45000
+    self.scan_rate = 37000
     self.set_color(WHITE)   
     self.flags = self.ALWAYS_ON
     self.MaxNoise = 0
@@ -146,7 +168,10 @@ class LaserDisplay():
     self.flags = flags
 
   def set_color(self, c):
-    self.color = {"R": c[0], "G": c[1], "B": c[2]}
+    if self.device.localDevice:
+      self.color = {"R": c[0], "G": c[1], "B": c[2]}
+    else:
+      self.device.remoteDevice.write("color %d %d %d\n" % (c[0], c[1], c[2]))
   
   def set_scan_rate(self, value):
     if value<5000:
@@ -219,7 +244,10 @@ class LaserDisplay():
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
 
   def draw_line(self, x1,y1,x2,y2):
-    self.device.write(self.line_message(x1, y1, x2, y2))
+    if self.device.localDevice:
+      self.schedule(self.line_message(x1, y1, x2, y2))
+    else:
+      self.device.remoteDevice.write("line %d %d %d %d\n" % (x1, y1, x2, y2))
 
   def gen_glyph_data(self, char, x, y, rx, ry):
     glyph_data = []
@@ -230,13 +258,30 @@ class LaserDisplay():
   def draw_text(self, string, x, y, size, kerning_percentage = -0.3):
     for char in string:
       glyph_curve = self.gen_glyph_data(char, x, y, size, size*2)
-      self.draw_bezier(glyph_curve, 5)
+      self.draw_quadratic_bezier(glyph_curve, 5)
       x -= int(size + size * kerning_percentage)
 
-  def draw_bezier(self, points, steps):
-    message = self.quadratic_bezier_message(points, steps)
-    if message:
-      self.device.write(message)
+  def draw_quadratic_bezier(self, points, steps):
+    if self.device.localDevice:
+      message = self.quadratic_bezier_message(points, steps)
+      if message:
+        self.schedule(message)
+    else:
+      msg = "quadratic"
+      for p in points:
+        msg+=" %f %f" % (p[0], p[1])
+      self.device.remoteDevice.write(msg+"\n")
+
+  def draw_cubic_bezier(self, points, steps):
+    if self.device.localDevice:
+      message = self.cubic_bezier_message(points, steps)
+      if message:
+        self.schedule(message)
+    else:
+      msg = "cubic"
+      for p in points:
+        msg+=" %f %f" % (p[0], p[1])
+      self.device.remoteDevice.write(msg+"\n")
     
   def quadratic_bezier_message(self, points, steps):
     if len(points) < 3:
@@ -305,11 +350,13 @@ class LaserDisplay():
         
       self.draw_line(x + r*math.cos(alpha*2*PI/step), y + r*math.sin(alpha*2*PI/step), x + r*math.cos((alpha+1)*2*PI/step), y + r*math.sin((alpha+1)*2*PI/step))
 
-  def start_frame(self):
-    self.messageBuffer = []
-
-  def end_frame(self):
-    self.device.write(self.messageBuffer)
+  def show_frame(self):
+    if self.device.localDevice:
+      self.device.write(self.messageBuffer)
+      self.messageBuffer = []
+    else:
+      self.device.remoteDevice.write("show\n")
+      time.sleep(1.0/24)
 
   def schedule(self, message):
     self.messageBuffer += message

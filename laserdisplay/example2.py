@@ -1,17 +1,16 @@
 #!/usr/bin/env python
 # This example draws a dashed 2 color circle with increasing radius length
-from LaserDisplay import LaserDisplay
+from LaserDisplay import *
 import math
 import pygame
 import random
 
+#LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
+
 x=0x80
 y=0x80
 r=0x00
-RED = [0x1F,0x80,0x00] #red
-GREEN = [0x00,0xFF,0x00] #green
-BLUE = [0x00,0x00,0xFF] #blue
-
 CIRCLE = [[0.0,0.5],[0.0,1.0],[0.5,1.0],[1.0,1.0],[1.0,0.5],[1.0,0.0],[0.5,0.0],[0.0,0.0],[0.0,0.5]]
 
 def gen_circle(x, y, r):
@@ -19,8 +18,6 @@ def gen_circle(x, y, r):
   for i in range(9):
     points.append([(int)(x + (CIRCLE[i][0]-0.5)*r*2), (int)(y + (CIRCLE[i][1]-0.5)*r*2-0.5)])
   return points
-
-LD = LaserDisplay()
 
 circle1 = gen_circle(0x80, 0x80, 0x10);
 circle2 = gen_circle(0x80, 0x80, 0x18);
@@ -187,9 +184,9 @@ while shutdown != 1:
   circle2 = gen_circle(ballx, bally, BALL_RADIUS-2)
 
   LD.set_color(RED)
-  LD.draw_bezier(circle, 10)
+  LD.draw_quadratic_bezier(circle, 10)
   LD.set_color(GREEN)
-  LD.draw_bezier(circle2, 6)
+  LD.draw_quadratic_bezier(circle2, 6)
   LD.set_color([0xff,0x00,0x20])
   LD.draw_line(PLAYER1_X, player1-20, PLAYER1_X, player1+20)
   LD.set_color([0x20,0xff,0xff])
@@ -197,3 +194,4 @@ while shutdown != 1:
 
   LD.draw_text("%02i"%(score1), 20, 220, 20)
   LD.draw_text("%02i"%(score2), 235, 220, 20)
+  LD.show_frame()
