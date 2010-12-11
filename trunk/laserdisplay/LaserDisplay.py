@@ -20,27 +20,8 @@ def clamp(value, min, max):
   if value < min: return min
   return int(value)
   
-class LaserDisplay():
-  # Configuration flags
-  ALWAYS_ON = 1
-  SOMETHING = 2
-
-  # Shapes for our characher rendering routine
-  GLYPHS = {"0": [[191, 130], [194, 194], [127, 191], [65, 191], [62, 129], [64, 62], [125, 62], [195, 65], [192, 131]],
-  "1": [[178, 133], [130, 149], [119, 191], [118, 116], [121, 62]],
-  "2": [[187, 131], [192, 189], [125, 192], [66, 190], [64, 149], [95, 97], [191, 66], [122, 63], [62, 64]],
-  "3": [[189, 161], [192, 197], [120, 193], [12, 188], [111, 126], [21, 64], [120, 60], [189, 64], [189, 96]],
-  "4": [[66, 127], [121, 128], [193, 125], [134, 156], [124, 194], [123, 128], [122, 64]],
-  "5": [[65, 192], [122, 192], [192, 192], [192, 161], [190, 133], [64, 137], [63, 99], [65, 63], [192, 64]],
-  "6": [[62, 160], [62, 193], [119, 194], [192, 194], [193, 133], [193, 65], [127, 62], [63, 64], [62, 99], [63, 130], [120, 131], [186, 125], [183, 93]],
-  "7": [[194, 191], [124, 191], [64, 191], [146, 142], [188, 63]],
-  "8": [[192, 164], [192, 193], [126, 195], [67, 192], [64, 165], [65, 137], [119, 133], [190, 134], [193, 102], [195, 64], [122, 60], [62, 64], [60, 89], [58, 119], [121, 132], [189, 134], [192, 166]],
-  "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
-  ":": []}
-
+class LaserDisplayDevice():
   def __init__(self):
-    self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
-    
     #self.ReplayInitLog()
 
     # find our device
@@ -65,19 +46,6 @@ class LaserDisplay():
         )
 
     assert self.ep is not None    
-
-    self.adjust_glyphs()
-
-    #default values
-    self.blanking_delay = 157
-    self.scan_rate = 34000
-    self.set_color(RED)   
-    self.flags = self.ALWAYS_ON
-    self.MaxNoise = 0
-    
-  def adjust_glyphs(self):
-    for k in self.GLYPHS.keys():
-      self.GLYPHS[k] = map(lambda(p):([p[0]/255.0,p[1]/255.0]),self.GLYPHS[k])
 
   def ReplayInitLog(self):
     # find our device
@@ -127,6 +95,49 @@ class LaserDisplay():
 
     print "done."
 
+  def send_configuration(self, blanking_delay, scan_rate):
+    self.ep.write([blanking_delay, (45000 - scan_rate)/200])
+#    self.ep.write([0xca, 0x2a]);
+
+  def write(self, message):
+    self.ep.write(message)
+
+class LaserDisplay():
+  # Configuration flags
+  ALWAYS_ON = 1
+  SOMETHING = 2
+
+  # Shapes for our characher rendering routine
+  GLYPHS = {"0": [[191, 130], [194, 194], [127, 191], [65, 191], [62, 129], [64, 62], [125, 62], [195, 65], [192, 131]],
+  "1": [[178, 133], [130, 149], [119, 191], [118, 116], [121, 62]],
+  "2": [[187, 131], [192, 189], [125, 192], [66, 190], [64, 149], [95, 97], [191, 66], [122, 63], [62, 64]],
+  "3": [[189, 161], [192, 197], [120, 193], [12, 188], [111, 126], [21, 64], [120, 60], [189, 64], [189, 96]],
+  "4": [[66, 127], [121, 128], [193, 125], [134, 156], [124, 194], [123, 128], [122, 64]],
+  "5": [[65, 192], [122, 192], [192, 192], [192, 161], [190, 133], [64, 137], [63, 99], [65, 63], [192, 64]],
+  "6": [[62, 160], [62, 193], [119, 194], [192, 194], [193, 133], [193, 65], [127, 62], [63, 64], [62, 99], [63, 130], [120, 131], [186, 125], [183, 93]],
+  "7": [[194, 191], [124, 191], [64, 191], [146, 142], [188, 63]],
+  "8": [[192, 164], [192, 193], [126, 195], [67, 192], [64, 165], [65, 137], [119, 133], [190, 134], [193, 102], [195, 64], [122, 60], [62, 64], [60, 89], [58, 119], [121, 132], [189, 134], [192, 166]],
+  "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
+  ":": []}
+
+  def __init__(self):
+    self.device = LaserDisplayDevice()
+    self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
+   
+    self.adjust_glyphs()
+
+    #default values
+    self.blanking_delay = 202
+    self.scan_rate = 37000
+    self.set_color(RED)   
+    self.flags = self.ALWAYS_ON
+    self.MaxNoise = 0
+    self.device.send_configuration(self.blanking_delay, self.scan_rate)
+    
+  def adjust_glyphs(self):
+    for k in self.GLYPHS.keys():
+      self.GLYPHS[k] = map(lambda(p):([p[0]/255.0,p[1]/255.0]),self.GLYPHS[k])
+
   def set_noise(self, value):
     self.MaxNoise = value
     
@@ -144,6 +155,7 @@ class LaserDisplay():
       value = 45000
       print "maximum allowed scan rate value is 45000"
     self.scan_rate = value
+    self.device.send_configuration(self.blanking_delay, self.scan_rate)
     
   def set_blanking_delay(self, value):
     if value<0:
@@ -152,11 +164,8 @@ class LaserDisplay():
     if value>255:
       value = 255
       print "maximum allowed blanking delay value is 255"
-
     self.blanking_delay = value
-
-  def send_configuration():
-    self.ep.write([self.blanking_delay, 0xc8 - (45000 - self.scan_rate)/200])
+    self.device.send_configuration(self.blanking_delay, self.scan_rate)
 
   def apply_context_transforms(self, x,y):
     vector = self.ctm*matrix([x,y,1]).transpose()
@@ -209,7 +218,7 @@ class LaserDisplay():
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
 
   def draw_line(self, x1,y1,x2,y2):
-    self.ep.write(self.line_message(x1, y1, x2, y2))
+    self.device.write(self.line_message(x1, y1, x2, y2))
 
   def gen_glyph_data(self, char, x, y, rx, ry):
     glyph_data = []
@@ -248,7 +257,7 @@ class LaserDisplay():
                                        t_1 * (t_1 * points[i]  [1] + t * points[i+1][1]) + \
                                        t   * (t_1 * points[i+1][1] + t * points[i+2][1])))
 
-    self.ep.write(message)
+    self.device.write(message)
 
   #TODO: refactor it. It should not be in our API
   def draw_dashed_circle(self, x,y,r, c1, c2):
@@ -265,7 +274,7 @@ class LaserDisplay():
     self.messageBuffer = []
 
   def end_frame(self):
-    self.ep.write(self.messageBuffer)
+    self.device.write(self.messageBuffer)
 
   def schedule(self, message):
     for byte in message:
