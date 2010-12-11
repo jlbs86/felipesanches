@@ -3,14 +3,14 @@ from LaserDisplay import *
 import math
 import random
 
-WIDTH = 100
-HEIGHT = 100
+WIDTH = 255
+HEIGHT = 255
 
-NUM_POINTS = 6
-NUM_SHAPES = 4
+NUM_POINTS = 10
+NUM_SHAPES = 2
 PI = 3.1415
 MAXSPEED = 8
-NOISE = 3
+NOISE = 0
 PROBAB_COLOR_CHANGE=0.05
 COLOR_CHANGE_MAXSTEP = 256
 
@@ -61,11 +61,13 @@ for _ in range (NUM_SHAPES):
 LD.set_noise(NOISE)
   
 while True:
+  LD.start_frame()
   for particles in shapes:
     points = []
     for p in particles:
       p.update_position()
       points.append([p.x,p.y])
       LD.set_color(p.color)
-    LD.draw_bezier(points, 10)
+    LD.schedule(LD.quadratic_bezier_message(points, 10))
+  LD.end_frame()
 
