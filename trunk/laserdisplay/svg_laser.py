@@ -23,17 +23,17 @@ class SVGHandler(ContentHandler):
           i+=1
         
         if cmd=="m":
-          x0,y0=x,y
           delta=tokens[i].split(",")
           x+=float(delta[0])
           y+=float(delta[1])
+          x0,y0=x,y
           cmd="l"
         elif cmd=="M":
-          x0,y0=x,y
           delta=tokens[i].split(",")
           x=float(delta[0])
           y=float(delta[1])
-          cmd="L"
+          x0,y0=x,y
+          cmd="l"
         elif cmd=="l":
           delta=tokens[i].split(",")
           LD.schedule(LD.line_message(x,y,x+float(delta[0]),y+float(delta[1])))
@@ -68,7 +68,7 @@ class SVGHandler(ContentHandler):
           ctrl1=tokens[i].split(",")
           ctrl2=tokens[i+1].split(",")
           delta=tokens[i+2].split(",")
-          LD.schedule(LD.cubic_bezier_message([[x,y],[x+float(ctrl1[0]),y+float(ctrl1[1])],[x+float(ctrl2[0]),y+float(ctrl2[1])],[x+float(delta[0]),y+float(delta[1])]],5))
+          LD.schedule(LD.cubic_bezier_message([[x,y],[x+float(ctrl1[0]),y+float(ctrl1[1])],[x+float(ctrl2[0]),y+float(ctrl2[1])],[x+float(delta[0]),y+float(delta[1])]],15))
           x+=float(delta[0])
           y+=float(delta[1])
           i+=2
@@ -76,7 +76,7 @@ class SVGHandler(ContentHandler):
           ctrl1=tokens[i].split(",")
           ctrl2=tokens[i+1].split(",")
           delta=tokens[i+2].split(",")
-          LD.schedule(LD.cubic_bezier_message([[x,y],[float(ctrl1[0]),float(ctrl1[1])],[float(ctrl2[0]),float(ctrl2[1])],[float(delta[0]),float(delta[1])]],5))
+          LD.schedule(LD.cubic_bezier_message([[x,y],[float(ctrl1[0]),float(ctrl1[1])],[float(ctrl2[0]),float(ctrl2[1])],[float(delta[0]),float(delta[1])]],15))
           x+=float(delta[0])
           y+=float(delta[1])
           i+=2
@@ -88,7 +88,11 @@ parser = make_parser()
 parser.setContentHandler(SVGHandler())
 parser.parse(open(filename))
 
+LD.start_frame()
+for m in messages:
+  LD.schedule(m)
+mess = LD.messageBuffer
+
 while True:
-  for m in messages:
-    LD.messageBuffer = m
+    LD.messageBuffer = mess
     LD.end_frame()

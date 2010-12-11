@@ -6,6 +6,8 @@ import usb.util
 import math
 from random import random
 PI=3.1415
+WIDTH=255
+HEIGHT=255
 
 RED = [255,0,0]
 GREEN = [0,255,0]
@@ -128,8 +130,8 @@ class LaserDisplay():
 
     #default values
     self.blanking_delay = 202
-    self.scan_rate = 37000
-    self.set_color(RED)   
+    self.scan_rate = 45000
+    self.set_color(WHITE)   
     self.flags = self.ALWAYS_ON
     self.MaxNoise = 0
     self.device.send_configuration(self.blanking_delay, self.scan_rate)
