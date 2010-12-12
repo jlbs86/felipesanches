@@ -4,6 +4,7 @@ from LaserDisplay import *
 
 #LD = LaserDisplay()
 LD = LaserDisplay({"server":"localhost","port": 50000})
+LD.set_scan_rate(35000)
 
 y=0
 while True:
