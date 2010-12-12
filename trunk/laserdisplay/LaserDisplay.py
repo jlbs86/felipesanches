@@ -120,7 +120,7 @@ class LaserDisplayDevice():
 
   def write(self, message):
     if self.localDevice:
-      self.ep.write(message)
+      self.ep.write(message, 0)
     else:
       pass #TODO: add it to the protocol
 

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 #
-# Youcope Emulator
+# Youcope Emulator (adapted to render on a laser show display)
 #
-#(c)2007 Felipe Sanches <juca@members.fsf.org>
+#(c)2010,2007 Felipe Sanches <juca@members.fsf.org>
 #(c)2007 Leandro Lameiro <lameiro@gmail.com>
 #licensed under GNU GPL v3 or later
 
@@ -11,7 +11,7 @@ import struct
 import pygame
 import sys
 import math
-from LaserDisplay import LaserDisplay
+from LaserDisplay import *
 
 SIZE = (1.5*640,1.5*480)
 DOTCOLOR  = (0,255,0)
@@ -22,7 +22,6 @@ PERSISTENCE = 0.60
 
 wro = wave.open('youscope-wave.wav')
 READ_LENGTH = wro.getframerate()/FPS
-
 
 pygame.init()
 
@@ -58,12 +57,15 @@ x_old=0
 y_old=0
 
 for _ in range(1000):
-    frames = wro.readframes(READ_LENGTH)
+   frames = wro.readframes(READ_LENGTH)
 
 display = LaserDisplay()
-display.set_color([0xff, 0xff, 0xff])
+display.set_scan_rate(45000)
+display.set_blanking_delay(0)
+display.set_color(WHITE)
 
 while True:
+  try:
     clock.tick(FPS)
     for event in pygame.event.get():
         if event.type == pygame.QUIT: sys.exit()
@@ -75,18 +77,24 @@ while True:
     
     surface.fill(BGCOLOR)
     surface.blit(grid, grid.get_rect())
-    
-    display.start_frame()
-    for i in range(0,READ_LENGTH,4):
-        r = struct.unpack('hh', frames[i:i+4])
-        x = int(r[1]*SIZE[0]/65536) + SIZE[0]/2 
-        y = int(-r[0]*SIZE[1]/65536) + SIZE[1]/2
-        surface.set_at((x,y), DOTCOLOR)
-        display.schedule(display.line_message(x_old*256/SIZE[0],255-y_old*256/SIZE[1],x*256/SIZE[0],255-y*256/SIZE[1]))
-        x_old=x
-        y_old=y
+    SKIP=1
+    for i in range(0,READ_LENGTH,4*SKIP):
+      r = struct.unpack('hh', frames[i:i+4])
+      x = int(r[1]*SIZE[0]/65536) + SIZE[0]/2 
+      y = int(-r[0]*SIZE[1]/65536) + SIZE[1]/2
+      surface.set_at((x,y), DOTCOLOR)
+      #display.draw_line(x_old*256/SIZE[0],255-y_old*256/SIZE[1],x*256/SIZE[0],255-y*256/SIZE[1])
+      display.draw_point(x*256/SIZE[0],255-y*256/SIZE[1])
+      x_old=x
+      y_old=y
+      i+=4
 
-    display.end_frame()
+#    display.show_frame()
     screen.blit(surface, surface.get_rect())
         
     pygame.display.flip()
+    
+  except:  
+    #this is an ugly hack!
+    display.show_frame()
+
