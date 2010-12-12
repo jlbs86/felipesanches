@@ -244,6 +244,9 @@ class LaserDisplay():
 
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
 
+  def draw_point(self, x,y):
+    self.draw_line(x,y,x,y)
+
   def draw_line(self, x1,y1,x2,y2):
     if self.device.localDevice:
       self.schedule(self.line_message(x1, y1, x2, y2))
