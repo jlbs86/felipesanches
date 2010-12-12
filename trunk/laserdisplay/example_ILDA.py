@@ -6,7 +6,7 @@ import ILDA
 
 LD = LaserDisplay()
 #LD = LaserDisplay({"server":"localhost","port": 50000})
-LD.set_scan_rate(45000)
+LD.set_scan_rate(37000)
 LD.set_blanking_delay(0)
 
 
@@ -27,12 +27,15 @@ ilda_file.close()
 
 LD.set_color(YELLOW)
 
+for frame in frames:
+  for _ in range(2):
+    for point in frame:
+        #LD.set_color(p.color)
+      if random.random()<=0.5:
+        LD.draw_point(point[0], point[1])
+m = LD.messageBuffer
+
 while True:
-  for frame in frames:
-    for _ in range(1):
-      for point in frame:
-          #LD.set_color(p.color)
-        if random.random()<=0.2:
-          LD.draw_point(point[0], point[1])
-      LD.show_frame()
+  LD.messageBuffer = m
+  LD.show_frame()
 
