@@ -39,7 +39,7 @@ class LaserDisplayDevice():
       import usb.core
       import usb.util
 
-      #self.ReplayInitLog()
+      self.ReplayInitLog()
 
       # find our device
       self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
@@ -104,11 +104,11 @@ class LaserDisplayDevice():
         print "wIndex: "+hex(index)
         print "buffer: "+buf
 
-        buf = ""
+        buf2 = ""
         for byte in buf.strip().split(" "):
-          buf+=chr(int(byte,16))
+          buf2+=chr(int(byte,16))
 
-        handle.controlMsg(reqType,req,buf,value,index)   
+        handle.controlMsg(reqType,req,buf2,value,index)
 
     print "done."
 
