@@ -13,7 +13,7 @@
    height="71.8125"
    id="svg3084"
    version="1.1"
-   inkscape:version="0.48.0 r9654"
+   inkscape:version="0.47 r22583"
    sodipodi:docname="template2.svg"
    inkscape:export-filename="/home/prusnak/work/scm/laserdisplay/svglaser/templates/template2.svg.png"
    inkscape:export-xdpi="200"
@@ -44,7 +44,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.979899"
      inkscape:cx="68.606461"
-     inkscape:cy="47.496801"
+     inkscape:cy="46.486648"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -65,7 +65,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -75,14 +75,8 @@
      id="layer1"
      transform="translate(-329,-457.46875)">
     <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 329.70423,458.16399 0,19.71831 26.76056,0 0,5.6338 -26.76056,0 0,45.07042 71.83098,0 0,-19.71831 -50.70423,0 0,-5.6338 56.33803,0 0,25.35211 19.71831,0 0,-70.42253 -46.47887,0 0,19.71831 26.76056,0 0,5.6338 -30.98592,0 0,-25.35211 -46.47886,0 z"
-       id="path3076"
-       inkscape:connector-curvature="0" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 431.11268,458.16399 0,70.42253 97.18309,0 0,-70.42253 -45.07042,0 0,19.71831 25.35211,0 0,5.6338 -25.35211,0 0,19.71831 25.35211,0 0,5.6338 -57.74647,0 0,-30.98591 5.6338,0 0,25.35211 21.12676,0 0,-45.07042 -46.47887,0 z"
        id="path3078"
-       inkscape:connector-curvature="0" />
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 431.11268,458.16399 0,70.42253 97.18309,0 0,-70.42253 -45.07042,0 0,19.71831 25.35211,0 0,5.6338 -25.35211,0 0,19.71831 25.35211,0 0,5.6338 -57.74647,0 0,-30.98591 5.6338,0 0,25.35211 21.12676,0 0,-45.07042 -46.47887,0 z m -101.40845,0 0,19.71831 26.76056,0 0,5.6338 -26.76056,0 0,45.07042 71.83098,0 0,-19.71831 -50.70423,0 0,-5.6338 56.33803,0 0,25.35211 19.71831,0 0,-70.42253 -46.47887,0 0,19.71831 26.76056,0 0,5.6338 -30.98592,0 0,-25.35211 -46.47886,0 z" />
   </g>
 </svg>

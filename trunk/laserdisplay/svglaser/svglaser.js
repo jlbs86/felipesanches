@@ -1,7 +1,5 @@
 var svgCanvas = null;
 
-var template1 = 'm 50.931034,145.74149 0,95.68966 130.172416,0 0,-95.68966 -33.62069,0 0,-33.62069 -68.965518,0 0,-7.75862 74.999998,0 0,34.48276 27.58621,0 0,-96.551726 -62.06897,0 0,27.586208 34.48276,0 0,6.896552 -40.51724,0 0,-34.48276 -62.068966,0 0,27.586208 34.48276,0 0,6.896552 -34.48276,0 0,62.068966 68.103446,0 0,34.48276 34.48276,0 0,6.89655 -34.48276,0 0,27.58621 34.48276,0 0,6.89655 -74.999998,0 0,-41.37931 5.172414,0 0,34.48276 28.448274,0 0,-62.06897 -61.206896,0 z';
-
 $(function(){
 
     svgCanvas = new SvgCanvas(document.getElementById("svgcanvas"));
@@ -28,5 +26,9 @@ $(function(){
     $('#color_yellow').click(function(){ svgCanvas.setStrokeColor('#ffff00'); });
 
     $('#template1').click(function(){ svgCanvas.insertTemplate(template1); });
+    $('#template2').click(function(){ svgCanvas.insertTemplate(template2); });
+    $('#template3').click(function(){ svgCanvas.insertTemplate(template3); });
+    $('#template4').click(function(){ svgCanvas.insertTemplate(template4); });
+    $('#template5').click(function(){ svgCanvas.insertTemplate(template5); });
 
 });
