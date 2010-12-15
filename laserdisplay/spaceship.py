@@ -6,7 +6,8 @@ import random
 WIDTH = 100
 HEIGHT = 100
 
-LD = LaserDisplay()
+#LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
 
 ship = [[190, 64], [168, 136], [118, 200], [77, 142], [63, 63], [87, 77], [105, 103], [119, 114], [143, 104], [158, 81], [192, 63]]
 

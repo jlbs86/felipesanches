@@ -4,8 +4,8 @@
 from LaserDisplay import *
 import ILDA
 
-LD = LaserDisplay()
-#LD = LaserDisplay({"server":"localhost","port": 50000})
+#LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
 LD.set_scan_rate(37000)
 LD.set_blanking_delay(0)
 

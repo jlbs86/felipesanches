@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import PyGML
 #import urllib
 from datetime import datetime
@@ -23,7 +24,8 @@ DEGRADATION = 0.40
 # complex content in our display without resulting in a lot of blinking.
 
 gml = readFile()
-LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
+#LD = LaserDisplay()
 LD.set_scan_rate(35000)
 LD.set_blanking_delay(0)
 LD.set_color(RED)

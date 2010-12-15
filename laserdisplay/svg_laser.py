@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 from LaserDisplay import LaserDisplay
-LD = LaserDisplay()
+
+LD = LaserDisplay({"server":"localhost","port": 50000})
+#LD = LaserDisplay()
+
 import sys
 filename = sys.argv[1]
 

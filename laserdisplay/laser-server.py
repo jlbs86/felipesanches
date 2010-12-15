@@ -1,4 +1,6 @@
+#!/usr/bin/python
 from LaserDisplay import *
+
 LD = LaserDisplay()
 
 from twisted.internet.protocol import Factory, Protocol
