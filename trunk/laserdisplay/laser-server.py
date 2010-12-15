@@ -39,8 +39,22 @@ def update_laser (connections):
           points.append([x,y])
         msg = LD.cubic_bezier_message(points, CUBIC_BEZ_QUALITY)
         LD.schedule(msg)
+      elif cmd[0] == "save":
+        LD.save()
+      elif cmd[0] == "restore":
+        LD.restore()
+      elif cmd[0] == "rotate":
+        LD.rotate(float(cmd[1]))
+      elif cmd[0] == "translate":
+        LD.translate(float(cmd[1]), float(cmd[2]))
+      elif cmd[0] == "scale":
+        LD.scale(float(cmd[1]))
+      elif cmd[0] == "rotateat":
+        LD.rotate_at(float(cmd[1]),float(cmd[2]),float(cmd[3])):
       elif cmd[0] == "color":
         LD.set_color([int(cmd[1]), int(cmd[2]), int(cmd[3])])
+      elif cmd[0] == "config":
+        LD.set_laser_configuration(int(cmd[1]), int(cmd[2]))
   LD.show_frame()
 
 connections = []
@@ -48,7 +62,7 @@ loop = LoopingCall(update_laser, connections)
 loop.start(0)
 
 class SendContent(Protocol):
-    valid_commands = ["quadratic", "cubic", "line", "color", "show", "quit"]
+    valid_commands = ["quadratic", "cubic", "line", "color", "show", "config", "save", "restore", "rotate", "rotateat", "translate", "scale", "quit"]
 
     def __init__(self):
       connections.append(self)

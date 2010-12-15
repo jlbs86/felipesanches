@@ -23,47 +23,42 @@ def clamp(value, min, max):
   if value < min: return min
   return int(value)
 
-class LaserDisplayDevice():
-  def __init__(self, config=None):
-    self.localDevice = True
-    self.remoteDevice = None
-    if config:
-      if "server" in config:
-        if not "port" in config:
-          config["port"]=50000
+class LaserDisplayLocalDevice():
+  # Configuration flags
+  ALWAYS_ON = 1
+  SOMETHING = 2
+  def __init__(self):
+    self.messageBuffer = []
+    self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
+    self.flags = self.ALWAYS_ON
 
-        print "remote laser server config: "+ str(config)
-        self.remoteDevice = telnetlib.Telnet(config["server"], config["port"])
-        self.localDevice = False
+    import usb
+    import time
+    self.ReplayInitLog()
+    time.sleep(3)
 
-    if self.localDevice:
-      import usb
-      import time
-      self.ReplayInitLog()
-      time.sleep(3)
+    # find our device
+    self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
 
-      # find our device
-      self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
+    # was it found?
+    if self.usbdev is None:
+        raise ValueError('Device (9999:5555) not found')
 
-      # was it found?
-      if self.usbdev is None:
-          raise ValueError('Device (9999:5555) not found')
+    # set the active configuration. With no arguments, the first
+    # configuration will be the active one
+    self.usbdev.set_configuration()
 
-      # set the active configuration. With no arguments, the first
-      # configuration will be the active one
-      self.usbdev.set_configuration()
+    # get an endpoint instance
+    self.ep = usb.util.find_descriptor(
+            self.usbdev.get_interface_altsetting(),   # first interface
+            # match the first OUT endpoint
+            custom_match = \
+                lambda e: \
+                    usb.util.endpoint_direction(e.bEndpointAddress) == \
+                    usb.util.ENDPOINT_OUT
+        )
 
-      # get an endpoint instance
-      self.ep = usb.util.find_descriptor(
-              self.usbdev.get_interface_altsetting(),   # first interface
-              # match the first OUT endpoint
-              custom_match = \
-                  lambda e: \
-                      usb.util.endpoint_direction(e.bEndpointAddress) == \
-                      usb.util.ENDPOINT_OUT
-          )
-
-      assert self.ep is not None    
+    assert self.ep is not None    
 
   def ReplayInitLog(self):
     import usb
@@ -114,112 +109,11 @@ class LaserDisplayDevice():
 
     print "done."
 
-  def send_configuration(self, blanking_delay, scan_rate):
-    if self.localDevice:
-      self.ep.write([blanking_delay, (45000 - scan_rate)/200])
-    else:
-      pass #TODO: add it to the protocol
-
-  def write(self, message):
-    if self.localDevice:
-      self.ep.write(message, 0)
-    else:
-      pass #TODO: add it to the protocol
-
-
-class LaserDisplay():
-  # Configuration flags
-  ALWAYS_ON = 1
-  SOMETHING = 2
-
-  # Shapes for our characher rendering routine
-  GLYPHS = {"0": [[191, 130], [194, 194], [127, 191], [65, 191], [62, 129], [64, 62], [125, 62], [195, 65], [192, 131]],
-  "1": [[178, 133], [130, 149], [119, 191], [118, 116], [121, 62]],
-  "2": [[187, 131], [192, 189], [125, 192], [66, 190], [64, 149], [95, 97], [191, 66], [122, 63], [62, 64]],
-  "3": [[189, 161], [192, 197], [120, 193], [12, 188], [111, 126], [21, 64], [120, 60], [189, 64], [189, 96]],
-  "4": [[66, 127], [121, 128], [193, 125], [134, 156], [124, 194], [123, 128], [122, 64]],
-  "5": [[65, 192], [122, 192], [192, 192], [192, 161], [190, 133], [64, 137], [63, 99], [65, 63], [192, 64]],
-  "6": [[62, 160], [62, 193], [119, 194], [192, 194], [193, 133], [193, 65], [127, 62], [63, 64], [62, 99], [63, 130], [120, 131], [186, 125], [183, 93]],
-  "7": [[194, 191], [124, 191], [64, 191], [146, 142], [188, 63]],
-  "8": [[192, 164], [192, 193], [126, 195], [67, 192], [64, 165], [65, 137], [119, 133], [190, 134], [193, 102], [195, 64], [122, 60], [62, 64], [60, 89], [58, 119], [121, 132], [189, 134], [192, 166]],
-  "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
-  ":": []}
-
-  def __init__(self, config=None):
-    self.messageBuffer = []
-    self.device = LaserDisplayDevice(config)
-    self.ctm = matrix([[1.0,0.0,0.0],[0.0,1.0,0.0],[0.0,0.0,1.0]])
-   
-    self.adjust_glyphs()
-
-    #default values
-    self.blanking_delay = 202
-    self.scan_rate = 37000
-    self.set_color(WHITE)   
-    self.flags = self.ALWAYS_ON
-    self.MaxNoise = 0
-    self.device.send_configuration(self.blanking_delay, self.scan_rate)
-    
-  def adjust_glyphs(self):
-    for k in self.GLYPHS.keys():
-      self.GLYPHS[k] = map(lambda(p):([p[0]/255.0,p[1]/255.0]),self.GLYPHS[k])
-
-  def set_noise(self, value):
-    self.MaxNoise = value
-    
   def set_flags(self, flags):
     self.flags = flags
 
-  def set_color(self, c):
-    if self.device.localDevice:
-      self.color = {"R": c[0], "G": c[1], "B": c[2]}
-    else:
-      self.device.remoteDevice.write("color %d %d %d\n" % (c[0], c[1], c[2]))
-  
-  def set_scan_rate(self, value):
-    if value<5000:
-      value = 5000
-      print "minimum allowed scan rate value is 5000"
-    if value>45000:
-      value = 45000
-      print "maximum allowed scan rate value is 45000"
-    self.scan_rate = value
-    self.device.send_configuration(self.blanking_delay, self.scan_rate)
-    
-  def set_blanking_delay(self, value):
-    if value<0:
-      value = 0
-      print "minimum allowed blanking delay value is 0"
-    if value>255:
-      value = 255
-      print "maximum allowed blanking delay value is 255"
-    self.blanking_delay = value
-    self.device.send_configuration(self.blanking_delay, self.scan_rate)
+#routines that generate USB messages (content of URBs):
 
-  def apply_context_transforms(self, x,y):
-    vector = self.ctm*matrix([x,y,1]).transpose()
-    return vector[0], vector[1]
-
-  def save(self):
-    self.saved_matrix = self.ctm
-
-  def restore(self):
-    self.ctm = self.saved_matrix
-    
-  def rotate(self, angle):
-    self.ctm = matrix([[math.cos(angle), -math.sin(angle), 0.0], [math.sin(angle), math.cos(angle), 0.0], [0.0, 0.0, 1.0]])*self.ctm
-
-  def translate(self, x, y):
-    self.ctm = matrix([[1.0, 0.0, float(x)], [0.0, 1.0, float(y)], [0.0, 0.0, 1.0]])*self.ctm
-  
-  def scale(self, s):
-    self.ctm = matrix([[float(s), 0.0, 0.0], [0.0, float(s), 0.0], [0.0, 0.0, 1.0]])*self.ctm
-
-  def rotate_at(self,cx,cy,angle):
-    self.translate(-cx,-cy)
-    self.rotate(angle)
-    self.translate(cx,cy)
-    
   def line_message(self, x1,y1,x2,y2):
     x1+=random()*self.MaxNoise-self.MaxNoise/2
     y1+=random()*self.MaxNoise-self.MaxNoise/2
@@ -245,49 +139,6 @@ class LaserDisplay():
     y = clamp(y,0,255)
 
     return [x, 0x00, y, 0x00, self.color["R"], self.color["G"], self.color["B"], self.flags]
-
-  def draw_point(self, x,y):
-    self.draw_line(x,y,x,y)
-
-  def draw_line(self, x1,y1,x2,y2):
-    if self.device.localDevice:
-      self.schedule(self.line_message(x1, y1, x2, y2))
-    else:
-      self.device.remoteDevice.write("line %d %d %d %d\n" % (x1, y1, x2, y2))
-
-  def gen_glyph_data(self, char, x, y, rx, ry):
-    glyph_data = []
-    for i in range(len(self.GLYPHS[char])):
-      glyph_data.append([(int)(x + (self.GLYPHS[char][i][0])*rx),(int)(y + (self.GLYPHS[char][i][1])*ry)]);
-    return glyph_data
-
-  def draw_text(self, string, x, y, size, kerning_percentage = -0.3):
-    for char in string:
-      glyph_curve = self.gen_glyph_data(char, x, y, size, size*2)
-      self.draw_quadratic_bezier(glyph_curve, 5)
-      x -= int(size + size * kerning_percentage)
-
-  def draw_quadratic_bezier(self, points, steps):
-    if self.device.localDevice:
-      message = self.quadratic_bezier_message(points, steps)
-      if message:
-        self.schedule(message)
-    else:
-      msg = "quadratic"
-      for p in points:
-        msg+=" %f %f" % (p[0], p[1])
-      self.device.remoteDevice.write(msg+"\n")
-
-  def draw_cubic_bezier(self, points, steps):
-    if self.device.localDevice:
-      message = self.cubic_bezier_message(points, steps)
-      if message:
-        self.schedule(message)
-    else:
-      msg = "cubic"
-      for p in points:
-        msg+=" %f %f" % (p[0], p[1])
-      self.device.remoteDevice.write(msg+"\n")
     
   def quadratic_bezier_message(self, points, steps):
     if len(points) < 3:
@@ -345,6 +196,217 @@ class LaserDisplay():
                                               t   * (t_1 * points[i+2][1] + t * points[i+3][1])))
     return message
 
+#---------------
+
+  def set_laser_configuration(self, blanking_delay, scan_rate):
+    self.ep.write([blanking_delay, (45000 - scan_rate)/200])
+
+  def set_color(self, c):
+    self.color = {"R": c[0], "G": c[1], "B": c[2]}
+
+  def draw_line(self, x1,y1,x2,y2):    
+    self.schedule(self.line_message(x1, y1, x2, y2))
+
+  def draw_quadratic_bezier(self, points, steps):
+    message = self.quadratic_bezier_message(points, steps)
+    if message:
+      self.schedule(message)
+
+  def draw_cubic_bezier(self, points, steps):
+    message = self.cubic_bezier_message(points, steps)
+    if message:
+      self.schedule(message)
+
+  def show_frame(self):
+    self.ep.write(self.messageBuffer, 0)
+    self.messageBuffer = []
+
+  def schedule(self, message):
+    self.messageBuffer += message
+
+# routines that deal with coordinate system transforms:
+
+  def apply_context_transforms(self, x,y):
+    vector = self.ctm*matrix([x,y,1]).transpose()
+    return vector[0], vector[1]
+
+  def save(self):
+    self.saved_matrix = self.ctm
+
+  def restore(self):
+    self.ctm = self.saved_matrix
+    
+  def rotate(self, angle):
+    self.ctm = matrix([[math.cos(angle), -math.sin(angle), 0.0], [math.sin(angle), math.cos(angle), 0.0], [0.0, 0.0, 1.0]])*self.ctm
+
+  def translate(self, x, y):
+    self.ctm = matrix([[1.0, 0.0, float(x)], [0.0, 1.0, float(y)], [0.0, 0.0, 1.0]])*self.ctm
+  
+  def scale(self, s):
+    self.ctm = matrix([[float(s), 0.0, 0.0], [0.0, float(s), 0.0], [0.0, 0.0, 1.0]])*self.ctm
+
+  def rotate_at(self,cx,cy,angle):
+    self.translate(-cx,-cy)
+    self.rotate(angle)
+    self.translate(cx,cy)
+ 
+
+
+
+class LaserDisplayRemoteDevice():
+  def __init__(self, server, port=50000):
+    print "remote laser server config:\n server:%s port:%d" % (server, port)
+    self.remote = telnetlib.Telnet(config["server"], config["port"])
+
+  def set_laser_configuration(self, blanking_delay, scan_rate):
+    self.remote.write("config %d %d\n" % (blanking_delay, scan_rate))
+
+  def set_color(self, c):
+    self.remote.write("color %d %d %d\n" % (c[0], c[1], c[2]))
+
+  def draw_line(self, x1,y1,x2,y2):
+    self.remote.write("line %d %d %d %d\n" % (x1, y1, x2, y2))
+
+  def draw_quadratic_bezier(self, points, steps):
+    msg = "quadratic"
+    for p in points:
+      msg+=" %f %f" % (p[0], p[1])
+    self.remote.write(msg+"\n")
+
+  def draw_cubic_bezier(self, points, steps):
+    msg = "cubic"
+    for p in points:
+      msg+=" %f %f" % (p[0], p[1])
+    self.remote.write(msg+"\n")
+
+  def show_frame(self):
+    self.remote.write("show\n")
+    time.sleep(1.0/24)
+
+  def save(self):
+    self.remote.write("save\n")
+
+  def restore(self):
+    self.remote.write("restore\n")
+
+  def rotate(self, angle):
+    self.remote.write("rotate %d\n" % (angle))
+    
+  def translate(self, x, y):
+    self.remote.write("translate %d %d\n" % (x,y))
+  
+  def scale(self, s):
+    self.remote.write("scale %d\n" % (s))
+
+  def rotate_at(self,cx,cy,angle):
+    self.remote.write("rotateat %d %d %d\n" % (cx, cy, angle))
+
+class LaserDisplay():
+  # Shapes for our characher rendering routine
+  GLYPHS = {"0": [[191, 130], [194, 194], [127, 191], [65, 191], [62, 129], [64, 62], [125, 62], [195, 65], [192, 131]],
+  "1": [[178, 133], [130, 149], [119, 191], [118, 116], [121, 62]],
+  "2": [[187, 131], [192, 189], [125, 192], [66, 190], [64, 149], [95, 97], [191, 66], [122, 63], [62, 64]],
+  "3": [[189, 161], [192, 197], [120, 193], [12, 188], [111, 126], [21, 64], [120, 60], [189, 64], [189, 96]],
+  "4": [[66, 127], [121, 128], [193, 125], [134, 156], [124, 194], [123, 128], [122, 64]],
+  "5": [[65, 192], [122, 192], [192, 192], [192, 161], [190, 133], [64, 137], [63, 99], [65, 63], [192, 64]],
+  "6": [[62, 160], [62, 193], [119, 194], [192, 194], [193, 133], [193, 65], [127, 62], [63, 64], [62, 99], [63, 130], [120, 131], [186, 125], [183, 93]],
+  "7": [[194, 191], [124, 191], [64, 191], [146, 142], [188, 63]],
+  "8": [[192, 164], [192, 193], [126, 195], [67, 192], [64, 165], [65, 137], [119, 133], [190, 134], [193, 102], [195, 64], [122, 60], [62, 64], [60, 89], [58, 119], [121, 132], [189, 134], [192, 166]],
+  "9": [[65, 191], [191, 193], [193, 159], [190, 115], [131, 120], [75, 144], [62, 190], [64, 123], [66, 63]],
+  ":": []}
+
+  def __init__(self, config=None):
+    if config and "server" in config:
+      if not "port" in config:
+        config["port"]=50000
+      self.device = LaserDisplayRemoteDevice(config["server"], config["port"])
+    else:
+      self.device = LaserDisplayLocalDevice()
+   
+    self.adjust_glyphs()
+
+    #default values
+    self.blanking_delay = 202
+    self.scan_rate = 37000
+    self.set_color(WHITE)   
+    self.MaxNoise = 0
+    self.device.set_laser_configuration(self.blanking_delay, self.scan_rate)
+    
+  def adjust_glyphs(self):
+    for k in self.GLYPHS.keys():
+      self.GLYPHS[k] = map(lambda(p):([p[0]/255.0,p[1]/255.0]),self.GLYPHS[k])
+
+  def set_noise(self, value):
+    self.MaxNoise = value
+
+  def set_color(self, c):
+    self.device.set_color(c)
+      
+  def set_scan_rate(self, value):
+    if value<5000:
+      value = 5000
+      print "minimum allowed scan rate value is 5000"
+    if value>45000:
+      value = 45000
+      print "maximum allowed scan rate value is 45000"
+    self.scan_rate = value
+    self.device.set_laser_configuration(self.blanking_delay, self.scan_rate)
+    
+  def set_blanking_delay(self, value):
+    if value<0:
+      value = 0
+      print "minimum allowed blanking delay value is 0"
+    if value>255:
+      value = 255
+      print "maximum allowed blanking delay value is 255"
+    self.blanking_delay = value
+    self.device.set_laser_configuration(self.blanking_delay, self.scan_rate)
+
+  def draw_point(self, x,y):
+    self.device.draw_line(x,y,x,y)
+
+  def draw_line(self, x1,y1,x2,y2):
+    self.device.draw_line(x1,y1,x2,y2)
+
+  def draw_quadratic_bezier(self, points, steps):
+    self.device.draw_quadratic_bezier(points, steps)
+
+  def draw_cubic_bezier(self, points, steps):
+    self.device.draw_cubic_bezier(points, steps)
+
+  def show_frame(self):
+    self.device.show_frame()
+    
+  def save(self):
+    self.device.save()
+
+  def restore(self):
+    self.device.restore()
+    
+  def rotate(self, angle):
+    self.device.rotate(angle)
+
+  def translate(self, x, y):
+    self.device.translate(x, y)
+  
+  def scale(self, s):
+    self.device.scale(s)
+
+  def rotate_at(self,cx,cy,angle):
+    self.device.rotate_at(cx,cy,angle)
+
+  def gen_glyph_data(self, char, x, y, rx, ry):
+    glyph_data = []
+    for i in range(len(self.GLYPHS[char])):
+      glyph_data.append([(int)(x + (self.GLYPHS[char][i][0])*rx),(int)(y + (self.GLYPHS[char][i][1])*ry)]);
+    return glyph_data
+
+  def draw_text(self, string, x, y, size, kerning_percentage = -0.3):
+    for char in string:
+      glyph_curve = self.gen_glyph_data(char, x, y, size, size*2)
+      self.draw_quadratic_bezier(glyph_curve, 5)
+      x -= int(size + size * kerning_percentage)
+
   #TODO: refactor it. It should not be in our API
   def draw_dashed_circle(self, x,y,r, c1, c2):
     step = 32
@@ -355,17 +417,6 @@ class LaserDisplay():
         self.set_color(c2)
         
       self.draw_line(x + r*math.cos(alpha*2*PI/step), y + r*math.sin(alpha*2*PI/step), x + r*math.cos((alpha+1)*2*PI/step), y + r*math.sin((alpha+1)*2*PI/step))
-
-  def show_frame(self):
-    if self.device.localDevice:
-      self.device.write(self.messageBuffer)
-      self.messageBuffer = []
-    else:
-      self.device.remoteDevice.write("show\n")
-      time.sleep(1.0/24)
-
-  def schedule(self, message):
-    self.messageBuffer += message
 
 
 class Laser3D(LaserDisplay):
