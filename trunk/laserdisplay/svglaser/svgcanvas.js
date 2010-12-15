@@ -5474,6 +5474,7 @@ function BatchCommand(text) {
 				"d": str
 			}
 		});
+		canvas.setMode('select');
 	};
 
 	var addGradient = function() {
