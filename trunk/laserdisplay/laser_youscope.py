@@ -59,7 +59,8 @@ y_old=0
 for _ in range(1000):
    frames = wro.readframes(READ_LENGTH)
 
-display = LaserDisplay()
+display = LaserDisplay({"server":"localhost","port": 50000})
+#display = LaserDisplay()
 display.set_scan_rate(45000)
 display.set_blanking_delay(0)
 display.set_color(WHITE)

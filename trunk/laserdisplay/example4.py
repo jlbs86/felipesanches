@@ -8,7 +8,7 @@ WIDTH = 255
 HEIGHT = 255
 
 #LD = LaserDisplay()
-LD = LaserDisplay({"server":"localhost"})
+LD = LaserDisplay({"server":"localhost","port": 50000})
 
 import time
 while True:

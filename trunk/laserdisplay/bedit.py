@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import pygame
 from LaserDisplay import LaserDisplay
 
@@ -26,7 +28,8 @@ curve = []
 curvelen = 0
 snap = 1
 
-LD = LaserDisplay()
+LD = LaserDisplay({"server":"localhost","port": 50000})
+#LD = LaserDisplay()
 
 def clamp_int(value, min, max):
   if value > max: return max
@@ -68,23 +71,23 @@ while cont == 1:
 
   LD.set_color([0xff, 0x00, 0xff])
   mouse = gen_circle(MIN_BORDER, MIN_BORDER, 1)
-  LD.draw_bezier(mouse, 2)
+  LD.draw_cubic_bezier(mouse, 2)
   mouse = gen_circle(MIN_BORDER, MAX_BORDER, 1)
-  LD.draw_bezier(mouse, 2)
+  LD.draw_cubic_bezier(mouse, 2)
   mouse = gen_circle(MAX_BORDER, MAX_BORDER, 1)
-  LD.draw_bezier(mouse, 2)
+  LD.draw_cubic_bezier(mouse, 2)
   mouse = gen_circle(MAX_BORDER, MIN_BORDER, 1)
-  LD.draw_bezier(mouse, 2)
+  LD.draw_cubic_bezier(mouse, 2)
 
   mouse = gen_circle(m_x, m_y, 3)
-  LD.draw_bezier(mouse, 2)
+  LD.draw_cubic_bezier(mouse, 2)
 
   LD.set_color([0xff, 0x00, 0x00])
   if curvelen >= 3:
-    LD.draw_bezier(curve, 8);
+    LD.draw_cubic_bezier(curve, 8);
 
   if curvelen % 2 == 0 and curvelen > 0:
     circle = gen_circle(curve[curvelen-1][0], curve[curvelen-1][1], 2)
     LD.set_color([0x00,0xff,0xff])
-    LD.draw_bezier(circle,4)
-    LD.draw_bezier(curve[-2:]+[[m_x,m_y]], 5)
+    LD.draw_cubic_bezier(circle,4)
+    LD.draw_cubic_bezier(curve[-2:]+[[m_x,m_y]], 5)
