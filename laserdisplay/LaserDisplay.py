@@ -5,7 +5,6 @@ import telnetlib
 from numpy import *
 import math
 from random import random
-import usb
 
 PI=3.1415
 WIDTH=255
@@ -38,8 +37,10 @@ class LaserDisplayDevice():
         self.localDevice = False
 
     if self.localDevice:
-
+      import usb
+      import time
       self.ReplayInitLog()
+      time.sleep(3)
 
       # find our device
       self.usbdev = usb.core.find(idVendor=0x9999, idProduct=0x5555)
@@ -65,7 +66,8 @@ class LaserDisplayDevice():
       assert self.ep is not None    
 
   def ReplayInitLog(self):
-    # find our device
+    import usb
+   # find our device
     self.usbdev=None
     for bus in usb.busses():
       for dev in bus.devices:
