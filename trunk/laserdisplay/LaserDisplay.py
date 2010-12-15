@@ -5,6 +5,8 @@ import telnetlib
 from numpy import *
 import math
 from random import random
+import usb
+
 PI=3.1415
 WIDTH=255
 HEIGHT=255
@@ -36,8 +38,6 @@ class LaserDisplayDevice():
         self.localDevice = False
 
     if self.localDevice:
-      import usb.core
-      import usb.util
 
       self.ReplayInitLog()
 
