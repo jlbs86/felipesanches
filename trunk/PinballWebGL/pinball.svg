@@ -1,0 +1,8 @@
+<svg 
+       onload="init_pinball_simulator(evt);"
+       xmlns="http://www.w3.org/2000/svg"
+       xmlns:xlink="http://www.w3.org/1999/xlink"
+       version="1.1" >
+  <script xlink:href="pinball.js"></script>
+  <path d="M 0,50 l 150,350 l 150,-400 l -20,600 l -260,0 l -20,-600" />
+</svg>
