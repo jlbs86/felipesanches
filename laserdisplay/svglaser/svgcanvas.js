@@ -19,7 +19,11 @@ if(window.opera) {
 	window.console.log = function(str) {opera.postError(str);}
 }
 
-
+var postCallback = function() {
+    if (!svgCanvas) return;
+    var str = svgCanvas.getSvgString();
+    $.post("http://localhost:8000/", { svg: str } );
+}
 
 function SvgCanvas(container)
 {
@@ -2976,6 +2980,7 @@ function BatchCommand(text) {
 						} // no change in mouse position
 					}
 					// we return immediately from select so that the obj_num is not incremented
+					postCallback();
 					return;
 					break;
 				case "zoom":
@@ -3133,7 +3138,6 @@ function BatchCommand(text) {
 					canvas.addToSelection([t], true);
 					canvas.setMode("select");
 				}
-				
 			} else if (element != null) {
 				canvas.addedNew = true;
 				element.setAttribute("opacity", cur_shape.opacity);
@@ -3149,6 +3153,7 @@ function BatchCommand(text) {
 				// undo means to call cmd.unapply(), redo means to call cmd.apply()
 				addCommandToHistory(new InsertElementCommand(element));
 				call("changed",[element]);
+				postCallback();
 			}
 	
 			start_transform = null;
@@ -5249,6 +5254,7 @@ function BatchCommand(text) {
 		// reset the rubber band box
 		rubberBox = selectorManager.getRubberBandBox();
 		call("cleared");
+		postCallback();
 	};
 	
 	this.linkControlPoints = function(linkPoints) {
@@ -5426,6 +5432,7 @@ function BatchCommand(text) {
 			this.changeSelectedAttribute("stroke", val);
 		else 
 			this.changeSelectedAttributeNoUndo("stroke", val);
+		postCallback();
 	};
 
 	this.getFillColor = function() {
@@ -5475,6 +5482,7 @@ function BatchCommand(text) {
 			}
 		});
 		canvas.setMode('select');
+		postCallback();
 	};
 
 	var addGradient = function() {
