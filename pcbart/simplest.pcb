@@ -1,0 +1,58 @@
+# release: pcb 20080202
+# date:    Mon Apr 26 18:25:23 2010
+# user:    felipe (felipe,,,)
+# host:    simon
+
+# To read pcb files, the pcb version (or the cvs source date) must be >= the file version
+FileVersion[20070407]
+
+PCB["" 1200000 500000]
+
+Grid[5000.000000 0 0 1]
+Cursor[0 0 6.000000]
+PolyArea[200000000.000000]
+Thermal[0.500000]
+DRC[1000 1000 1000 1000 1500 1000]
+Flags("rubberband,nameonpcb,autodrc,orthomove")
+Groups("1,2,3,s:4,5,6,c:s:c")
+Styles["Signal,1000,4000,2000,1000:Power,2500,6000,3500,1000:Fat,4000,6000,3500,1000:Skinny,800,3600,2000,1000"]
+
+Element["" "a_dot" "D00" "" 150000 205000 7600 59000 1 150 ""]
+(
+	Pin[0 0 11000 3000 14000 4800 "1" "1" ""]
+	)
+
+
+Element["" "custom_block" "R01" "" 950000 245000 7600 59000 1 150 ""]
+(
+	Pin[0 0 11000 3000 14000 4800 "1" "1" ""]
+	Pin[0 38800 11000 3000 14000 4800 "2" "2" ""]
+	)
+
+Element["" "custom_block" "R00" "" 40000 250000 7600 59000 1 150 ""]
+(
+	Pin[0 0 11000 3000 14000 4800 "1" "1" ""]
+	Pin[0 38800 11000 3000 14000 4800 "2" "2" ""]
+	)
+
+Layer(4 "component")
+(
+)
+Layer(7 "silk")
+(
+)
+
+NetList()
+(
+	Net("net0" "(unknown)")
+	(
+		Connect("D00-1")
+		Connect("R00-1")
+		Connect("R01-1")
+	)
+	Net("net1" "(unknown)")
+	(
+		Connect("R00-2")
+		Connect("R01-2")
+	)
+)
