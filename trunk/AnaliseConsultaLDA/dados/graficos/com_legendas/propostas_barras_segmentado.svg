@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3226"
+   version="1.1"
+   inkscape:version="0.47+devel r9426"
+   width="2000"
+   height="1500"
+   sodipodi:docname="propostas_barras_segmentado.png">
+  <metadata
+     id="metadata3232">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3230" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1024"
+     inkscape:window-height="576"
+     id="namedview3228"
+     showgrid="false"
+     inkscape:zoom="0.23133333"
+     inkscape:cx="1000"
+     inkscape:cy="750"
+     inkscape:window-x="-1"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3226" />
+  <image
+     width="2000"
+     height="1500"
+     xlink:href="file:///home/felipe/devel/observatoriolda_24ago/extractor/graficos/propostas_barras_segmentado.png"
+     id="image3234"
+     x="0"
+     y="0" />
+  <g
+     id="g3270">
+    <text
+       sodipodi:linespacing="125%"
+       id="text3086-6"
+       y="198.38989"
+       x="340.77328"
+       style="font-size:82.01637268px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         y="198.38989"
+         x="340.77328"
+         id="tspan3088-8"
+         sodipodi:role="line">ACRÉSCIMO</tspan></text>
+    <rect
+       ry="29.029146"
+       y="108.57578"
+       x="181.15242"
+       height="119.91802"
+       width="119.91802"
+       id="rect3134"
+       style="fill:#0000d2;fill-opacity:1;stroke:none" />
+  </g>
+  <g
+     id="g3275"
+     transform="translate(0,11.509705)">
+    <text
+       xml:space="preserve"
+       style="font-size:82.01637268px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="340.77328"
+       y="379.99908"
+       id="text3090-9"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3092-0"
+         x="340.77328"
+         y="379.99908">ALTERAÇÃO</tspan></text>
+    <rect
+       style="fill:#dede00;fill-opacity:1;stroke:none"
+       id="rect3136"
+       width="119.91802"
+       height="119.91802"
+       x="181.15242"
+       y="290.185"
+       ry="29.029146" />
+  </g>
+  <g
+     id="g3280"
+     transform="translate(0,23.019287)">
+    <text
+       sodipodi:linespacing="125%"
+       id="text3078-4"
+       y="568.93707"
+       x="337.32922"
+       style="font-size:82.01637268px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       xml:space="preserve"><tspan
+         y="568.93707"
+         x="337.32922"
+         id="tspan3080-7"
+         sodipodi:role="line">EXCLUSÃO</tspan></text>
+    <rect
+       ry="29.029146"
+       y="471.79437"
+       x="181.15242"
+       height="119.91802"
+       width="119.91802"
+       id="rect3138"
+       style="fill:#d19200;fill-opacity:1;stroke:none" />
+  </g>
+  <g
+     id="g3265">
+    <text
+       xml:space="preserve"
+       style="font-size:82.01637268px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="337.32922"
+       y="785.07538"
+       id="text3259"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3261"
+         x="337.32922"
+         y="785.07538">RETORNO</tspan></text>
+    <rect
+       style="fill:#e00000;fill-opacity:1;stroke:none"
+       id="rect3263"
+       width="119.91802"
+       height="119.91802"
+       x="181.15242"
+       y="687.93268"
+       ry="29.029146" />
+  </g>
+</svg>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3068"
+   version="1.1"
+   inkscape:version="0.47+devel r9426"
+   width="2000"
+   height="1500"
+   sodipodi:docname="resultados_parciais_proposta.png">
+  <metadata
+     id="metadata3074">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3072" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1024"
+     inkscape:window-height="576"
+     id="namedview3070"
+     showgrid="false"
+     inkscape:zoom="0.23133333"
+     inkscape:cx="1000"
+     inkscape:cy="750"
+     inkscape:window-x="0"
+     inkscape:window-y="-3"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3068" />
+  <image
+     width="2000"
+     height="1500"
+     xlink:href="file:///home/felipe/devel/observatoriolda_24ago/extractor/graficos/resultados_parciais_proposta.png"
+     id="image3076"
+     x="0"
+     y="0" />
+  <text
+     xml:space="preserve"
+     style="font-size:137.67842102000000182px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="940.61261"
+     y="367.22958"
+     id="text3078"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3080"
+       x="940.61261"
+       y="367.22958">RETORNO</tspan></text>
+  <text
+     sodipodi:linespacing="125%"
+     id="text3082"
+     y="958.8631"
+     x="573.0827"
+     style="font-size:137.67842102px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       y="958.8631"
+       x="573.0827"
+       id="tspan3084"
+       sodipodi:role="line">EXCLUSÃO</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:137.67842102px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     x="345.99106"
+     y="1248.7037"
+     id="text3086"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan3088"
+       x="345.99106"
+       y="1248.7037">ALTERAÇÃO</tspan></text>
+  <text
+     sodipodi:linespacing="125%"
+     id="text3090"
+     y="1419.0225"
+     x="65.114563"
+     style="font-size:137.67842102px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0;word-spacing:0;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+     xml:space="preserve"><tspan
+       y="1419.0225"
+       x="65.114563"
+       id="tspan3092"
+       sodipodi:role="line">ACRÉSCIMO</tspan></text>
+</svg>
