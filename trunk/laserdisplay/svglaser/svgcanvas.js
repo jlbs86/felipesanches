@@ -1146,7 +1146,7 @@ function BatchCommand(text) {
 			var i;
 			var childs = elem.childNodes;
 			for (var i=0; i<indent; i++) out.push(" ");
-			out.push("<"); out.push(elem.nodeName);			
+			out.push("<"); out.push(elem.nodeName);
 			if(elem.id == 'svgcontent') {
 				// Process root element separately; Prevents errors caused 
 				// in webkit when removing attributes
@@ -4713,7 +4713,7 @@ function BatchCommand(text) {
 		if(opts) $.extend(save_options, opts);
 		save_options.apply = true;
 		
-		var str = "<?xml version=\"1.0\" standalone=\"no\"?>\n";
+		var str = "";
 		// no need for doctype, see http://jwatt.org/svg/authoring/#doctype-declaration
 		str += svgCanvasToString();
 		call("saved", str);
