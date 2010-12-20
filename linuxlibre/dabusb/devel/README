@@ -1,0 +1,8 @@
+ * Copyright (C) 1999 BayCom GmbH
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that redistributions of source
+ * code retain the above copyright notice and this comment without
+ * modification.
+
+In this directory we are providing comments to the source code derived from disassembling the original firmware, in order to have a free firmware for this device. 

@@ -1,0 +1,15 @@
+ * Copyright (C) 1999 BayCom GmbH
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that redistributions of source
+ * code retain the above copyright notice and this comment without
+ * modification.
+
+The files in this directory are:
+
+original/dabusb_fw.bin
+	The binary image of the original binary-only release of the firmware.
+
+original/dabusb_fw.d52
+	The result of disassembling it with d52. This assembly code does not have labels. For a commented/annotated version of this code you can use the files from the "devel/" directory instead. 
+
