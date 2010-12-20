@@ -1,0 +1,10 @@
+These files are the 8051 (EZUSB) firmware and FPGA bitstream for DABUSB. This is derivative work based on the original binary-only release intended for usage with the Linux kernel. These files, just like the original ones, are available under the following terms:
+
+ * Copyright (C) 1999 BayCom GmbH
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that redistributions of source
+ * code retain the above copyright notice and this comment without
+ * modification.
+
+
