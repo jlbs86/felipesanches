@@ -1,3 +1,10 @@
+; * Copyright (C) 2010 Felipe C. da S. Sanches <juca@members.fsf.org>
+; * Copyright (C) 1999 BayCom GmbH
+; *
+; * Redistribution and use in source and binary forms, with or without
+; * modification, are permitted provided that redistributions of source
+; * code retain the above copyright notice and this comment without
+; * modification.
 ;
 ;  D52 V3.4.1 8052 Disassembly of dabusb_fw.bin
 ;  2010/12/20 14:48
@@ -159,7 +166,7 @@ X0167:	push	psw
 	push	dpl
 	push	dph
 	push	acc
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	movx	a,@dptr
 	orl	a,#80h
 	movx	@dptr,a
@@ -196,7 +203,7 @@ X0167:	push	psw
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	movx	a,@dptr
 	anl	a,7fh
 	movx	@dptr,a
@@ -634,7 +641,7 @@ X04e2:	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r2,a
 	mov	20h,r2
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	clr	a
 	movx	@dptr,a
 	ret	
@@ -712,10 +719,10 @@ X0537:	mov	a,r2
 	lcall	X11a0
 	ret	
 ;
-X0564:	mov	dptr,#X7f96
+X0564:	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	xrl	a,rb0r2
 	movx	@dptr,a
@@ -866,10 +873,10 @@ X064e:	mov	dptr,#X7feb
 	rlc	a
 	subb	a,acc
 	mov	r5,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r6,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	xrl	a,rb0r6
 	movx	@dptr,a
@@ -1066,7 +1073,7 @@ X07bf:	clr	a
 	mov	dptr,#X7f9c
 	mov	a,#0ffh
 	movx	@dptr,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	movx	@dptr,a
 	mov	dptr,#X7f94
@@ -1075,13 +1082,13 @@ X07bf:	clr	a
 	mov	dptr,#X7f9d
 	mov	a,#8fh
 	movx	@dptr,a
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7f95
 	mov	a,#0c2h
 	movx	@dptr,a
-X0800:	mov	dptr,#X7f98
+X0800:	mov	dptr,OUTC
 	mov	a,#28h
 	movx	@dptr,a
 	mov	dptr,#X7f9e
@@ -1248,7 +1255,7 @@ X093a:	mov	34h,33h
 	mov	dptr,#X7f9d
 	mov	a,#8fh
 	movx	@dptr,a
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	mov	a,#8
 	movx	@dptr,a
 	mov	dptr,#X7f9d
@@ -1263,7 +1270,7 @@ X093a:	mov	34h,33h
 	mov	dptr,#X7f9d
 	mov	a,#8fh
 	movx	@dptr,a
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	mov	a,#2
 	movx	@dptr,a
 	mov	dptr,#X7f9d
@@ -1279,10 +1286,10 @@ X093a:	mov	34h,33h
 	orl	a,r2
 	mov	33h,a
 	jz	X0988
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	orl	a,r2
 	movx	@dptr,a
@@ -1382,14 +1389,14 @@ X0a3f:	push	rb0r4
 	lcall	X01dd
 	pop	rb0r5
 	pop	rb0r4
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#7fh
 	anl	a,r2
 	movx	@dptr,a
-	mov	dptr,#X7f97
+	mov	dptr,OUTB
 	mov	a,#8
 	movx	@dptr,a
 	clr	c
@@ -1398,7 +1405,7 @@ X0a3f:	push	rb0r4
 	mov	a,r5
 	subb	a,#2
 	jc	X0a6d
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
 	jb	acc.6,X0a75
@@ -1408,10 +1415,10 @@ X0a6d:	clr	c
 	mov	a,#8
 	subb	a,r5
 	jnc	X0a88
-X0a75:	mov	dptr,#X7f96
+X0a75:	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#40h
 	xrl	a,rb0r2
 	movx	@dptr,a
@@ -1440,10 +1447,10 @@ X0aa7:	mov	dptr,OUT2BC
 	jnz	X0ab1
 	ljmp	X0c2d
 ;
-X0ab1:	mov	dptr,#X7f96
+X0ab1:	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r2,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	xrl	a,rb0r2
 	movx	@dptr,a
@@ -1507,7 +1514,7 @@ X0af1:	push	rb0r2
 ;
 X0b36:	cjne	r2,#2ah,X0b74 ; if code != FPGA_CLEAR goto X0b74
 dabusb_fpga_clear:
-	mov	dptr,#X7f98
+	mov	dptr,OUTC
 	mov	a,#20h
 	movx	@dptr,a
 	push	rb0r2
@@ -1517,7 +1524,7 @@ dabusb_fpga_clear:
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	mov	dptr,#X7f98
+	mov	dptr,OUTC
 	mov	a,#28h
 	movx	@dptr,a
 	mov	r3,#0
@@ -1545,17 +1552,17 @@ X0b74:	cjne	r2,#2bh,X0b91 ; if code != FPGA_LOAD_BITSTREAM goto X0b91
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
-	lcall	X1205 dabusb_fpga_load_bitstream
+	lcall	dabusb_fpga_load_bitstream
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
 	ljmp	X0c2d
 ;
 X0b91:	cjne	r2,#10h,X0bb3
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	movx	a,@dptr
 	mov	r3,a
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#80h
 	xrl	a,rb0r3
 	movx	@dptr,a
@@ -2545,7 +2552,8 @@ X11f3:	mov	dptr,#X7dff
 	lcall	X1175
 	ret	
 ;
-X1205:	mov	r2,#4
+dabusb_fpga_load_bitstream:
+	mov	r2,#4
 X1207:	cjne	r2,#40h,X120a ; for (index=4; index<64; index++){
 X120a:	jnc	X1242
 	mov	a,r2
@@ -2562,14 +2570,14 @@ X121d:	jnc	X123f
 	mov	rb0r5,r3
 	mov	a,r5
 	jnb	acc.7,X1230
-	mov	dptr,#X7f96
+	mov	dptr,OUTA
 	mov	a,#42h
 	movx	@dptr,a
 	mov	a,#0c3h
 	movx	@dptr,a
 	sjmp	X1238
 ;
-X1230:	mov	dptr,#X7f96
+X1230:	mov	dptr,OUTA
 	clr	a
 	movx	@dptr,a
 	mov	a,#81h
@@ -3076,9 +3084,9 @@ X7f92	equ	7f92h
 X7f93	equ	7f93h
 X7f94	equ	7f94h
 X7f95	equ	7f95h
-X7f96	equ	7f96h
-X7f97	equ	7f97h
-X7f98	equ	7f98h
+OUTA	equ	7f96h
+OUTB	equ	7f97h
+OUTC	equ	7f98h
 X7f9a	equ	7f9ah
 X7f9c	equ	7f9ch
 X7f9d	equ	7f9dh
