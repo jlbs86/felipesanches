@@ -1742,24 +1742,18 @@ X0c2d:	mov	dptr,#OUT2BC
 	ljmp	X092a
 ;
 	ret	
-;
-	anl	0x55,#0x50
-	orl	a,0x4e
-	orl	a,#0
-	anl	0x45,a
-	anl	0x55,#0x4d
-	orl	a,rb0r0
-;TODO	jb	0x2a.6,X0cb9
-	xrl	a,r4
-;TODO	jb	0x20.0,X0c92
-	ajmp	X0a42
-;
-	anl	a,0x53
-	orl	0x20,a
-	mov	@r0,#0x31
-	add	a,r6
-;TODO	jnb	0x26.0,X0c5a
-X0c5a:	push	acc
+
+.ascii "SUSPEND"
+.db 0
+.ascii "RESUME"
+.db 0
+.ascii " Vol "
+.db 0
+.ascii "DABUSB v1.00"
+.db 0
+
+X0c5a:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
