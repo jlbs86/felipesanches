@@ -1,6 +1,3 @@
-
-
-
 void dabusb_fpga_load_bitstream(){
 	for (idx=4; idx<64; idx++){
 		char byte = *(OUT2BUF+idx);
