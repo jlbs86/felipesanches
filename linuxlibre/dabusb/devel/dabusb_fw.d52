@@ -9,9 +9,6 @@
 ;  D52 V3.4.1 8052 Disassembly of dabusb_fw.bin
 ;  2010/12/20 14:48
 ;
-
-
-;
 ;	Register/Memory Equates
 ;
 rb0r0=0
@@ -48,14 +45,14 @@ X7f95=0x7f95
 OUTA=0x7f96
 OUTB=0x7f97
 OUTC=0x7f98
-X7f9a=0x7f9a
-X7f9c=0x7f9c
-X7f9d=0x7f9d
-X7f9e=0x7f9e
-X7fa1=0x7fa1
-X7fa5=0x7fa5
-X7fa6=0x7fa6
-X7fa9=0x7fa9
+PINSB=0x7f9a
+OEA=0x7f9c
+OEB=0x7f9d
+OEC=0x7f9e
+ISOCTL=0x7fa1
+I2CS=0x7fa5
+I2CDAT=0x7fa6
+IN07IRQ=0x7fa9
 X7faa=0x7faa
 X7fab=0x7fab
 X7fac=0x7fac
@@ -108,7 +105,7 @@ X880f=0x880f
 Xba00=0x0ba00
 Xffc3=0x0ffc3
 
-	;org	0x00
+;org	#0x00
 ;
 X0000:	ajmp	X0157
 ;
@@ -307,7 +304,7 @@ X0167:	push	psw
 	movx	a,@dptr
 	anl	a,0x7f
 	movx	@dptr,a
-	mov	dptr,#X7f9a
+	mov	dptr,#PINSB
 	movx	a,@dptr
 	jnb	acc.4,X01cc
 	mov	dptr,#X7f68
@@ -558,46 +555,46 @@ X030f:	push	acc
 	pop	acc
 	reti	
 ;
-X0372:	mov	dptr,#X7fa5
+X0372:	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,#0x9a
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,0x42
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,0x43
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa5
+	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
 ;
-X039a:	mov	dptr,#X7fa5
+X039a:	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,#0x9a
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,0x44
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,0x45
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	mov	a,0x46
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa5
+	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
@@ -664,7 +661,7 @@ X043c:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7fa9
+	mov	dptr,#IN07IRQ
 	mov	a,#4
 	movx	@dptr,a
 	mov	0x30,#1
@@ -1118,7 +1115,7 @@ X075c:	mov	0x6b,#0x80
 	lcall	X10e2
 	ret	
 ;
-X076f:	mov	dptr,#X7fa1
+X076f:	mov	dptr,#ISOCTL
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7faf
@@ -1170,7 +1167,7 @@ X07bf:	clr	a
 	mov	dptr,#X7f93
 	mov	a,#0x3c
 	movx	@dptr,a
-	mov	dptr,#X7f9c
+	mov	dptr,#OEA
 	mov	a,#0x0ff
 	movx	@dptr,a
 	mov	dptr,#OUTA
@@ -1179,7 +1176,7 @@ X07bf:	clr	a
 	mov	dptr,#X7f94
 	mov	a,#0x70
 	movx	@dptr,a
-	mov	dptr,#X7f9d
+	mov	dptr,#OEB
 	mov	a,#0x8f
 	movx	@dptr,a
 	mov	dptr,#OUTB
@@ -1191,7 +1188,7 @@ X07bf:	clr	a
 X0800:	mov	dptr,#OUTC
 	mov	a,#0x28
 	movx	@dptr,a
-	mov	dptr,#X7f9e
+	mov	dptr,#OEC
 	mov	a,#0x28
 	movx	@dptr,a
 	mov	dptr,#X7ff0
@@ -1352,34 +1349,34 @@ X092a:	mov	dptr,#X7fae
 X0937:	ljmp	X0a3f
 ;
 X093a:	mov	0x34,0x33
-	mov	dptr,#X7f9d
+	mov	dptr,#OEB
 	mov	a,#0x8f
 	movx	@dptr,a
 	mov	dptr,#OUTB
 	mov	a,#8
 	movx	@dptr,a
-	mov	dptr,#X7f9d
+	mov	dptr,#OEB
 	mov	a,#0x88
 	movx	@dptr,a
-	mov	dptr,#X7f9a
+	mov	dptr,#PINSB
 	movx	a,@dptr
 	mov	r2,a
 	mov	a,#5
 	anl	a,r2
 	mov	0x33,a
-	mov	dptr,#X7f9d
+	mov	dptr,#OEB
 	mov	a,#0x8f
 	movx	@dptr,a
 	mov	dptr,#OUTB
 	mov	a,#2
 	movx	@dptr,a
-	mov	dptr,#X7f9d
+	mov	dptr,#OEB
 	mov	a,#0x82
 	movx	@dptr,a
 	mov	a,0x33
 	add	a,acc
 	mov	r2,a
-	mov	dptr,#X7f9a
+	mov	dptr,#PINSB
 	movx	a,@dptr
 	anl	a,#5
 	mov	r3,a
@@ -1816,7 +1813,7 @@ X0cc1:	jc	X0ce4
 	add	a,#0x0ff
 	add	a,acc
 	mov	r5,a
-	add	a,#0x0c6
+	add	a,#0xc6
 	mov	dpl,a
 	clr	a
 	addc	a,#0x7f
@@ -2334,7 +2331,8 @@ X0f68:	dec	rb0r0
 ;
 X1000:	nop	
 X1001:	nop	
-;TODO	jc	X104b
+;TODO: this seems to be a data section. Uncomment next instruction and investigate:
+;	jc	X104b
 	inc	sbuf
 	subb	a,r1
 	nop	
@@ -2355,7 +2353,7 @@ X1001:	nop
 X101b:	mov	r2,#0
 X101d:	cjne	r2,#5,X1020
 X1020:	jnc	X1039
-	mov	dptr,#X7fa5
+	mov	dptr,#I2CS
 	movx	a,@dptr
 	mov	r3,a
 	jnb	acc.0,X102f
@@ -2427,7 +2425,7 @@ X107c:	mov	dpl,r4
 	djnz	r3,X107c
 	ret	
 ;
-X108f:	mov	dptr,#X7fa5
+X108f:	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
 	inc	0x86
@@ -2437,7 +2435,7 @@ X108f:	mov	dptr,#X7fa5
 	inc	dptr
 	movx	@dptr,a
 	lcall	X101b
-	mov	dptr,#X7fa6
+	mov	dptr,#I2CDAT
 	inc	0x86
 	inc	dptr
 	inc	dptr
@@ -2446,7 +2444,7 @@ X108f:	mov	dptr,#X7fa5
 	jz	X10c3
 	inc	dptr
 	inc	0x86
-X10b0:	mov	dptr,#X7fa6
+X10b0:	mov	dptr,#I2CDAT
 	inc	0x86
 	movx	a,@dptr
 	inc	dptr
@@ -2456,7 +2454,7 @@ X10b0:	mov	dptr,#X7fa6
 	lcall	X101b
 	pop	rb0r1
 	djnz	r1,X10b0
-X10c3:	mov	dptr,#X7fa5
+X10c3:	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
@@ -2648,12 +2646,13 @@ X11f3:	mov	dptr,#X7dff
 	lcall	X1175
 	ret	
 ;
+
 dabusb_fpga_load_bitstream:
 	mov	r2,#4
 X1207:	cjne	r2,#0x40,X120a ; for (index=4; index<64; index++){
 X120a:	jnc	X1242
 	mov	a,r2
-;TODO check whether it is equivalent to 	add	a,#lo(OUT2BUF)
+;TODO How to declare macros?	add	a,#lo(OUT2BUF)
 	add	a,#(OUT2BUF & 0xff)
 	mov	dpl,a
 	clr	a
