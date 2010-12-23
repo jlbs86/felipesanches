@@ -53,23 +53,23 @@ ISOCTL=0x7fa1
 I2CS=0x7fa5
 I2CDAT=0x7fa6
 IN07IRQ=0x7fa9
-X7faa=0x7faa
-X7fab=0x7fab
-X7fac=0x7fac
-X7fad=0x7fad
-X7fae=0x7fae
-X7faf=0x7faf
-X7fb4=0x7fb4
-X7fb5=0x7fb5
-X7fb9=0x7fb9
-X7fc5=0x7fc5
+OUT07IRQ=0x7faa
+USBIRQ=0x7fab
+IN07IEN=0x7fac
+OUT07IEN=0x7fad
+USBIEN=0x7fae
+USBBAV=0x7faf
+EP0CS=0x7fb4
+IN0BC=0x7fb5
+IN2BC=0x7fb9
+OUT0BC=0x7fc5
 OUT2BC=0x7fc9
-X7fd4=0x7fd4
-X7fd5=0x7fd5
-X7fd6=0x7fd6
-X7fdd=0x7fdd
-X7fde=0x7fde
-X7fdf=0x7fdf
+SUDPTRH=0x7fd4
+SUDPTRL=0x7fd5
+USBCS=0x7fd6
+USBPAIR=0x7fdd
+IN07VAL=0x7fde
+OUT07VAL=0x7fdf
 X7fe0=0x7fe0
 X7fe1=0x7fe1
 X7fe2=0x7fe2
@@ -375,10 +375,10 @@ X01ed:	push	acc
 	mov	dptr,#X8800
 	movx	a,@dptr
 	mov	0x41,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
 	mov	a,0x32
@@ -427,7 +427,7 @@ X0251:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#4
 	movx	@dptr,a
 	pop	0x86
@@ -457,7 +457,7 @@ X027c:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#8
 	movx	@dptr,a
 	mov	0x6e,#0
@@ -467,7 +467,7 @@ X027c:	push	acc
 	mov	0x71,#0x0c
 	mov	0x72,#2
 	lcall	X1175
-	mov	dptr,#X7fd6
+	mov	dptr,#USBCS
 	clr	a
 	movx	@dptr,a
 	mov	i2cfg,#0x20
@@ -498,7 +498,7 @@ X02e4:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#0x10
 	movx	@dptr,a
 	pop	0x86
@@ -532,10 +532,10 @@ X030f:	push	acc
 	mov	0x71,#0x0c
 	mov	0x72,#2
 	lcall	X1175
-	mov	dptr,#X7fd6
+	mov	dptr,#USBCS
 	mov	a,#2
 	movx	@dptr,a
-	mov	dptr,#X7fd6
+	mov	dptr,#USBCS
 	mov	a,#6
 	movx	@dptr,a
 	mov	i2cfg,#0x10
@@ -639,7 +639,7 @@ X03e1:	mov	dptr,#X8800
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7faa
+	mov	dptr,#OUT07IRQ
 	mov	a,#2
 	movx	@dptr,a
 	pop	0x86
@@ -684,7 +684,7 @@ X046a:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7faa
+	mov	dptr,#OUT07IRQ
 	mov	a,#4
 	movx	@dptr,a
 	mov	0x31,#1
@@ -937,7 +937,7 @@ X05fd:	push	acc
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7faa
+	mov	dptr,#OUT07IRQ
 	mov	a,#1
 	movx	@dptr,a
 	lcall	X0564
@@ -1077,7 +1077,7 @@ X070c:	mov	dptr,#X7f00
 	mov	dptr,#X7f01
 	mov	a,#1
 	movx	@dptr,a
-X0718:	mov	dptr,#X7fb5
+X0718:	mov	dptr,#IN0BC
 	mov	a,r4
 	movx	@dptr,a
 	ret	
@@ -1118,7 +1118,7 @@ X075c:	mov	0x6b,#0x80
 X076f:	mov	dptr,#ISOCTL
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7faf
+	mov	dptr,#USBBAV
 	mov	a,#1
 	movx	@dptr,a
 	mov	dptr,#X7f92
@@ -1245,7 +1245,7 @@ X0810:	movx	@dptr,a
 	mov	dptr,#X7fe1
 	mov	a,#1
 	movx	@dptr,a
-	mov	dptr,#X7fdd
+	mov	dptr,#USBPAIR
 	mov	a,#0x80
 	movx	@dptr,a
 	lcall	X1243
@@ -1272,7 +1272,7 @@ X087f:	clr	c
 X089d:	sjmp	X087f
 ;
 X089f:	lcall	X03e1
-	mov	dptr,#X7fd6
+	mov	dptr,#USBCS
 	clr	a
 	movx	@dptr,a
 	mov	r2,#0
@@ -1299,33 +1299,33 @@ X08ab:	mov	rb0r4,r2
 	inc	r3
 X08d0:	sjmp	X08ab
 ;
-X08d2:	mov	dptr,#X7fd6
+X08d2:	mov	dptr,#USBCS
 	mov	a,#2
 	movx	@dptr,a
-	mov	dptr,#X7fd6
+	mov	dptr,#USBCS
 	mov	a,#6
 	movx	@dptr,a
-	mov	dptr,#X7fde
+	mov	dptr,#IN07VAL
 	mov	a,#5
 	movx	@dptr,a
-	mov	dptr,#X7fdf
+	mov	dptr,#OUT07VAL
 	mov	a,#5
 	movx	@dptr,a
-	mov	dptr,#X7fac
+	mov	dptr,#IN07IEN
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7fad
+	mov	dptr,#OUT07IEN
 	mov	a,#5
 	movx	@dptr,a
 	mov	ie,#0x80
 	mov	i2sta,#0x10
-	mov	dptr,#X7fae
+	mov	dptr,#USBIEN
 	mov	a,#0x0b
 	movx	@dptr,a
 	mov	dptr,#X7fe2
 	mov	a,#0x88
 	movx	@dptr,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#8
 	movx	@dptr,a
 	mov	csr,#0x11
@@ -1339,7 +1339,7 @@ X08d2:	mov	dptr,#X7fd6
 	pop	rb0r4
 	mov	0x34,#0
 	mov	0x35,#1
-X092a:	mov	dptr,#X7fae
+X092a:	mov	dptr,#USBIEN
 	mov	a,#3
 	movx	@dptr,a
 	mov	rb0r2,r4
@@ -1769,7 +1769,7 @@ X0c5a:
 	mov	a,0x91
 	clr	acc.4
 	mov	0x91,a
-	mov	dptr,#X7fab
+	mov	dptr,#USBIRQ
 	mov	a,#1
 	movx	@dptr,a
 	mov	dptr,#X7fe8
@@ -1790,7 +1790,7 @@ X0c9a:	cjne	r2,#0x80,X0cb1
 	mov	dptr,#X7f01
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7fb5
+	mov	dptr,#IN0BC
 	mov	a,#2
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1855,7 +1855,7 @@ X0d0a:	mov	dptr,#X7f00
 X0d0f:	mov	dptr,#X7f01
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7fb5
+	mov	dptr,#IN0BC
 	mov	a,#2
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1871,7 +1871,7 @@ X0d25:	mov	dptr,#X7f00
 	mov	dptr,#X7f01
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7fb5
+	mov	dptr,#IN0BC
 	mov	a,#2
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1895,7 +1895,7 @@ X0d55:	cjne	r2,#0x21,X0d5a
 X0d5a:	ljmp	X0ecd
 ;
 X0d5d:	mov	0x37,#1
-	mov	dptr,#X7fc5
+	mov	dptr,#OUT0BC
 	clr	a
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1931,10 +1931,10 @@ X0d95:	mov	dptr,#X7feb
 	mov	r5,#0x0f
 	mov	rb0r6,r5
 	mov	r7,#0
-	mov	dptr,#X7fd4
+	mov	dptr,#SUDPTRH
 	mov	a,r6
 	movx	@dptr,a
-	mov	dptr,#X7fd5
+	mov	dptr,#SUDPTRL
 	mov	a,r4
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1959,10 +1959,10 @@ X0dcc:	mov	r4,#0x3b
 	mov	r5,#0x0f
 	mov	rb0r6,r5
 	mov	r7,#0
-	mov	dptr,#X7fd4
+	mov	dptr,#SUDPTRH
 	mov	a,r6
 	movx	@dptr,a
-	mov	dptr,#X7fd5
+	mov	dptr,#SUDPTRL
 	mov	a,r4
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -1975,7 +1975,7 @@ X0de7:	cjne	r3,#8,X0dfa
 	mov	dptr,#X7f00
 	mov	a,r4
 	movx	@dptr,a
-	mov	dptr,#X7fb5
+	mov	dptr,#IN0BC
 	mov	a,#1
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -2030,7 +2030,7 @@ X0e39:	mov	dptr,#X7fec
 	mov	r2,a
 	mov	dptr,#X7f00
 	movx	@dptr,a
-	mov	dptr,#X7fb5
+	mov	dptr,#IN0BC
 	mov	a,#1
 	movx	@dptr,a
 	ljmp	X0ecd
@@ -2095,12 +2095,12 @@ X0ebd:	cjne	r3,#0x84,X0ec5
 X0ec0:	lcall	X064e
 	sjmp	X0ecd
 ;
-X0ec5:	mov	dptr,#X7fb4
+X0ec5:	mov	dptr,#EP0CS
 	mov	a,#3
 	movx	@dptr,a
 	sjmp	X0ed3
 ;
-X0ecd:	mov	dptr,#X7fb4
+X0ecd:	mov	dptr,#EP0CS
 	mov	a,#2
 	movx	@dptr,a
 X0ed3:	pop	0x86
@@ -2395,7 +2395,7 @@ X104f:	mov	dpl,r1
 	djnz	r3,X104f
 X1061:	mov	dptr,#X7dc3
 	movx	a,@dptr
-	mov	dptr,#X7fb9
+	mov	dptr,#IN2BC
 	movx	@dptr,a
 	ret	
 ;
