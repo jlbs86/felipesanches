@@ -36,8 +36,8 @@ OUT0BUF=0x7ec0
 X7ec1=0x7ec1
 IN0BUF=0x7f00
 X7f01=0x7f01
-X7f68=0x7f68
-X7f69=0x7f69
+IN8DATA=0x7f68
+IN9DATA=0x7f69
 CPUCS=0x7f92
 PORTACFG=0x7f93
 PORTBCFG=0x7f94
@@ -269,7 +269,7 @@ X0167:	push	psw
 	movx	a,@dptr
 	orl	a,#0x80
 	movx	@dptr,a
-	mov	dptr,#X7f69
+	mov	dptr,#IN9DATA
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
@@ -309,7 +309,7 @@ X0167:	push	psw
 	mov	dptr,#PINSB
 	movx	a,@dptr
 	jnb	acc.4,X01cc
-	mov	dptr,#X7f68
+	mov	dptr,#IN8DATA
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
@@ -394,7 +394,7 @@ X0223:	clr	c
 	xrl	a,#0x80
 	subb	a,#0x80
 	jnc	X0240
-	mov	dptr,#X7f69
+	mov	dptr,#IN9DATA
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
@@ -1266,7 +1266,7 @@ X087f:	clr	c
 	mov	dptr,#X880b
 	movx	a,@dptr
 	mov	0x47,a
-	mov	dptr,#X7f68
+	mov	dptr,#IN8DATA
 	movx	@dptr,a
 	inc	r2
 	cjne	r2,#0,X089d
