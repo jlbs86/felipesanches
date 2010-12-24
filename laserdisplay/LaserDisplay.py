@@ -34,7 +34,7 @@ class LaserDisplay():
     if config and "simulator" in config:
       self.device = LasersimDevice(config)
     else:
-      self.device = LaserDisplayLocalDevice()
+      self.device = LaserDevice()
    
     self.adjust_glyphs()
 
