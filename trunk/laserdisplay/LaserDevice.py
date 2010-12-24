@@ -1,6 +1,9 @@
 #!/usr/bin/env python
 
 import time
+from numpy import *
+import math
+from random import random
 
 class LaserDevice():
   # Configuration flags
