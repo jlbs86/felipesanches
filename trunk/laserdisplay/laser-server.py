@@ -1,14 +1,28 @@
 #!/usr/bin/python
 from LaserDisplay import *
 
-LD = LaserDisplay()
-
 from twisted.internet.protocol import Factory, Protocol
 from twisted.internet.task import LoopingCall 
 from twisted.internet import reactor
 
 QUAD_BEZ_QUALITY = 8
 CUBIC_BEZ_QUALITY = 8
+
+# Initialization:
+LD = []
+line = raw_input("Simulator? y/N: ")
+if line == "y" or line == "Y":
+  print "Running in simulator mode"
+  LD = LaserDisplay({"simulator":True})
+else:
+  print "Running in normal mode"
+  try:
+    LD = LaserDisplay()
+  except Exception as e:
+    print "Laser init error:",
+    print e
+    exit(-1)
+print "Laser display initialization complete"
 
 def update_laser (connections):
 #  if len(connections):
@@ -19,8 +33,9 @@ def update_laser (connections):
       if len(cmd)==0:
         break
       if cmd[0] == "line":
-        msg = LD.line_message(float(cmd[1]), float(cmd[2]), float(cmd[3]), float(cmd[4]))
-        LD.schedule(msg)
+        msg = LD.call("line_message", float(cmd[1]), float(cmd[2]), float(cmd[3]), float(cmd[4]))
+        if msg:
+          LD.call("schedule", msg)
       elif cmd[0] == "quadratic":
         cmd.pop(0)
         points = []
@@ -28,8 +43,9 @@ def update_laser (connections):
           x=float(cmd.pop(0))
           y=float(cmd.pop(0))
           points.append([x,y])
-        msg = LD.quadratic_bezier_message(points, QUAD_BEZ_QUALITY)
-        LD.schedule(msg)
+        msg = LD.call("draw_quadratic_bezier", points, QUAD_BEZ_QUALITY)
+        if msg:
+          LD.call("schedule", msg)
       elif cmd[0] == "cubic":
         cmd.pop(0)
         points = []
@@ -37,25 +53,26 @@ def update_laser (connections):
           x=float(cmd.pop(0))
           y=float(cmd.pop(0))
           points.append([x,y])
-        msg = LD.cubic_bezier_message(points, CUBIC_BEZ_QUALITY)
-        LD.schedule(msg)
+        msg = LD.call("draw_cubic_bezier", points, CUBIC_BEZ_QUALITY)
+        if msg:
+          LD.call("schedule", msg)
       elif cmd[0] == "save":
-        LD.save()
+        LD.call("save")
       elif cmd[0] == "restore":
-        LD.restore()
+        LD.call("restore")
       elif cmd[0] == "rotate":
-        LD.rotate(float(cmd[1]))
+        LD.call("rotate", float(cmd[1]))
       elif cmd[0] == "translate":
-        LD.translate(float(cmd[1]), float(cmd[2]))
+        LD.call("translate", float(cmd[1]), float(cmd[2]))
       elif cmd[0] == "scale":
-        LD.scale(float(cmd[1]))
+        LD.call("scale", float(cmd[1]))
       elif cmd[0] == "rotateat":
-        LD.rotate_at(float(cmd[1]),float(cmd[2]),float(cmd[3])):
+        LD.call("rotate_at", float(cmd[1]),float(cmd[2]),float(cmd[3]))
       elif cmd[0] == "color":
-        LD.set_color([int(cmd[1]), int(cmd[2]), int(cmd[3])])
+        LD.call("set_color", [int(cmd[1]), int(cmd[2]), int(cmd[3])])
       elif cmd[0] == "config":
-        LD.set_laser_configuration(int(cmd[1]), int(cmd[2]))
-  LD.show_frame()
+        LD.call("set_laser_configuration", int(cmd[1]), int(cmd[2]))
+  LD.call("show_frame")
 
 connections = []
 loop = LoopingCall(update_laser, connections)

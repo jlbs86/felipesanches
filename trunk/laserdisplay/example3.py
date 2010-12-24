@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 from LaserDisplay import *
+from LaserClient import *
 import math
 import random
+import time
 
 WIDTH = 255
 HEIGHT = 255
@@ -14,6 +16,10 @@ NOISE = 0
 PROBAB_COLOR_CHANGE=0.05
 COLOR_CHANGE_MAXSTEP = 256
 
+def clamp(value, min, max):
+  if value > max: return max
+  if value < min: return min
+  return int(value)
 
 class Particle:
   def __init__(self, display):
@@ -47,7 +53,8 @@ class Particle:
       self.color[1] = clamp(self.color[1] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)
       self.color[2] = clamp(self.color[2] + random.random()*COLOR_CHANGE_MAXSTEP - COLOR_CHANGE_MAXSTEP/2, 0,255)    
 
-LD = LaserDisplay({"server":"localhost","port": 50000})
+LD = LaserClient({"server":"localhost","port": 50000})
+#LD = LaserDisplay({"server":"localhost","port": 50000})
 #LD = LaserDisplay()
 
 shapes = []
@@ -59,7 +66,7 @@ for _ in range (NUM_SHAPES):
     
   shapes.append(particles)
 
-LD.set_noise(NOISE)
+#LD.set_noise(NOISE)
   
 while True:
   for particles in shapes:
