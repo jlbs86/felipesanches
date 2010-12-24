@@ -33,9 +33,7 @@ def update_laser (connections):
       if len(cmd)==0:
         break
       if cmd[0] == "line":
-        msg = LD.call("line_message", float(cmd[1]), float(cmd[2]), float(cmd[3]), float(cmd[4]))
-        if msg:
-          LD.call("schedule", msg)
+        LD.call("draw_line", float(cmd[1]), float(cmd[2]), float(cmd[3]), float(cmd[4]))
       elif cmd[0] == "quadratic":
         cmd.pop(0)
         points = []
@@ -43,9 +41,7 @@ def update_laser (connections):
           x=float(cmd.pop(0))
           y=float(cmd.pop(0))
           points.append([x,y])
-        msg = LD.call("draw_quadratic_bezier", points, QUAD_BEZ_QUALITY)
-        if msg:
-          LD.call("schedule", msg)
+        LD.call("draw_quadratic_bezier", points, QUAD_BEZ_QUALITY)
       elif cmd[0] == "cubic":
         cmd.pop(0)
         points = []
@@ -53,9 +49,7 @@ def update_laser (connections):
           x=float(cmd.pop(0))
           y=float(cmd.pop(0))
           points.append([x,y])
-        msg = LD.call("draw_cubic_bezier", points, CUBIC_BEZ_QUALITY)
-        if msg:
-          LD.call("schedule", msg)
+        LD.call("draw_cubic_bezier", points, CUBIC_BEZ_QUALITY)
       elif cmd[0] == "save":
         LD.call("save")
       elif cmd[0] == "restore":
@@ -72,6 +66,8 @@ def update_laser (connections):
         LD.call("set_color", [int(cmd[1]), int(cmd[2]), int(cmd[3])])
       elif cmd[0] == "config":
         LD.call("set_laser_configuration", int(cmd[1]), int(cmd[2]))
+      elif cmd[0] == "draw_text":
+        LD.draw_text(cmd[1], int(cmd[2]), int(cmd[3]), int(cmd[4]))
   LD.call("show_frame")
 
 connections = []
@@ -79,7 +75,7 @@ loop = LoopingCall(update_laser, connections)
 loop.start(0)
 
 class SendContent(Protocol):
-    valid_commands = ["quadratic", "cubic", "line", "color", "show", "config", "save", "restore", "rotate", "rotateat", "translate", "scale", "quit"]
+    valid_commands = ["quadratic", "cubic", "line", "color", "show", "config", "save", "restore", "rotate", "rotateat", "translate", "scale", "draw_text", "quit"]
 
     def __init__(self):
       connections.append(self)
