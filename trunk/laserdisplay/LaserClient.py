@@ -15,6 +15,9 @@ class LaserClient():
   def set_laser_configuration(self, blanking_delay, scan_rate):
     self.remote.write("config %d %d\n" % (blanking_delay, scan_rate))
 
+  def set_scan_rate(self, scan_rate):
+    self.remote.write("scanrate %d" % (scan_rate))
+
   def set_color(self, c):
     self.remote.write("color %d %d %d\n" % (c[0], c[1], c[2]))
 
@@ -32,6 +35,9 @@ class LaserClient():
     for p in points:
       msg+=" %f %f" % (p[0], p[1])
     self.remote.write(msg+"\n")
+
+  def draw_text(self, text, x, y, size):
+    self.remote.write("draw_text %s %d %d %d\n" % (text, x, y, size))
 
   def show_frame(self):
     self.remote.write("show\n")

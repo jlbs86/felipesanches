@@ -86,6 +86,12 @@ class LasersimDevice():
   def set_color(self, col):
     self.color = col
 
+  def draw_line(self, x1,y1,x2,y2):
+    self.set_flags(0x03)
+    self.schedule(self.point_message(x1,y1))
+    self.set_flags(0x02)
+    self.schedule(self.point_message(x2,y2))
+
   def write(self, message):
     if len(message) == 0:
       return

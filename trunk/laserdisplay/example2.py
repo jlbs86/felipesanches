@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 # This example draws a dashed 2 color circle with increasing radius length
-from LaserDisplay import *
+from LaserClient import *
 import math
 import pygame
 import random
 
-#LD = LaserDisplay()
-LD = LaserDisplay({"server":"localhost","port": 50000})
+LD = LaserClient({"server":"localhost","port": 50000})
 
 x=0x80
 y=0x80
 r=0x00
+
+RED = [255,0,0]
+GREEN = [0,255,0]
+BLUE = [0,0,255]
+
 CIRCLE = [[0.0,0.5],[0.0,1.0],[0.5,1.0],[1.0,1.0],[1.0,0.5],[1.0,0.0],[0.5,0.0],[0.0,0.0],[0.0,0.5]]
 
 def gen_circle(x, y, r):

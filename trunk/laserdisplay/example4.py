@@ -1,14 +1,24 @@
 #!/usr/bin/env python
 # A clock!
-from LaserDisplay import *
+from LaserClient import *
 import math
 import random
 
 WIDTH = 255
 HEIGHT = 255
 
+PI = 3.1415
+
+RED = [255,0,0]
+GREEN = [0,255,0]
+BLUE = [0,0,255]
+CYAN = [0,255,255]
+MAGENTA = [255,0,255]
+YELLOW = [255,255,0]
+WHITE = [255,255,255]
+
 #LD = LaserDisplay()
-LD = LaserDisplay({"server":"localhost","port": 50000})
+LD = LaserClient({"server":"localhost","port": 50000})
 
 import time
 while True:
