@@ -26,8 +26,13 @@ cont = 1
 numbers = []
 
 curve = []
+vec = []
+ctl_x = 0
+ctl_y = 0
 curvelen = 0
-snap = 1
+
+config_snap = 1
+config_border = 1
 
 LD = LaserClient({"server":"localhost","port": 50000})
 #LD = LaserDisplay()
@@ -50,14 +55,22 @@ while cont == 1:
       if event.key == pygame.K_a:
         numbers.append(curve)
         print numbers
+      if event.key == pygame.K_b:
+        config_border = 1 - config_border
     if event.type == pygame.MOUSEBUTTONDOWN:
-      curvelen += 1
       x = clamp_int(255-(float)(event.pos[0])/WIDTH*255, 3, 252)
       y = clamp_int(255-(float)(event.pos[1])/HEIGHT*255, 3, 252)
-      if snap:
-        curve.append( [ int(x), int(y) ] )
+      if config_snap:
+        x = int(x)
+        y = int(y)
+      if curvelen % 2 == 0 and curvelen > 0:
+        # Setting the control point
+        last_point = curve[-1]
+        curve[-1] = [ctl_x, ctl_y]
+        curve.append(last_point)
       else:
         curve.append( [ x, y ] )
+      curvelen += 1
 
   m_x = (float)(pygame.mouse.get_pos()[0])/WIDTH
   m_x = 1.0 - m_x
@@ -67,18 +80,19 @@ while cont == 1:
   m_x = clamp_int(m_x * 255, 6, 249)
   m_y = clamp_int(m_y * 255, 6, 249)
 
-  MIN_BORDER = 64
-  MAX_BORDER = 192
+  if config_border:
+    MIN_BORDER = 64
+    MAX_BORDER = 192
 
-  LD.set_color([0xff, 0x00, 0xff])
-  mouse = gen_circle(MIN_BORDER, MIN_BORDER, 1)
-  LD.draw_quadratic_bezier(mouse, 2)
-  mouse = gen_circle(MIN_BORDER, MAX_BORDER, 1)
-  LD.draw_quadratic_bezier(mouse, 2)
-  mouse = gen_circle(MAX_BORDER, MAX_BORDER, 1)
-  LD.draw_quadratic_bezier(mouse, 2)
-  mouse = gen_circle(MAX_BORDER, MIN_BORDER, 1)
-  LD.draw_quadratic_bezier(mouse, 2)
+    LD.set_color([0xff, 0x00, 0xff])
+    mouse = gen_circle(MIN_BORDER, MIN_BORDER, 1)
+    LD.draw_quadratic_bezier(mouse, 2)
+    mouse = gen_circle(MIN_BORDER, MAX_BORDER, 1)
+    LD.draw_quadratic_bezier(mouse, 2)
+    mouse = gen_circle(MAX_BORDER, MAX_BORDER, 1)
+    LD.draw_quadratic_bezier(mouse, 2)
+    mouse = gen_circle(MAX_BORDER, MIN_BORDER, 1)
+    LD.draw_quadratic_bezier(mouse, 2)
 
   mouse = gen_circle(m_x, m_y, 3)
   LD.draw_quadratic_bezier(mouse, 2)
@@ -88,9 +102,14 @@ while cont == 1:
     LD.draw_quadratic_bezier(curve, 8);
 
   if curvelen % 2 == 0 and curvelen > 0:
-    circle = gen_circle(curve[curvelen-1][0], curve[curvelen-1][1], 2)
+    vec = [m_x - curve[-1][0], m_y - curve[-1][1]]
+    ctl_x = curve[-1][0]-vec[0]
+    ctl_y = curve[-1][1]-vec[1]
+    circle = gen_circle(ctl_x, ctl_y, 2)
+
+    #circle = gen_circle(curve[curvelen-1][0], curve[curvelen-1][1], 2)
     LD.set_color([0x00,0xff,0xff])
     LD.draw_quadratic_bezier(circle,4)
-    LD.draw_quadratic_bezier(curve[-2:]+[[m_x,m_y]], 5)
+    LD.draw_quadratic_bezier([curve[-2],[ctl_x,ctl_y],curve[-1]], 5)
 
   LD.show_frame();
