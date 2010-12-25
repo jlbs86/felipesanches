@@ -19,6 +19,23 @@ rb0r4=4
 rb0r5=5
 rb0r6=6
 rb0r7=7
+
+got_EP2IN_data=0x30
+got_EP2OUT_data=0x31
+DPL1=0x84
+DPH1=0x85
+DPS=0x86 ; dptr selector
+CKCON=0x8E
+SPC_FNC=0x8F
+EXIF=0x91
+MPAGE=0x92
+SCON1=0xC0
+SBUF1=0xC1
+EICON=0xD8
+EIE=0xE8
+EIP=0xF8
+
+
 ;
 ;	Miscellaneous equates
 ;
@@ -109,159 +126,118 @@ Xffc3=0x0ffc3
 
 ;org	#0x00
 ;
-X0000:	ajmp	X0157
-;
-X0002:	nop	
-	ljmp	X0166
-;
-	;org	0x0b
-;
-	ljmp	X0166
-;
-	;org	0x13
-;
-	ljmp	X0166
-;
-	;org	0x1b
-;
-	ljmp	X0166
-;
-	;org	0x23
-;
-	ljmp	X0166
-;
-	;org	0x2b
-;
-	ljmp	X0166
-;
-	;org	0x33
-;
-	ljmp	X030f
-;
-	;org	0x3b
-;
-	ljmp	X0166
-;
-	;org	0x43
-;
-	ljmp	X0100
-;
-	;org	0x4b
-;
-	ljmp	X0166
-;
-	;org	0x53
-;
-	ljmp	X0166
-;
-	;org	0x5b
-;
-	ljmp	X04bd
-;
-	;org	0x63
-;
-	ljmp	X0167
-;
+X0000:
+	ajmp	X0000_
+	.db 0
+ExternalInterrupt0:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0 	;org	0x0b
+TimerInterrupt0:
+	ljmp	INTERRUPT_NOT_HANDLED 
+	.db 0,0,0,0,0	;org	0x13
+ExternalInterrupt1:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x1b
+TimerInterrupt1:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x23
+SerialPort0Int:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x2b
+Timer2Int:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x33
+RESUME:
+	ljmp	RESUME_INTERRUPT_HANDLER
+	.db 0,0,0,0,0	;org	0x3b
+SerialPort1Int:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x43
+INT2:
+	ljmp	USBInterruptAutoVector
+	.db 0,0,0,0,0	;org	0x4b
+INT3:
+	ljmp	INTERRUPT_NOT_HANDLED ;I2C interrupt
+	.db 0,0,0,0,0	;org	0x53
+INT4:
+	ljmp	INTERRUPT_NOT_HANDLED
+	.db 0,0,0,0,0	;org	0x5b
+INT5:
+	ljmp	INT5_HANDLER
+	.db 0,0,0,0,0	;org	0x63
+INT6:
+	ljmp	INT6_HANDLER
+
+;TODO: figure out a better way of aligning code
+
 	;org	0x100
-;
-X0100:	ljmp	X0c5a
-;
-X0103:	nop	
-	ljmp	X01ed
-;
-	;org	0x108
-;
-	ljmp	X0251
-;
-	;org	0x10c
-;
-	ljmp	X027c
-;
-	;org	0x110
-;
-	ljmp	X02e4
-;
-	;org	0x114
-;
-	reti	
-;
-	;org	0x118
-;
-	reti	
-;
-	;org	0x11c
-;
-	ljmp	X05fd
-;
-	;org	0x120
-;
+	.db 0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+
+USBInterruptAutoVector:
+	ljmp	SUDAV
+X0103:
+	.db 0
+	ljmp	SOF
+	.db 0
+	ljmp	SUTOK
+	.db 0
+	ljmp	SUSPEND
+	.db 0
+	ljmp	USBRES
+	.db 0
+	reti
+	.db 0,0,0
+	reti
+	.db 0,0,0
+	ljmp	EP0_OUT
+	.db 0
 	ljmp	X0000
-;
-	;org	0x124
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x128
-;
-	ljmp	X043c
-;
-	;org	0x12c
-;
-	ljmp	X046a
-;
-	;org	0x130
-;
+	.db 0
+	ljmp	EP2_IN
+	.db 0
+	ljmp	EP2_OUT
+	.db 0
 	ljmp	X0000
-;
-	;org	0x134
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x138
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x13c
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x140
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x144
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x148
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x14c
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x150
-;
+	.db 0
 	ljmp	X0000
-;
-	;org	0x154
-;
+	.db 0
 	ljmp	X0000
-;
-X0157:
+
+X0000_:
 	mov	sp,#0x7f
 	mov	a,dpl
-	jz	X0161
-	ljmp	X0161
-;
-X0161:	lcall	X076f
-X0164:	ajmp	X0164
-;
-X0166:	reti	
-;
-X0167:	push	psw
-	push	0x86
+	lcall	init_usb
+FOREVER:	ajmp	FOREVER
+
+INTERRUPT_NOT_HANDLED:	reti	
+
+INT6_HANDLER:	push	psw
+	push	DPS
 	push	dpl
 	push	dph
 	push	acc
@@ -348,11 +324,11 @@ X01cc:	mov	a,i2cfg
 	pop	acc
 	pop	dph
 	pop	dpl
-	pop	0x86
+	pop	DPS
 	pop	psw
 	reti	
 ;
-X01dd:	mov	0x86,#0
+X01dd:	mov	DPS,#0
 	mov	dptr,#Xffc3
 	mov	r4,#5
 X01e5:	inc	dptr
@@ -360,8 +336,9 @@ X01e5:	inc	dptr
 	orl	a,dph
 	jnz	X01e5
 	ret	
-;
-X01ed:	push	acc
+
+SOF:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -369,11 +346,11 @@ X01ed:	push	acc
 	push	rb0r3
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#X8800
 	movx	a,@dptr
 	mov	0x41,a
@@ -387,7 +364,8 @@ X01ed:	push	acc
 	jz	X0240
 	mov	r2,#0
 	mov	r3,#0
-X0223:	clr	c
+X0223:
+	clr	c
 	mov	a,r2
 	subb	a,#0x18
 	mov	a,r3
@@ -406,9 +384,10 @@ X0223:	clr	c
 	inc	r2
 	cjne	r2,#0,X023e
 	inc	r3
-X023e:	sjmp	X0223
-;
-X0240:	pop	0x86
+X023e:
+	sjmp	X0223
+X0240:
+	pop	DPS
 	pop	psw
 	pop	rb0r3
 	pop	rb0r2
@@ -418,21 +397,21 @@ X0240:	pop	0x86
 	pop	acc
 	reti	
 ;
-X0251:	push	acc
+SUTOK:	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#USBIRQ
 	mov	a,#4
 	movx	@dptr,a
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
@@ -440,7 +419,7 @@ X0251:	push	acc
 	pop	acc
 	reti	
 ;
-X027c:	push	acc
+SUSPEND:	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -454,11 +433,11 @@ X027c:	push	acc
 	push	rb0r1
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#USBIRQ
 	mov	a,#8
 	movx	@dptr,a
@@ -473,7 +452,7 @@ X027c:	push	acc
 	clr	a
 	movx	@dptr,a
 	mov	i2cfg,#0x20
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	rb0r1
 	pop	rb0r0
@@ -489,21 +468,21 @@ X027c:	push	acc
 	pop	acc
 	reti	
 ;
-X02e4:	push	acc
+USBRES:	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#USBIRQ
 	mov	a,#0x10
 	movx	@dptr,a
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
@@ -511,7 +490,7 @@ X02e4:	push	acc
 	pop	acc
 	reti	
 ;
-X030f:	push	acc
+RESUME_INTERRUPT_HANDLER:	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -525,8 +504,8 @@ X030f:	push	acc
 	push	rb0r1
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
+	push	DPS
+	mov	DPS,#0
 	mov	0x6e,#0
 	mov	0x6f,#2
 	lcall	X1144
@@ -541,7 +520,7 @@ X030f:	push	acc
 	mov	a,#6
 	movx	@dptr,a
 	mov	i2cfg,#0x10
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	rb0r1
 	pop	rb0r0
@@ -609,7 +588,7 @@ X03cb:	mov	0x44,#2
 	mov	0x43,#0
 	lcall	X0372
 	ret	
-;
+
 X03e1:	mov	dptr,#X8800
 	mov	a,0x36
 	movx	@dptr,a
@@ -629,68 +608,76 @@ X03e1:	mov	dptr,#X8800
 	mov	0x43,#0x44
 	lcall	X0372
 	ret	
-;
+
 	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#OUT07IRQ
 	mov	a,#2
 	movx	@dptr,a
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
 	pop	b
 	pop	acc
-	reti	
-;
-X043c:	push	acc
+	reti
+
+EP2_IN:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
+
 	mov	dptr,#IN07IRQ
 	mov	a,#4
 	movx	@dptr,a
-	mov	0x30,#1
-	pop	0x86
+
+	mov	got_EP2IN_data,#1
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
 	pop	b
 	pop	acc
 	reti	
-;
-X046a:	push	acc
+
+EP2_OUT:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
+
 	mov	dptr,#OUT07IRQ
 	mov	a,#4
 	movx	@dptr,a
-	mov	0x31,#1
-	pop	0x86
+
+	mov	got_EP2OUT_data,#1
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
@@ -704,12 +691,12 @@ X046a:	push	acc
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.5
-	mov	0x91,a
-	pop	0x86
+	mov	EXIF,a
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
@@ -717,18 +704,18 @@ X046a:	push	acc
 	pop	acc
 	reti	
 ;
-X04bd:	push	acc
+INT5_HANDLER:	push	acc
 	push	b
 	push	dpl
 	push	dph
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.7
-	mov	0x91,a
-	pop	0x86
+	mov	EXIF,a
+	pop	DPS
 	pop	psw
 	pop	dph
 	pop	dpl
@@ -920,7 +907,7 @@ X05c8:	mov	a,r2
 X05f9:	mov	0x38,#1
 	ret	
 ;
-X05fd:	push	acc
+EP0_OUT:	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -934,17 +921,17 @@ X05fd:	push	acc
 	push	rb0r1
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#OUT07IRQ
 	mov	a,#1
 	movx	@dptr,a
 	lcall	X0564
 	mov	0x37,#0
-	pop	0x86
+	pop	DPS
 	pop	psw
 	pop	rb0r1
 	pop	rb0r0
@@ -1115,31 +1102,63 @@ X075c:	mov	0x6b,#0x80
 	mov	0x6b,#0x80
 	mov	0x6c,#0x0f
 	lcall	X10e2
-	ret	
-;
-X076f:	mov	dptr,#ISOCTL
+	ret
+
+;TODO: I am not sure whether "init_usb" is a precise name for this routine 
+init_usb:
+	;enable isochronous endpoints
+	mov	dptr,#ISOCTL
 	clr	a
 	movx	@dptr,a
+
+	;enable auto-vector feature for handling usb interrupts
 	mov	dptr,#USBBAV
 	mov	a,#1
 	movx	@dptr,a
+
+	;enable internal 24MHz clock
 	mov	dptr,#CPUCS
 	mov	a,#2
 	movx	@dptr,a
-	mov	pwcm,#0x31
+
+	mov	pwcm,#0x31	;TODO
+
+	;select mode 1 for timer0: 16 bit counter
+	;select mode 2 for timer1: 8 bit counter with auto-reload
+	;both timers are clocked by the internal 24MHz clock
 	mov	tmod,#0x21
+
 	mov	tcon,#0
 	mov	t2con,#0
-	mov	t0x1,#0x40
-	mov	scon,#0x40
+;STRANGELY THE TIMERS ARE INITIALY DISABLED AND I SEE NO CODE ACTUALLY ENABLING THEM...
+;perhaps these timers are used for the serial port interface
+
+	mov	th1,#0x40 ;reload value
+	mov	scon,#0x40 ; set mode 1 for serial port 0 
 	mov	p4,#0x40
 	mov	pcon,#0
+
+;It seems to me that these timers are not used by 8051 code (timer interrupts
+; are not handled and no routine checks the timer bits in the TCON SFR). So
+; I think that these timers are only feeding clock signals to the FPGA logic
+; through T0OUT/T1OUT pins.
+
+;Timer 0 counts from 0x0 to 0x10000, so 2^16 increments.
+;base freq is 24MHz/12 = 2MHz
+;Timer1 freq = 2MHz/65536 = 30.52 Hz
+
+;Timer 1 counts from 0x40 to 0x100, so 12*16 increments.
+;base freq is 24MHz/12 = 2MHz
+;Timer1 freq = 2MHz/(12*16) = 10.42 kHz
+
+
 	mov	0x20,#0
 	mov	0x21,#0
 	mov	0x22,#0
 	mov	0x23,#0
 	mov	0x47,#0
-X07a7:	clr	c
+X07a7:
+	clr	c
 	mov	a,0x47
 	subb	a,#0x20
 	jnc	X07bf
@@ -1332,8 +1351,8 @@ X08d2:	mov	dptr,#USBCS
 	movx	@dptr,a
 	mov	csr,#0x11
 	mov	0x32,#1
-	mov	0x31,#0
-	mov	0x30,#0
+	mov	got_EP2OUT_data,#0
+	mov	got_EP2IN_data,#0
 	push	rb0r4
 	push	rb0r5
 	lcall	X04f7
@@ -1536,7 +1555,7 @@ X0a8d:	mov	a,0x38
 	pop	rb0r5
 	pop	rb0r4
 	mov	0x38,#0
-X0aa0:	mov	a,0x31
+X0aa0:	mov	a,got_EP2OUT_data
 	jnz	X0aa7
 	ljmp	X092a
 ;
@@ -1737,7 +1756,7 @@ X0c1f:	cjne	r2,#0x16,X0c2d
 X0c2d:	mov	dptr,#OUT2BC
 	clr	a
 	movx	@dptr,a
-	mov	0x31,#0
+	mov	got_EP2OUT_data,#0
 	ljmp	X092a
 ;
 	ret	
@@ -1751,7 +1770,7 @@ X0c2d:	mov	dptr,#OUT2BC
 .ascii "DABUSB v1.00"
 .db 0
 
-X0c5a:
+SUDAV:
 	push	acc
 	push	b
 	push	dpl
@@ -1766,11 +1785,11 @@ X0c5a:
 	push	rb0r1
 	push	psw
 	mov	psw,#0
-	push	0x86
-	mov	0x86,#0
-	mov	a,0x91
+	push	DPS
+	mov	DPS,#0
+	mov	a,EXIF
 	clr	acc.4
-	mov	0x91,a
+	mov	EXIF,a
 	mov	dptr,#USBIRQ
 	mov	a,#1
 	movx	@dptr,a
@@ -2105,7 +2124,7 @@ X0ec5:	mov	dptr,#EP0CS
 X0ecd:	mov	dptr,#EP0CS
 	mov	a,#2
 	movx	@dptr,a
-X0ed3:	pop	0x86
+X0ed3:	pop	DPS
 	pop	psw
 	pop	rb0r1
 	pop	rb0r0
@@ -2430,27 +2449,27 @@ X107c:	mov	dpl,r4
 X108f:	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
-	inc	0x86
+	inc	DPS
 	mov	dptr,#X7dc1
 	movx	a,@dptr
-	inc	0x86
+	inc	DPS
 	inc	dptr
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	inc	0x86
+	inc	DPS
 	inc	dptr
 	inc	dptr
 	movx	a,@dptr
 	mov	r1,a
 	jz	X10c3
 	inc	dptr
-	inc	0x86
+	inc	DPS
 X10b0:	mov	dptr,#I2CDAT
-	inc	0x86
+	inc	DPS
 	movx	a,@dptr
 	inc	dptr
-	inc	0x86
+	inc	DPS
 	movx	@dptr,a
 	push	rb0r1
 	lcall	X101b
