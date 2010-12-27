@@ -20,8 +20,67 @@ rb0r5=5
 rb0r6=6
 rb0r7=7
 
+;----------
+;constants:
+
+FPGA_CLEAR=0x2a
+FPGA_LOAD_BITSTREAM=0x2b
+FPGA_INIT=0x2c
+INTERNAL_8BITS = 0
+EXTERNAL_16BITS = 1
+INTERNAL_16BITS = 2
+EXTERNAL_8BITS = 3
+
+;----------
+;variables:
+
+variable20=0x20
+variable21=0x21
+variable22=0x22
+variable23=0x23
 got_EP2IN_data=0x30
 got_EP2OUT_data=0x31
+variable32=0x32
+variable33=0x33
+variable34=0x34
+variable35=0x35
+variable36=0x36
+variable37=0x37
+variable38=0x38
+LCD_CHAR_POSITION=0x39
+variable3a=0x3a
+variable3b=0x3b
+variable3c=0x3c
+variable3d=0x3d
+variable3e=0x3e
+variable3f=0x3f
+variable40=0x40
+variable41=0x41
+variable42=0x42
+variable43=0x43
+variable44=0x44
+variable45=0x45
+variable46=0x46
+variable47=0x47
+variable48=0x48
+variable59=0x59
+variable5a=0x5a
+variable6b=0x6b
+variable6c=0x6c
+CHAR_TO_PRINT=0x6d
+CHAR_COL=0x6e
+CHAR_ROW=0x6f
+STRING_ADDR_LOW=0x70
+STRING_ADDR_HI=0x71
+STRING_ADDRESSING_MODE=0x72
+variable73=0x73
+variable74=0x74
+variable75=0x75
+variable76=0x76
+variable7f=0x7f
+
+;----------
+;EZ-USB additional SFRs:
 DPL1=0x84
 DPH1=0x85
 DPS=0x86 ; dptr selector
@@ -124,64 +183,66 @@ X880f=0x880f
 Xba00=0x0ba00
 Xffc3=0x0ffc3
 
-;org	#0x00
-;
+.area   INTERRUPT_VECTOR_TABLE   (ABS)   ;ABSOLUTE
+
+.org	0x00
+
 X0000:
 	ajmp	X0000_
-	.db 0
+
+.org 0x03
 ExternalInterrupt0:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0 	;org	0x0b
+
+.org	0x0b
 TimerInterrupt0:
 	ljmp	INTERRUPT_NOT_HANDLED 
-	.db 0,0,0,0,0	;org	0x13
+
+.org	0x13
 ExternalInterrupt1:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x1b
+
+.org	0x1b
 TimerInterrupt1:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x23
+
+.org	0x23
 SerialPort0Int:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x2b
+
+.org	0x2b
 Timer2Int:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x33
+
+.org	0x33
 RESUME:
 	ljmp	RESUME_INTERRUPT_HANDLER
-	.db 0,0,0,0,0	;org	0x3b
+
+.org	0x3b
 SerialPort1Int:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x43
+
+.org	0x43
 INT2:
 	ljmp	USBInterruptAutoVector
-	.db 0,0,0,0,0	;org	0x4b
+
+.org	0x4b
 INT3:
 	ljmp	INTERRUPT_NOT_HANDLED ;I2C interrupt
-	.db 0,0,0,0,0	;org	0x53
+
+.org	0x53
 INT4:
 	ljmp	INTERRUPT_NOT_HANDLED
-	.db 0,0,0,0,0	;org	0x5b
+
+.org	0x5b
 INT5:
 	ljmp	INT5_HANDLER
-	.db 0,0,0,0,0	;org	0x63
+
+.org	0x63
 INT6:
 	ljmp	INT6_HANDLER
 
-;TODO: figure out a better way of aligning code
-
-	;org	0x100
-	.db 0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-	.db 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-
+.org	0x100
 USBInterruptAutoVector:
 	ljmp	SUDAV
 X0103:
@@ -228,6 +289,8 @@ X0103:
 	.db 0
 	ljmp	X0000
 
+.area   CODE   (REL)   ;RELOCATABLE
+
 X0000_:
 	mov	sp,#0x7f
 	mov	a,dpl
@@ -236,11 +299,13 @@ FOREVER:	ajmp	FOREVER
 
 INTERRUPT_NOT_HANDLED:	reti	
 
-INT6_HANDLER:	push	psw
+INT6_HANDLER:
+	push	psw
 	push	DPS
 	push	dpl
 	push	dph
 	push	acc
+
 	mov	dptr,#OUTB
 	movx	a,@dptr
 	orl	a,#0x80
@@ -280,7 +345,7 @@ INT6_HANDLER:	push	psw
 	movx	@dptr,a
 	mov	dptr,#OUTB
 	movx	a,@dptr
-	anl	a,0x7f
+	anl	a,variable7f
 	movx	@dptr,a
 	mov	dptr,#PINSB
 	movx	a,@dptr
@@ -318,24 +383,28 @@ INT6_HANDLER:	push	psw
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
-X01cc:	mov	a,i2cfg
+X01cc:
+	mov	a,i2cfg
 	clr	acc.3
 	mov	i2cfg,a
+
 	pop	acc
 	pop	dph
 	pop	dpl
 	pop	DPS
 	pop	psw
 	reti	
-;
-X01dd:	mov	DPS,#0
+
+sleep_a_bit:
+	mov	DPS,#0
 	mov	dptr,#Xffc3
 	mov	r4,#5
-X01e5:	inc	dptr
+sleep_loop:
+	inc	dptr
 	mov	a,dpl
 	orl	a,dph
-	jnz	X01e5
-	ret	
+	jnz	sleep_loop
+	ret
 
 SOF:
 	push	acc
@@ -348,19 +417,21 @@ SOF:
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#X8800
 	movx	a,@dptr
-	mov	0x41,a
+	mov	variable41,a
 	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
 	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
-	mov	a,0x32
+	mov	a,variable32
 	jz	X0240
 	mov	r2,#0
 	mov	r3,#0
@@ -382,9 +453,8 @@ X0223:
 	movx	@dptr,a
 	movx	@dptr,a
 	inc	r2
-	cjne	r2,#0,X023e
+	cjne	r2,#0,X0223
 	inc	r3
-X023e:
 	sjmp	X0223
 X0240:
 	pop	DPS
@@ -396,8 +466,9 @@ X0240:
 	pop	b
 	pop	acc
 	reti	
-;
-SUTOK:	push	acc
+
+SUTOK:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -405,12 +476,15 @@ SUTOK:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#4
 	movx	@dptr,a
+
 	pop	DPS
 	pop	psw
 	pop	dph
@@ -418,8 +492,9 @@ SUTOK:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-SUSPEND:	push	acc
+
+SUSPEND:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -435,22 +510,28 @@ SUSPEND:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#8
 	movx	@dptr,a
-	mov	0x6e,#0
-	mov	0x6f,#2
-	lcall	X1144
-	mov	0x70,#0x39
-	mov	0x71,#0x0c
-	mov	0x72,#2
-	lcall	X1175
+
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#2
+	lcall	set_cursor_position
+
+	mov	STRING_ADDR_LOW,	<string_SUSPEND
+	mov	STRING_ADDR_HI,		>string_SUSPEND
+	mov	STRING_ADDRESSING_MODE, INTERNAL_16BITS
+	lcall	print_string
+
 	mov	dptr,#USBCS
 	clr	a
 	movx	@dptr,a
+
 	mov	i2cfg,#0x20
 	pop	DPS
 	pop	psw
@@ -467,8 +548,9 @@ SUSPEND:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-USBRES:	push	acc
+
+USBRES:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -476,12 +558,15 @@ USBRES:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#0x10
 	movx	@dptr,a
+
 	pop	DPS
 	pop	psw
 	pop	dph
@@ -489,8 +574,9 @@ USBRES:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-RESUME_INTERRUPT_HANDLER:	push	acc
+
+RESUME_INTERRUPT_HANDLER:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -506,19 +592,24 @@ RESUME_INTERRUPT_HANDLER:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
-	mov	0x6e,#0
-	mov	0x6f,#2
-	lcall	X1144
-	mov	0x70,#0x40
-	mov	0x71,#0x0c
-	mov	0x72,#2
-	lcall	X1175
+
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#2
+	lcall	set_cursor_position
+
+	mov	STRING_ADDR_LOW,	<string_RESUME
+	mov	STRING_ADDR_HI,		>string_RESUME
+	mov	STRING_ADDRESSING_MODE, INTERNAL_16BITS
+	lcall	print_string
+
 	mov	dptr,#USBCS
 	mov	a,#2
 	movx	@dptr,a
+
 	mov	dptr,#USBCS
 	mov	a,#6
 	movx	@dptr,a
+
 	mov	i2cfg,#0x10
 	pop	DPS
 	pop	psw
@@ -535,8 +626,9 @@ RESUME_INTERRUPT_HANDLER:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-X0372:	mov	dptr,#I2CS
+
+X0372:
+	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
 	mov	dptr,#I2CDAT
@@ -544,19 +636,20 @@ X0372:	mov	dptr,#I2CS
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	mov	a,0x42
+	mov	a,variable42
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	mov	a,0x43
+	mov	a,variable43
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
-;
-X039a:	mov	dptr,#I2CS
+
+X039a:
+	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
 	mov	dptr,#I2CDAT
@@ -564,51 +657,59 @@ X039a:	mov	dptr,#I2CS
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	mov	a,0x44
+	mov	a,variable44
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	mov	a,0x45
+	mov	a,variable45
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CDAT
-	mov	a,0x46
+	mov	a,variable46
 	movx	@dptr,a
 	lcall	X101b
 	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
-;
-X03cb:	mov	0x44,#2
-	mov	0x45,#0
-	mov	0x46,#0
+
+X03cb:
+	mov	variable44,#2
+	mov	variable45,#0
+	mov	variable46,#0
 	lcall	X039a
-	mov	0x42,#3
-	mov	0x43,#0
+	mov	variable42,#3
+	mov	variable43,#0
 	lcall	X0372
 	ret	
 
-X03e1:	mov	dptr,#X8800
-	mov	a,0x36
+X03e1:
+	mov	dptr,#X8800
+	mov	a,variable36
 	movx	@dptr,a
+
 	mov	dptr,#X8800
 	mov	a,#0x10
-	add	a,0x36
+	add	a,variable36
 	movx	@dptr,a
-	lcall	X01dd
-	mov	0x42,#1
-	mov	0x43,#0x18
+
+	lcall	sleep_a_bit
+
+	mov	variable42,#1
+	mov	variable43,#0x18
 	lcall	X0372
-	mov	0x44,#2
-	mov	0x45,#0
-	mov	0x46,#0
+
+	mov	variable44,#2
+	mov	variable45,#0
+	mov	variable46,#0
 	lcall	X039a
-	mov	0x42,#3
-	mov	0x43,#0x44
+
+	mov	variable42,#3
+	mov	variable43,#0x44
 	lcall	X0372
 	ret	
 
+does_this_routine_get_called:;?
 	push	acc
 	push	b
 	push	dpl
@@ -617,12 +718,15 @@ X03e1:	mov	dptr,#X8800
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#OUT07IRQ
 	mov	a,#2
 	movx	@dptr,a
+
 	pop	DPS
 	pop	psw
 	pop	dph
@@ -684,7 +788,8 @@ EP2_OUT:
 	pop	b
 	pop	acc
 	reti	
-;
+
+another_routine_that_I_think_never_gets_called:
 	push	acc
 	push	b
 	push	dpl
@@ -693,9 +798,11 @@ EP2_OUT:
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.5
 	mov	EXIF,a
+
 	pop	DPS
 	pop	psw
 	pop	dph
@@ -703,8 +810,9 @@ EP2_OUT:
 	pop	b
 	pop	acc
 	reti	
-;
-INT5_HANDLER:	push	acc
+
+INT5_HANDLER:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -712,9 +820,11 @@ INT5_HANDLER:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.7
 	mov	EXIF,a
+
 	pop	DPS
 	pop	psw
 	pop	dph
@@ -722,23 +832,26 @@ INT5_HANDLER:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-X04e2:	mov	dptr,#X7fea
+
+X04e2:
+	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r2,a
-	mov	0x20,r2
+	mov	variable20,r2
 	mov	dptr,#OUTA
 	clr	a
 	movx	@dptr,a
 	ret	
-;
-X04ef:	mov	dptr,#X7fea
+
+X04ef:
+	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r2,a
-	mov	0x21,r2
+	mov	variable21,r2
 	ret	
-;
-X04f7:	mov	dptr,#X1713
+
+X04f7:
+	mov	dptr,#X1713
 	movx	a,@dptr
 	mov	r2,a
 	mov	dptr,#X1715
@@ -779,39 +892,46 @@ X04f7:	mov	dptr,#X1713
 	mov	r4,a
 	jz	X052e
 	mov	r2,#0
-X052e:	mov	dptr,#X170c
+X052e:
+	mov	dptr,#X170c
 	movx	a,@dptr
 	mov	r4,a
 	jz	X0537
 	mov	r3,#0
-X0537:	mov	a,r2
+X0537:
+	mov	a,r2
 	add	a,r3
 	mov	r4,a
 	clr	c
 	rrc	a
-	mov	0x3a,a
-	mov	0x44,#2
-	mov	0x45,r3
-	mov	0x46,r2
+	mov	variable3a,a
+	mov	variable44,#2
+	mov	variable45,r3
+	mov	variable46,r2
 	lcall	X039a
-	mov	0x6e,#8
-	mov	0x6f,#0
-	lcall	X1144
-	mov	0x70,#0x47
-	mov	0x71,#0x0c
-	mov	0x72,#2
-	lcall	X1175
-	mov	0x73,0x3a
+
+	mov	CHAR_COL,#8
+	mov	CHAR_ROW,#0
+	lcall	set_cursor_position
+
+	mov	STRING_ADDR_LOW,	<string_Vol
+	mov	STRING_ADDR_HI,		>string_Vol
+	mov	STRING_ADDRESSING_MODE, INTERNAL_16BITS
+	lcall	print_string
+
+	mov	variable73,variable3a
 	lcall	X11a0
-	ret	
-;
-X0564:	mov	dptr,#OUTA
+	ret
+
+X0564:
+	mov	dptr,#OUTA
 	movx	a,@dptr
 	mov	r2,a
 	mov	dptr,#OUTA
 	mov	a,#0x80
 	xrl	a,rb0r2
 	movx	@dptr,a
+
 	mov	dptr,#X7feb
 	movx	a,@dptr
 	mov	r2,a
@@ -843,10 +963,10 @@ X0564:	mov	dptr,#OUTA
 	mov	r6,a
 	cjne	r6,#1,X05a1
 	sjmp	X05a4
-;
-X05a1:	ljmp	X05f9
-;
-X05a4:	cjne	r4,#1,X05c8
+X05a1:
+	ljmp	X05f9
+X05a4:
+	cjne	r4,#1,X05c8
 	cjne	r5,#0,X05c8
 	mov	a,r2
 	swap	a
@@ -869,8 +989,8 @@ X05a4:	cjne	r4,#1,X05c8
 	mov	dph,r5
 	movx	@dptr,a
 	sjmp	X05f9
-;
-X05c8:	mov	a,r2
+X05c8:
+	mov	a,r2
 	swap	a
 	rr	a
 	anl	a,#0x0f8
@@ -904,10 +1024,12 @@ X05c8:	mov	a,r2
 	mov	dpl,r2
 	mov	dph,r3
 	movx	@dptr,a
-X05f9:	mov	0x38,#1
+X05f9:
+	mov	variable38,#1
 	ret	
-;
-EP0_OUT:	push	acc
+
+EP0_OUT:
+	push	acc
 	push	b
 	push	dpl
 	push	dph
@@ -923,14 +1045,17 @@ EP0_OUT:	push	acc
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#OUT07IRQ
 	mov	a,#1
 	movx	@dptr,a
 	lcall	X0564
-	mov	0x37,#0
+	mov	variable37,#0
+
 	pop	DPS
 	pop	psw
 	pop	rb0r1
@@ -946,8 +1071,9 @@ EP0_OUT:	push	acc
 	pop	b
 	pop	acc
 	reti	
-;
-X064e:	mov	dptr,#X7feb
+
+X064e:
+	mov	dptr,#X7feb
 	movx	a,@dptr
 	mov	r2,a
 	mov	dptr,#X7fea
@@ -1009,7 +1135,8 @@ X064e:	mov	dptr,#X7feb
 	mov	dptr,#X7f01
 	mov	a,r6
 	movx	@dptr,a
-X06af:	mov	dptr,#X7fe9
+X06af:
+	mov	dptr,#X7fe9
 	movx	a,@dptr
 	mov	r3,a
 	cjne	r3,#0x82,X06d1
@@ -1022,13 +1149,15 @@ X06af:	mov	dptr,#X7fe9
 	movx	@dptr,a
 	sjmp	X06d1
 ;
-X06c6:	mov	dptr,#IN0BUF
+X06c6:
+	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7f01
 	mov	a,#0x0b5
 	movx	@dptr,a
-X06d1:	mov	dptr,#X7fe9
+X06d1:
+	mov	dptr,#X7fe9
 	movx	a,@dptr
 	mov	r3,a
 	cjne	r3,#0x83,X06f4
@@ -1041,13 +1170,15 @@ X06d1:	mov	dptr,#X7fe9
 	movx	@dptr,a
 	sjmp	X06f4
 ;
-X06e9:	mov	dptr,#IN0BUF
+X06e9:
+	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7f01
 	mov	a,#0x12
 	movx	@dptr,a
-X06f4:	mov	dptr,#X7fe9
+X06f4:
+	mov	dptr,#X7fe9
 	movx	a,@dptr
 	mov	r3,a
 	cjne	r3,#0x84,X0718
@@ -1060,47 +1191,58 @@ X06f4:	mov	dptr,#X7fe9
 	movx	@dptr,a
 	sjmp	X0718
 ;
-X070c:	mov	dptr,#IN0BUF
+X070c:
+	mov	dptr,#IN0BUF
 	mov	a,#0x80
 	movx	@dptr,a
 	mov	dptr,#X7f01
 	mov	a,#1
 	movx	@dptr,a
-X0718:	mov	dptr,#IN0BC
+X0718:
+	mov	dptr,#IN0BC
 	mov	a,r4
 	movx	@dptr,a
 	ret	
-;
-X071e:	mov	0x36,#0x0d
+
+X071e:
+	mov	variable36,#0x0d
 	mov	dptr,#X8800
 	mov	a,#0x1d
 	movx	@dptr,a
-	mov	0x6b,#0x80
-	mov	0x6c,#0x3c
+
+	mov	variable6b,#0x80
+	mov	variable6c,#0x3c
 	lcall	X10e2
-	mov	0x6b,#0x80
-	mov	0x6c,#0x0f
+
+	mov	variable6b,#0x80
+	mov	variable6c,#0x0f
 	lcall	X10e2
-	mov	0x6b,#0x80
-	mov	0x6c,#6
+
+	mov	variable6b,#0x80
+	mov	variable6c,#6
 	lcall	X10e2
-	mov	0x6b,#0x80
-	mov	0x6c,#1
+
+	mov	variable6b,#0x80
+	mov	variable6c,#1
 	lcall	X10e2
+
+sleep_a_lot:
 	mov	r2,#0
 X074d:	cjne	r2,#0x0ff,X0750
 X0750:	jnc	X075c
 	push	rb0r2
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r2
 	inc	r2
 	sjmp	X074d
-;
-X075c:	mov	0x6b,#0x80
-	mov	0x6c,#0x3c
+
+X075c:
+	mov	variable6b,#0x80
+	mov	variable6c,#0x3c
 	lcall	X10e2
-	mov	0x6b,#0x80
-	mov	0x6c,#0x0f
+
+	mov	variable6b,#0x80
+	mov	variable6c,#0x0f
 	lcall	X10e2
 	ret
 
@@ -1152,17 +1294,17 @@ init_usb:
 ;Timer1 freq = 2MHz/(12*16) = 10.42 kHz
 
 
-	mov	0x20,#0
-	mov	0x21,#0
-	mov	0x22,#0
-	mov	0x23,#0
-	mov	0x47,#0
+	mov	variable20,#0
+	mov	variable21,#0
+	mov	variable22,#0
+	mov	variable23,#0
+	mov	variable47,#0
 X07a7:
 	clr	c
-	mov	a,0x47
+	mov	a,variable47
 	subb	a,#0x20
 	jnc	X07bf
-	mov	a,0x47
+	mov	a,variable47
 	add	a,#0
 	mov	dpl,a
 	clr	a
@@ -1170,21 +1312,22 @@ X07a7:
 	mov	dph,a
 	clr	a
 	movx	@dptr,a
-	inc	0x47
+	inc	variable47
 	sjmp	X07a7
 ;
-X07bf:	clr	a
-	mov	0x40,a
-	mov	0x3f,a
+X07bf:
 	clr	a
-	mov	0x3c,a
-	mov	0x3b,a
+	mov	variable40,a
+	mov	variable3f,a
 	clr	a
-	mov	0x3e,a
-	mov	0x3d,a
-	mov	0x32,#0
-	mov	0x37,#0
-	mov	0x39,#0
+	mov	variable3c,a
+	mov	variable3b,a
+	clr	a
+	mov	variable3e,a
+	mov	variable3d,a
+	mov	variable32,#0
+	mov	variable37,#0
+	mov	LCD_CHAR_POSITION,#0
 	mov	dptr,#PORTACFG
 	mov	a,#0x3c
 	movx	@dptr,a
@@ -1206,7 +1349,8 @@ X07bf:	clr	a
 	mov	dptr,#PORTCCFG
 	mov	a,#0x0c2
 	movx	@dptr,a
-X0800:	mov	dptr,#OUTC
+X0800:
+	mov	dptr,#OUTC
 	mov	a,#0x28
 	movx	@dptr,a
 	mov	dptr,#OEC
@@ -1214,7 +1358,8 @@ X0800:	mov	dptr,#OUTC
 	movx	@dptr,a
 	mov	dptr,#X7ff0
 	clr	a
-X0810:	movx	@dptr,a
+X0810:
+	movx	@dptr,a
 	mov	dptr,#X7ff1
 	clr	a
 	movx	@dptr,a
@@ -1273,7 +1418,8 @@ X0810:	movx	@dptr,a
 	lcall	X071e
 	mov	r2,#0
 	mov	r3,#0
-X087f:	clr	c
+X087f:
+	clr	c
 	mov	a,r2
 	subb	a,#0x1e
 	mov	a,r3
@@ -1281,10 +1427,10 @@ X087f:	clr	c
 	jnc	X089f
 	mov	dptr,#X8800
 	movx	a,@dptr
-	mov	0x47,a
+	mov	variable47,a
 	mov	dptr,#X880b
 	movx	a,@dptr
-	mov	0x47,a
+	mov	variable47,a
 	mov	dptr,#IN8DATA
 	movx	@dptr,a
 	inc	r2
@@ -1292,13 +1438,15 @@ X087f:	clr	c
 	inc	r3
 X089d:	sjmp	X087f
 ;
-X089f:	lcall	X03e1
+X089f:
+	lcall	X03e1
 	mov	dptr,#USBCS
 	clr	a
 	movx	@dptr,a
 	mov	r2,#0
 	mov	r3,#0
-X08ab:	mov	rb0r4,r2
+X08ab:
+	mov	rb0r4,r2
 	mov	rb0r5,r3
 	clr	c
 	mov	a,r2
@@ -1306,21 +1454,24 @@ X08ab:	mov	rb0r4,r2
 	mov	a,r3
 	subb	a,#0x2e
 	jnc	X08d2
+
 	push	rb0r2
 	push	rb0r3
 	push	rb0r4
 	push	rb0r5
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r3
 	pop	rb0r2
+
 	inc	r2
 	cjne	r2,#0,X08d0
 	inc	r3
 X08d0:	sjmp	X08ab
 ;
-X08d2:	mov	dptr,#USBCS
+X08d2:
+	mov	dptr,#USBCS
 	mov	a,#2
 	movx	@dptr,a
 	mov	dptr,#USBCS
@@ -1350,7 +1501,7 @@ X08d2:	mov	dptr,#USBCS
 	mov	a,#8
 	movx	@dptr,a
 	mov	csr,#0x11
-	mov	0x32,#1
+	mov	variable32,#1
 	mov	got_EP2OUT_data,#0
 	mov	got_EP2IN_data,#0
 	push	rb0r4
@@ -1358,18 +1509,21 @@ X08d2:	mov	dptr,#USBCS
 	lcall	X04f7
 	pop	rb0r5
 	pop	rb0r4
-	mov	0x34,#0
-	mov	0x35,#1
-X092a:	mov	dptr,#USBIEN
+	mov	variable34,#0
+	mov	variable35,#1
+X092a:
+	mov	dptr,#USBIEN
 	mov	a,#3
 	movx	@dptr,a
 	mov	rb0r2,r4
 	cjne	r2,#0,X0937
 	sjmp	X093a
 ;
-X0937:	ljmp	X0a3f
+X0937:
+	ljmp	X0a3f
 ;
-X093a:	mov	0x34,0x33
+X093a:
+	mov	variable34,variable33
 	mov	dptr,#OEB
 	mov	a,#0x8f
 	movx	@dptr,a
@@ -1384,7 +1538,7 @@ X093a:	mov	0x34,0x33
 	mov	r2,a
 	mov	a,#5
 	anl	a,r2
-	mov	0x33,a
+	mov	variable33,a
 	mov	dptr,#OEB
 	mov	a,#0x8f
 	movx	@dptr,a
@@ -1394,7 +1548,7 @@ X093a:	mov	0x34,0x33
 	mov	dptr,#OEB
 	mov	a,#0x82
 	movx	@dptr,a
-	mov	a,0x33
+	mov	a,variable33
 	add	a,acc
 	mov	r2,a
 	mov	dptr,#PINSB
@@ -1402,7 +1556,7 @@ X093a:	mov	0x34,0x33
 	anl	a,#5
 	mov	r3,a
 	orl	a,r2
-	mov	0x33,a
+	mov	variable33,a
 	jz	X0988
 	mov	dptr,#OUTA
 	movx	a,@dptr
@@ -1411,23 +1565,26 @@ X093a:	mov	0x34,0x33
 	mov	a,#0x80
 	orl	a,r2
 	movx	@dptr,a
-X0988:	mov	0x6e,#0
-	mov	0x6f,#0
+X0988:
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#0
 	push	rb0r4
 	push	rb0r5
-	lcall	X1144
+	lcall	set_cursor_position
 	pop	rb0r5
 	pop	rb0r4
+
 	mov	dptr,#X1713
 	movx	a,@dptr
 	mov	r2,a
 	mov	a,#0x80
 	add	a,r2
 	mov	r2,a
-	mov	a,0x33
+	mov	a,variable33
 	cjne	a,#4,X09d0
 	cjne	r2,#0x0a0,X09aa
-X09aa:	jnc	X09d0
+X09aa:
+	jnc	X09d0
 	mov	dptr,#X1713
 	movx	a,@dptr
 	inc	a
@@ -1441,6 +1598,7 @@ X09aa:	jnc	X09d0
 	mov	r3,a
 	mov	dptr,#X1715
 	movx	@dptr,a
+
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1448,7 +1606,9 @@ X09aa:	jnc	X09d0
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-X09d0:	mov	a,0x33
+
+X09d0:
+	mov	a,variable33
 	cjne	a,#2,X09fb
 	clr	c
 	mov	a,#4
@@ -1472,39 +1632,42 @@ X09d0:	mov	a,0x33
 	lcall	X04f7
 	pop	rb0r5
 	pop	rb0r4
-X09fb:	mov	a,0x33
+X09fb:
+	mov	a,variable33
 	cjne	a,#8,X0a1d
-	mov	a,0x34
+	mov	a,variable34
 	jnz	X0a1d
 	mov	a,#1
-	add	a,0x35
+	add	a,variable35
 	anl	a,#0x0f
-	mov	0x35,a
-	mov	0x75,0x35
-	mov	0x76,#0
+	mov	variable35,a
+	mov	variable75,variable35
+	mov	variable76,#0
 	push	rb0r4
 	push	rb0r5
 	lcall	X13fe
 	pop	rb0r5
 	pop	rb0r4
-X0a1d:	mov	a,0x33
+X0a1d:
+	mov	a,variable33
 	cjne	a,#1,X0a3f
-	mov	a,0x34
+	mov	a,variable34
 	jnz	X0a3f
-	mov	a,0x35
+	mov	a,variable35
 	add	a,#0x0ff
 	anl	a,#0x0f
-	mov	0x35,a
-	mov	0x75,0x35
-	mov	0x76,#0
+	mov	variable35,a
+	mov	variable75,variable35
+	mov	variable76,#0
 	push	rb0r4
 	push	rb0r5
 	lcall	X13fe
 	pop	rb0r5
 	pop	rb0r4
-X0a3f:	push	rb0r4
+X0a3f:
+	push	rb0r4
 	push	rb0r5
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r5
 	pop	rb0r4
 	mov	dptr,#OUTA
@@ -1527,13 +1690,15 @@ X0a3f:	push	rb0r4
 	movx	a,@dptr
 	mov	r2,a
 	jb	acc.6,X0a75
-X0a6d:	clr	c
+X0a6d:
+	clr	c
 	clr	a
 	subb	a,r4
 	mov	a,#8
 	subb	a,r5
 	jnc	X0a88
-X0a75:	mov	dptr,#OUTA
+X0a75:
+	mov	dptr,#OUTA
 	movx	a,@dptr
 	mov	r2,a
 	mov	dptr,#OUTA
@@ -1544,44 +1709,62 @@ X0a75:	mov	dptr,#OUTA
 	mov	r5,#0
 	sjmp	X0a8d
 ;
-X0a88:	inc	r4
+X0a88:
+	inc	r4
 	cjne	r4,#0,X0a8d
 	inc	r5
-X0a8d:	mov	a,0x38
+X0a8d:
+	mov	a,variable38
 	cjne	a,#1,X0aa0
+
 	push	rb0r4
 	push	rb0r5
 	lcall	X04f7
 	pop	rb0r5
 	pop	rb0r4
-	mov	0x38,#0
-X0aa0:	mov	a,got_EP2OUT_data
-	jnz	X0aa7
+
+	mov	variable38,#0
+X0aa0:
+	mov	a,got_EP2OUT_data
+	jnz	consume_received_bulk_data
 	ljmp	X092a
-;
-X0aa7:	mov	dptr,#OUT2BC
+
+consume_received_bulk_data:
+	mov	dptr,#OUT2BC
 	movx	a,@dptr
 	mov	r2,a
-	jnz	X0ab1
-	ljmp	X0c2d
-;
-X0ab1:	mov	dptr,#OUTA
+	jnz	select_message_type
+	ljmp	_default
+
+select_message_type:
+
+;TODO: figure out what is connected to port A:
+	mov	dptr,#OUTA
 	movx	a,@dptr
 	mov	r2,a
 	mov	dptr,#OUTA
 	mov	a,#0x80
 	xrl	a,rb0r2
 	movx	@dptr,a
+
+;first byte of bulk transfers is a code
+;for each code we have a different routine
+  
 	mov	dptr,#OUT2BUF
 	movx	a,@dptr
 	mov	r2,a
-	cjne	r2,#0x2c,X0ac8 ;if code != FPGA_INIT goto X0ac8
+
+;the following assembly code is equivalent
+; to a C switch/case block
+
+	cjne	r2,#FPGA_INIT, _not_fpga_init
 	sjmp	dabusb_fpga_init
-;
-X0ac8:	ljmp	X0b36
-;
+
+_not_fpga_init:
+	ljmp	not_fpga_init
+
 dabusb_fpga_init:
-	mov	0x32,#0
+	mov	variable32,#0
 	mov	r3,#0
 X0ad0:	cjne	r3,#0x64,X0ad3
 X0ad3:	jnc	X0af1
@@ -1589,18 +1772,20 @@ X0ad3:	jnc	X0af1
 	push	rb0r3
 	push	rb0r4
 	push	rb0r5
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r3
 	pop	rb0r2
+
 	mov	dptr,#X880f
 	movx	a,@dptr
-	mov	0x47,a
+	mov	variable47,a
 	inc	r3
 	sjmp	X0ad0
-;
-X0af1:	push	rb0r2
+
+X0af1:
+	push	rb0r2
 	push	rb0r4
 	push	rb0r5
 	lcall	X071e
@@ -1609,64 +1794,73 @@ X0af1:	push	rb0r2
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	mov	0x6e,#0
-	mov	0x6f,#1
+
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#1
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
-	lcall	X1144
+	lcall	set_cursor_position
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	mov	0x70,#0x4d
-	mov	0x71,#0x0c
-	mov	0x72,#2
+
+	mov	STRING_ADDR_LOW,	<string_DABUSB_v1_00
+	mov	STRING_ADDR_HI,		>string_DABUSB_v1_00
+	mov	STRING_ADDRESSING_MODE, INTERNAL_16BITS
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
-	lcall	X1175
+	lcall	print_string
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	ljmp	X0c2d
-;
-X0b36:	cjne	r2,#0x2a,X0b74 ; if code != FPGA_CLEAR goto X0b74
+	ljmp	_default
+
+not_fpga_init:
+	cjne	r2,#FPGA_CLEAR,not_fpga_clear
+
 dabusb_fpga_clear:
 	mov	dptr,#OUTC
 	mov	a,#0x20
 	movx	@dptr,a
+
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
+
 	mov	dptr,#OUTC
 	mov	a,#0x28
 	movx	@dptr,a
+
 	mov	r3,#0
 X0b56:	cjne	r3,#0x0a,X0b59
 X0b59:	jc	X0b5e
-	ljmp	X0c2d
-;
-X0b5e:	push	rb0r2
+	ljmp	_default
+X0b5e:
+	push	rb0r2
 	push	rb0r3
 	push	rb0r4
 	push	rb0r5
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r3
 	pop	rb0r2
 	inc	r3
 	sjmp	X0b56
-;
-X0b74:	cjne	r2,#0x2b,X0b91 ; if code != FPGA_LOAD_BITSTREAM goto X0b91
+
+not_fpga_clear:
+	cjne	r2,#FPGA_LOAD_BITSTREAM,not_fpga_load_bitstream
+
 	mov	dptr,#OUT2BC
 	movx	a,@dptr
 	mov	r3,a
-	cjne	r3,#0x40,X0b91 ; if out2_byte_count != 64 goto X0b91
+	cjne	r3,#0x40,not_fpga_load_bitstream
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1674,9 +1868,11 @@ X0b74:	cjne	r2,#0x2b,X0b91 ; if code != FPGA_LOAD_BITSTREAM goto X0b91
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	ljmp	X0c2d
-;
-X0b91:	cjne	r2,#0x10,X0bb3
+	ljmp	_default
+
+not_fpga_load_bitstream:
+	cjne	r2,#0x10,X0bb3
+
 	mov	dptr,#OUTA
 	movx	a,@dptr
 	mov	r3,a
@@ -1691,9 +1887,11 @@ X0b91:	cjne	r2,#0x10,X0bb3
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	ljmp	X0c2d
-;
-X0bb3:	cjne	r2,#0x11,X0bc8
+	ljmp	_default
+
+X0bb3:
+	cjne	r2,#0x11,X0bc8
+
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1701,9 +1899,11 @@ X0bb3:	cjne	r2,#0x11,X0bc8
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	ljmp	X0c2d
-;
-X0bc8:	cjne	r2,#0x12,X0bdd
+	ljmp	_default
+
+X0bc8:
+	cjne	r2,#0x12,X0bdd
+
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1711,17 +1911,21 @@ X0bc8:	cjne	r2,#0x12,X0bdd
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	ljmp	X0c2d
-;
-X0bdd:	cjne	r2,#0x13,X0beb
+	ljmp	_default
+
+X0bdd:
+	cjne	r2,#0x13,X0beb
+
 	mov	dptr,#X7dc1
 	movx	a,@dptr
 	mov	r3,a
 	mov	dptr,#X8800
 	movx	@dptr,a
-	sjmp	X0c2d
-;
-X0beb:	cjne	r2,#0x14,X0bff
+	sjmp	_default
+
+X0beb:
+	cjne	r2,#0x14,X0bff
+
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1729,15 +1933,17 @@ X0beb:	cjne	r2,#0x14,X0bff
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	sjmp	X0c2d
-;
-X0bff:	cjne	r2,#0x15,X0c1f
+	sjmp	_default
+
+X0bff:
+	cjne	r2,#0x15,X0c1f
+
 	mov	dptr,#X7dc1
 	movx	a,@dptr
-	mov	0x75,a
+	mov	variable75,a
 	mov	dptr,#X7dc2
 	movx	a,@dptr
-	mov	0x76,a
+	mov	variable76,a
 	push	rb0r2
 	push	rb0r4
 	push	rb0r5
@@ -1745,28 +1951,38 @@ X0bff:	cjne	r2,#0x15,X0c1f
 	pop	rb0r5
 	pop	rb0r4
 	pop	rb0r2
-	sjmp	X0c2d
-;
-X0c1f:	cjne	r2,#0x16,X0c2d
+	sjmp	_default
+
+X0c1f:
+	cjne	r2,#0x16,_default
+
 	push	rb0r4
 	push	rb0r5
 	lcall	X13a3
 	pop	rb0r5
 	pop	rb0r4
-X0c2d:	mov	dptr,#OUT2BC
+
+_default:
+	;prepare next bulk transfer
+	mov	dptr,#OUT2BC
 	clr	a
 	movx	@dptr,a
 	mov	got_EP2OUT_data,#0
 	ljmp	X092a
-;
-	ret	
 
+string_SUSPEND:
 .ascii "SUSPEND"
 .db 0
+
+string_RESUME:
 .ascii "RESUME"
 .db 0
+
+string_Vol:
 .ascii " Vol "
 .db 0
+
+string_DABUSB_v1_00:
 .ascii "DABUSB v1.00"
 .db 0
 
@@ -1787,9 +2003,11 @@ SUDAV:
 	mov	psw,#0
 	push	DPS
 	mov	DPS,#0
+
 	mov	a,EXIF
 	clr	acc.4
 	mov	EXIF,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#1
 	movx	@dptr,a
@@ -1799,12 +2017,15 @@ SUDAV:
 	mov	dptr,#X7fe9
 	movx	a,@dptr
 	mov	r3,a
-X0c92:	cjne	r3,#0,X0c97
+X0c92:
+	cjne	r3,#0,X0c97
 	sjmp	X0c9a
 ;
-X0c97:	ljmp	X0d38
+X0c97:
+	ljmp	X0d38
 ;
-X0c9a:	cjne	r2,#0x80,X0cb1
+X0c9a:
+	cjne	r2,#0x80,X0cb1
 	mov	dptr,#IN0BUF
 	mov	a,#1
 	movx	@dptr,a
@@ -1816,16 +2037,20 @@ X0c9a:	cjne	r2,#0x80,X0cb1
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0cb1:	cjne	r2,#0x82,X0cb6
+X0cb1:
+	cjne	r2,#0x82,X0cb6
 	sjmp	X0cb9
 ;
-X0cb6:	ljmp	X0d1d
+X0cb6:
+	ljmp	X0d1d
 ;
-X0cb9:	mov	dptr,#X7fec
+X0cb9:
+	mov	dptr,#X7fec
 	movx	a,@dptr
 	mov	r4,a
 	cjne	r4,#1,X0cc1
-X0cc1:	jc	X0ce4
+X0cc1:
+	jc	X0ce4
 	clr	c
 	mov	a,#7
 	subb	a,r4
@@ -1870,10 +2095,12 @@ X0ce7:	jc	X0d0a
 	movx	@dptr,a
 	sjmp	X0d0f
 ;
-X0d0a:	mov	dptr,#IN0BUF
+X0d0a:
+	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
-X0d0f:	mov	dptr,#X7f01
+X0d0f:
+	mov	dptr,#X7f01
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#IN0BC
@@ -1881,12 +2108,15 @@ X0d0f:	mov	dptr,#X7f01
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0d1d:	cjne	r2,#0x81,X0d22
+X0d1d:
+	cjne	r2,#0x81,X0d22
 	sjmp	X0d25
 ;
-X0d22:	ljmp	X0ec5
+X0d22:
+	ljmp	X0ec5
 ;
-X0d25:	mov	dptr,#IN0BUF
+X0d25:
+	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7f01
@@ -1897,12 +2127,14 @@ X0d25:	mov	dptr,#IN0BUF
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0d38:	cjne	r3,#1,X0d68
+X0d38:
+	cjne	r3,#1,X0d68
 	cjne	r2,#0,X0d41
 	ljmp	X0ecd
 ;
-X0d41:	cjne	r2,#2,X0d55
-	mov	0x59,#0
+X0d41:
+	cjne	r2,#2,X0d55
+	mov	variable59,#0
 	push	rb0r2
 	push	rb0r3
 	lcall	X0ef0
@@ -1910,27 +2142,34 @@ X0d41:	cjne	r2,#2,X0d55
 	pop	rb0r2
 	ljmp	X0ecd
 ;
-X0d55:	cjne	r2,#0x21,X0d5a
+X0d55:
+	cjne	r2,#0x21,X0d5a
 	sjmp	X0d5d
 ;
-X0d5a:	ljmp	X0ecd
+X0d5a:
+	ljmp	X0ecd
 ;
-X0d5d:	mov	0x37,#1
+X0d5d:
+	mov	variable37,#1
 	mov	dptr,#OUT0BC
 	clr	a
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0d68:	cjne	r3,#3,X0d8a
+X0d68:
+	cjne	r3,#3,X0d8a
 	cjne	r2,#0,X0d71
 	ljmp	X0ecd
 ;
-X0d71:	cjne	r2,#2,X0d76
+X0d71:
+	cjne	r2,#2,X0d76
 	sjmp	X0d79
 ;
-X0d76:	ljmp	X0ecd
+X0d76:
+	ljmp	X0ecd
 ;
-X0d79:	mov	0x59,#1
+X0d79:
+	mov	variable59,#1
 	push	rb0r2
 	push	rb0r3
 	lcall	X0ef0
@@ -1938,18 +2177,21 @@ X0d79:	mov	0x59,#1
 	pop	rb0r2
 	ljmp	X0ecd
 ;
-X0d8a:	cjne	r3,#6,X0de1
+X0d8a:
+	cjne	r3,#6,X0de1
 	cjne	r2,#0x80,X0d92
 	sjmp	X0d95
 ;
-X0d92:	ljmp	X0ec5
+X0d92:
+	ljmp	X0ec5
 ;
-X0d95:	mov	dptr,#X7feb
+X0d95:
+	mov	dptr,#X7feb
 	movx	a,@dptr
 	mov	r4,a
 	cjne	r4,#1,X0db2
-	mov	r4,#0x0fb
-	mov	r5,#0x0f
+	mov	r4, >data_block2
+	mov	r5, <data_block2
 	mov	rb0r6,r5
 	mov	r7,#0
 	mov	dptr,#SUDPTRH
@@ -1960,24 +2202,29 @@ X0d95:	mov	dptr,#X7feb
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0db2:	mov	dptr,#X7feb
+X0db2:
+	mov	dptr,#X7feb
 	movx	a,@dptr
 	mov	r4,a
 	cjne	r4,#2,X0dbc
 	sjmp	X0dbf
 ;
-X0dbc:	ljmp	X0ec5
+X0dbc:
+	ljmp	X0ec5
 ;
-X0dbf:	mov	dptr,#X7fea
+X0dbf:
+	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r4,a
 	cjne	r4,#0,X0dc9
 	sjmp	X0dcc
 ;
-X0dc9:	ljmp	X0ec5
+X0dc9:
+	ljmp	X0ec5
 ;
-X0dcc:	mov	r4,#0x3b
-	mov	r5,#0x0f
+X0dcc:
+	mov	r4, <data_block
+	mov	r5, >data_block
 	mov	rb0r6,r5
 	mov	r7,#0
 	mov	dptr,#SUDPTRH
@@ -1988,11 +2235,13 @@ X0dcc:	mov	r4,#0x3b
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0de1:	cjne	r3,#7,X0de7
+X0de1:
+	cjne	r3,#7,X0de7
 	ljmp	X0ec5
 ;
-X0de7:	cjne	r3,#8,X0dfa
-	mov	r4,0x48
+X0de7:
+	cjne	r3,#8,X0dfa
+	mov	r4,variable48
 	mov	dptr,#IN0BUF
 	mov	a,r4
 	movx	@dptr,a
@@ -2001,13 +2250,16 @@ X0de7:	cjne	r3,#8,X0dfa
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0dfa:	cjne	r3,#9,X0e2e
+X0dfa:
+	cjne	r3,#9,X0e2e
 	cjne	r2,#0,X0e02
 	sjmp	X0e05
 ;
-X0e02:	ljmp	X0ec5
+X0e02:
+	ljmp	X0ec5
 ;
-X0e05:	mov	dptr,#X7fea
+X0e05:
+	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r4,a
 	clr	c
@@ -2016,7 +2268,8 @@ X0e05:	mov	dptr,#X7fea
 	jnc	X0e13
 	ljmp	X0ec5
 ;
-X0e13:	mov	dptr,#X7fea
+X0e13:
+	mov	dptr,#X7fea
 	movx	a,@dptr
 	mov	r4,a
 	cjne	r4,#0,X0e25
@@ -2026,18 +2279,22 @@ X0e13:	mov	dptr,#X7fea
 	mov	dptr,#X1722
 	clr	a
 	movx	@dptr,a
-X0e25:	mov	dptr,#X7fea
+X0e25:
+	mov	dptr,#X7fea
 	movx	a,@dptr
-	mov	0x48,a
+	mov	variable48,a
 	ljmp	X0ecd
 ;
-X0e2e:	cjne	r3,#0x0a,X0e58
+X0e2e:
+	cjne	r3,#0x0a,X0e58
 	cjne	r2,#0x81,X0e36
 	sjmp	X0e39
 ;
-X0e36:	ljmp	X0ec5
+X0e36:
+	ljmp	X0ec5
 ;
-X0e39:	mov	dptr,#X7fec
+X0e39:
+	mov	dptr,#X7fec
 	movx	a,@dptr
 	mov	r2,a
 	add	a,#0x20
@@ -2056,12 +2313,15 @@ X0e39:	mov	dptr,#X7fec
 	movx	@dptr,a
 	ljmp	X0ecd
 ;
-X0e58:	cjne	r3,#0x0b,X0e5d
+X0e58:
+	cjne	r3,#0x0b,X0e5d
 	sjmp	X0e60
 ;
-X0e5d:	ljmp	X0ea9
+X0e5d:
+	ljmp	X0ea9
 ;
-X0e60:	mov	dptr,#X1720
+X0e60:
+	mov	dptr,#X1720
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#X7fec
@@ -2082,7 +2342,8 @@ X0e60:	mov	dptr,#X1720
 	pop	rb0r3
 	sjmp	X0ecd
 ;
-X0e87:	mov	dptr,#X7fec
+X0e87:
+	mov	dptr,#X7fec
 	movx	a,@dptr
 	mov	r2,a
 	cjne	r2,#2,X0ecd
@@ -2100,31 +2361,38 @@ X0e87:	mov	dptr,#X7fec
 	movx	@dptr,a
 	sjmp	X0ecd
 ;
-X0ea9:	cjne	r3,#0x12,X0eae
+X0ea9:
+	cjne	r3,#0x12,X0eae
 	sjmp	X0ec5
 ;
-X0eae:	cjne	r3,#0x81,X0eb3
+X0eae:
+	cjne	r3,#0x81,X0eb3
 	sjmp	X0ec0
 ;
-X0eb3:	cjne	r3,#0x83,X0eb8
+X0eb3:
+	cjne	r3,#0x83,X0eb8
 	sjmp	X0ec0
 ;
-X0eb8:	cjne	r3,#0x82,X0ebd
+X0eb8:
+	cjne	r3,#0x82,X0ebd
 	sjmp	X0ec0
 ;
 X0ebd:	cjne	r3,#0x84,X0ec5
 X0ec0:	lcall	X064e
 	sjmp	X0ecd
 ;
-X0ec5:	mov	dptr,#EP0CS
+X0ec5:
+	mov	dptr,#EP0CS
 	mov	a,#3
 	movx	@dptr,a
 	sjmp	X0ed3
 ;
-X0ecd:	mov	dptr,#EP0CS
+X0ecd:
+	mov	dptr,#EP0CS
 	mov	a,#2
 	movx	@dptr,a
-X0ed3:	pop	DPS
+X0ed3:
+	pop	DPS
 	pop	psw
 	pop	rb0r1
 	pop	rb0r0
@@ -2139,18 +2407,19 @@ X0ed3:	pop	DPS
 	pop	b
 	pop	acc
 	reti	
-;
-X0ef0:	mov	dptr,#X7fec
+
+X0ef0:
+	mov	dptr,#X7fec
 	movx	a,@dptr
-	mov	0x5a,a
+	mov	variable5a,a
 	clr	c
 	subb	a,#1
 	jc	X0f18
 	clr	c
 	mov	a,#7
-	subb	a,0x5a
+	subb	a,variable5a
 	jc	X0f18
-	mov	a,0x5a
+	mov	a,variable5a
 	add	a,#0x0ff
 	add	a,acc
 	mov	r2,a
@@ -2159,20 +2428,21 @@ X0ef0:	mov	dptr,#X7fec
 	clr	a
 	addc	a,#0x7f
 	mov	dph,a
-	mov	r2,0x59
+	mov	r2,variable59
 	mov	a,r2
 	movx	@dptr,a
 	sjmp	X0f3a
 ;
-X0f18:	clr	c
-	mov	a,0x5a
+X0f18:
+	clr	c
+	mov	a,variable5a
 	subb	a,#0x81
 	jc	X0f3a
 	clr	c
 	mov	a,#0x87
-	subb	a,0x5a
+	subb	a,variable5a
 	jc	X0f3a
-	mov	a,0x5a
+	mov	a,variable5a
 	add	a,#0x0ff
 	add	a,acc
 	mov	r2,a
@@ -2181,199 +2451,50 @@ X0f18:	clr	c
 	clr	a
 	addc	a,#0x7f
 	mov	dph,a
-	mov	r2,0x59
+	mov	r2,variable59
 	mov	a,r2
 	movx	@dptr,a
-X0f3a:	ret	
-;
-	inc	r1
-	ljmp	Xba00
-;
-	rr	a
-	ajmp	X0800
-;
-	jc	X0f44
-X0f44:	inc	r1
-	inc	a
-	nop	
-;
-	;org	0x0f49
-;
-	ajmp	X0801
-;
-	;org	0x0f4d
-;
-	inc	r1
-	add	a,#1
-	nop	
-	ajmp	X083d
-;
-	;org	0x0f54
-;
-	ajmp	X0801
-;
-	inc	r4
-	add	a,#2
-	ajmp	X0810
-;
-	inc	@r1
-	nop	
-	ljmp	X0300
-;
-	;org	0x0f62
-;
-	inc	r5
-	add	a,#6
-	rr	a
-	ajmp	X0802
-;
-X0f68:	dec	rb0r0
-	rr	a
-	nop	
-	rr	a
-	nop	
-;
-	;org	0x0f6f
-;
-	inc	r1
-	add	a,#3
-	ljmp	X0101
-;
-	;org	0x0f76
-;
-	ajmp	X0800
-;
-	inc	r1
-	add	a,#3
-	inc	a
-	ljmp	X0300
-;
-	rr	a
-	nop	
-	inc	r1
-	add	a,#3
-	inc	rb0r3
-	inc	@r0
-	nop	
-	ajmp	X0800
-;
-	inc	r1
-	inc	a
-	ajmp	X0800
-;
-	;org	0x0f8f
-;
-	ajmp	X0802
-;
-	;org	0x0f93
-;
-	inc	r1
-	inc	a
-	ajmp	X0801
-;
-	ajmp	X0801
-;
-	ljmp	X0000
-;
-	inc	@r1
-	add	a,#1
-	ljmp	X0101
-;
-	;org	0x0fa3
-;
-	inc	r3
-	add	a,#2
-	ajmp	X0802
-;
-	ljmp	X1001
-;
-	sjmp	X0f68
-;
-	;org	0x0fae
-;
-	inc	r1
-	inc	tcon
-	inc	rb0r0
-	ajmp	X0801
-;
-	;org	0x0fb7
-;
-	inc	@r1
-	add	a,rb0r1
-	nop	
-;
-	;org	0x0fbe
-;
-	inc	r1
-	inc	a
-	ljmp	X0002
-;
-	;org	0x0fc7
-;
-	inc	@r1
-	inc	dpl
-	ljmp	X4000
-;
-	;org	0x0fce
-;
-	inc	@r1
-	inc	rb0r2
-	ljmp	X4000
-;
-	;org	0x0fd5
-;
-	inc	r1
-	inc	a
-	ljmp	X0103
-;
-	;org	0x0fde
-;
-	inc	@r1
-	inc	dpl
-	ljmp	X4000
-;
-	;org	0x0fe5
-;
-	inc	@r1
-	inc	rb0r2
-	ljmp	X4000
-;
-	;org	0x0fec
-;
-	inc	r1
-	inc	tmod
-	inc	p2
-	ajmp	X0801
-;
-	;org	0x0ffb
-;
-	lcall	X0100
-	ajmp	X1000
-;
-X1000:	nop	
-X1001:	nop	
-;TODO: this seems to be a data section. Uncomment next instruction and investigate:
-;	jc	X104b
-	inc	sbuf
-	subb	a,r1
-	nop	
-	ajmp	X1000
-;
-	;org	0x100c
-;
-	ajmp	X1000
-;
-	;org	0x1014
-;
-	inc	r1
-	ljmp	Xba00
-;
-	rr	a
-	ajmp	X1000
-;
+X0f3a:
+	ret	
+
+data_block:
+X0f3b:
+.db 0x09, 0x02, 0xba, 0x00, 0x03, 0x01, 0x00, 0x40
+.db 0x00, 0x09, 0x04, 0x00, 0x00, 0x00, 0x01, 0x01
+.db 0x00, 0x00, 0x09, 0x24, 0x01, 0x00, 0x01, 0x3d
+.db 0x00, 0x01, 0x01, 0x0c, 0x24, 0x02, 0x01, 0x10
+.db 0x07, 0x00, 0x02, 0x03, 0x00, 0x00, 0x00, 0x0d
+.db 0x24, 0x06, 0x03, 0x01, 0x02, 0x15, 0x00, 0x03
+.db 0x00, 0x03, 0x00, 0x00, 0x09, 0x24, 0x03, 0x02
+.db 0x01, 0x01, 0x00, 0x01, 0x00, 0x09, 0x24, 0x03
+.db 0x04, 0x02, 0x03, 0x00, 0x03, 0x00, 0x09, 0x24
+.db 0x03, 0x05, 0x03, 0x06, 0x00, 0x01, 0x00, 0x09
+.db 0x04, 0x01, 0x00, 0x00, 0x01, 0x02, 0x00, 0x00
+.db 0x09, 0x04, 0x01, 0x01, 0x01, 0x01, 0x02, 0x00
+
+data_block2:
+X0ffb:
+.db 0x00, 0x07, 0x24, 0x01, 0x02, 0x01, 0x01, 0x00
+.db 0x0b, 0x24, 0x02, 0x01, 0x02, 0x02, 0x10, 0x01
+.db 0x80, 0xbb, 0x00, 0x09, 0x05, 0x88, 0x05, 0x00
+.db 0x01, 0x01, 0x00, 0x00, 0x07, 0x25, 0x01, 0x00
+.db 0x00, 0x00, 0x00, 0x09, 0x04, 0x02, 0x00, 0x02
+.db 0x00, 0x00, 0x00, 0x00, 0x07, 0x05, 0x82, 0x02
+.db 0x40, 0x00, 0x00, 0x07, 0x05, 0x02, 0x02, 0x40
+.db 0x00, 0x00, 0x09, 0x04, 0x02, 0x01, 0x03, 0x00
+.db 0x00, 0x00, 0x00, 0x07, 0x05, 0x82, 0x02, 0x40
+.db 0x00, 0x00, 0x07, 0x05, 0x02, 0x02, 0x40, 0x00
+.db 0x00, 0x09, 0x05, 0x89, 0x05, 0xa0, 0x01, 0x01
+.db 0x00, 0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00
+.db 0x12, 0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x40
+.db 0x47, 0x05, 0x99, 0x99, 0x00, 0x01, 0x00, 0x00
+.db 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+.db 0x00, 0x09, 0x02, 0xba, 0x00, 0x03, 0x01, 0x00
+
 X101b:	mov	r2,#0
 X101d:	cjne	r2,#5,X1020
-X1020:	jnc	X1039
+X1020:
+	jnc	X1039
 	mov	dptr,#I2CS
 	movx	a,@dptr
 	mov	r3,a
@@ -2381,16 +2502,20 @@ X1020:	jnc	X1039
 	mov	dptr,#X0001
 	sjmp	X103c
 ;
-X102f:	push	rb0r2
-	lcall	X01dd
+X102f:
+	push	rb0r2
+	lcall	sleep_a_bit
 	pop	rb0r2
 	inc	r2
 	sjmp	X101d
 ;
-X1039:	mov	dptr,#X0001
-X103c:	ret	
+X1039:
+	mov	dptr,#X0001
+X103c:
+	ret	
 ;
-X103d:	mov	dptr,#X7dc1
+X103d:
+	mov	dptr,#X7dc1
 	movx	a,@dptr
 	mov	r1,a
 	inc	dptr
@@ -2403,7 +2528,8 @@ X103d:	mov	dptr,#X7dc1
 	mov	r5,#0x7e
 	mov	a,r3
 	jz	X1061
-X104f:	mov	dpl,r1
+X104f:
+	mov	dpl,r1
 	mov	dph,r2
 	movx	a,@dptr
 	inc	dptr
@@ -2414,13 +2540,15 @@ X104f:	mov	dpl,r1
 	movx	@dptr,a
 	inc	r4
 	djnz	r3,X104f
-X1061:	mov	dptr,#X7dc3
+X1061:
+	mov	dptr,#X7dc3
 	movx	a,@dptr
 	mov	dptr,#IN2BC
 	movx	@dptr,a
 	ret	
 ;
-X106a:	mov	dptr,#X7dc1
+X106a:
+	mov	dptr,#X7dc1
 	movx	a,@dptr
 	mov	r1,a
 	inc	dptr
@@ -2433,7 +2561,8 @@ X106a:	mov	dptr,#X7dc1
 	mov	r5,#0x7d
 	mov	a,r3
 	jz	X1061
-X107c:	mov	dpl,r4
+X107c:
+	mov	dpl,r4
 	mov	dph,r5
 	movx	a,@dptr
 	inc	r4
@@ -2446,7 +2575,8 @@ X107c:	mov	dpl,r4
 	djnz	r3,X107c
 	ret	
 ;
-X108f:	mov	dptr,#I2CS
+X108f:
+	mov	dptr,#I2CS
 	mov	a,#0x80
 	movx	@dptr,a
 	inc	DPS
@@ -2465,7 +2595,8 @@ X108f:	mov	dptr,#I2CS
 	jz	X10c3
 	inc	dptr
 	inc	DPS
-X10b0:	mov	dptr,#I2CDAT
+X10b0:
+	mov	dptr,#I2CDAT
 	inc	DPS
 	movx	a,@dptr
 	inc	dptr
@@ -2475,38 +2606,47 @@ X10b0:	mov	dptr,#I2CDAT
 	lcall	X101b
 	pop	rb0r1
 	djnz	r1,X10b0
-X10c3:	mov	dptr,#I2CS
+X10c3:
+	mov	dptr,#I2CS
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
 ;
-X10ca:	mov	dptr,#X8802
+X10ca:
+	mov	dptr,#X8802
 	mov	a,#1
 	movx	@dptr,a
 	mov	r2,#0
 X10d2:	cjne	r2,#0x0ff,X10d5
 X10d5:	jnc	X10e1
 	push	rb0r2
-	lcall	X01dd
+	lcall	sleep_a_bit
 	pop	rb0r2
 	inc	r2
 	sjmp	X10d2
 ;
-X10e1:	ret	
-;
-X10e2:	mov	a,0x6b
-	cjne	a,#0x0c0,X10ef
+X10e1:
+	ret	
+
+X10e2:
+	mov	a,variable6b
+	cjne	a,#0xC0,X10ef
 	mov	dptr,#X8803
-	mov	a,0x6c
+	mov	a,variable6c
 	movx	@dptr,a
 	sjmp	X10f5
 ;
-X10ef:	mov	dptr,#X8802
-	mov	a,0x6c
+X10ef:
+	mov	dptr,#X8802
+	mov	a,variable6c
 	movx	@dptr,a
-X10f5:	mov	r2,#0
+
+;seems to be another sleep routine:
+X10f5:
+	mov	r2,#0
 	mov	r3,#0
-X10f9:	clr	c
+X10f9:
+	clr	c
 	mov	a,r2
 	subb	a,#0x32
 	mov	a,r3
@@ -2514,101 +2654,122 @@ X10f9:	clr	c
 	subb	a,#0x80
 	jnc	X110b
 	inc	r2
-	cjne	r2,#0,X1109
+	cjne	r2,#0,X10f9
 	inc	r3
-X1109:	sjmp	X10f9
-;
-X110b:	ret	
-;
-X110c:	mov	dptr,#X8803
-	mov	a,0x6d
+	sjmp	X10f9
+X110b:
+	ret	
+
+;the LCD display seems to have 2 lines of 16 chars
+print_char:
+	mov	dptr,#X8803
+	mov	a,CHAR_TO_PRINT
 	movx	@dptr,a
-	inc	0x39
-;
+	inc	LCD_CHAR_POSITION
+
 	mov	r2,#0
 SLEEP:	cjne	r2,#0x28,X1119
 X1119:	jnc	X111e
 	inc	r2
 	sjmp	SLEEP
-;
-X111e:	mov	a,0x39
+
+X111e:
+	mov	a,LCD_CHAR_POSITION
 	cjne	a,#0x10,X112b
+
+	;break line
 	mov	dptr,#X8802
-	mov	a,#0x0c0
+	mov	a,#0xc0
 	movx	@dptr,a
 	sjmp	X1139
-;
-X112b:	mov	a,0x39
+
+X112b:
+	mov	a,LCD_CHAR_POSITION
 	cjne	a,#0x20,X1139
+
+	;cursor moves back to beginning of first line
 	mov	dptr,#X8802
 	mov	a,#0x80
 	movx	@dptr,a
-	mov	0x39,#0
+	mov	LCD_CHAR_POSITION,#0
 ;
-X1139:	mov	r2,#0
+X1139:
+	mov	r2,#0
 SLEEP_MORE:	cjne	r2,#0x28,X113e
 X113e:	jnc	X1143
 	inc	r2
 	sjmp	SLEEP_MORE
-;
-X1143:	ret	
-;
-X1144:	mov	a,0x6f
-	jz	X114a
-	sjmp	X1151
-;
-X114a:	mov	r2,#0
-	mov	0x39,#0
+X1143:
+	ret	
+
+set_cursor_position:
+	mov	a,CHAR_ROW
+	jz	first_row
+	sjmp	second_row
+
+first_row:
+	mov	r2,#0
+	mov	LCD_CHAR_POSITION,#0
 	sjmp	X1156
-;
-X1151:	mov	r2,#0x40
-	mov	0x39,#0x10
-X1156:	mov	a,0x6e
+
+second_row:
+	mov	r2,#0x40
+	mov	LCD_CHAR_POSITION,#0x10
+X1156:
+	mov	a,CHAR_COL
 	add	a,r2
 	mov	r2,a
-	mov	a,0x6e
-	add	a,0x39
-	mov	0x39,a
+	mov	a,CHAR_COL
+	add	a,LCD_CHAR_POSITION
+	mov	LCD_CHAR_POSITION,a ; LCD_CHAR_POSITION += CHAR_COL
+
 	mov	dptr,#X8802
 	mov	a,#0x80
-	add	a,r2
+	add	a,r2			;a = CHAR_COL + (second_row ? 0xC0 : 0x80)
 	movx	@dptr,a
 	mov	r2,#0
-X1169:	clr	c
+
+another_sleep_loop:
+	clr	c
 	mov	a,r2
 	xrl	a,#0x80
 	subb	a,#0x0a8
 	jnc	X1174
 	inc	r2
-	sjmp	X1169
-;
-X1174:	ret	
-;
-X1175:	mov	r2,0x70
-	mov	r3,0x71
-	mov	r4,0x72
-X117b:	mov	dpl,r2
+	sjmp	another_sleep_loop
+X1174:
+	ret	
+
+print_string:
+	mov	r2,STRING_ADDR_LOW
+	mov	r3,STRING_ADDR_HI
+	mov	r4,STRING_ADDRESSING_MODE
+next_char:
+	mov	dpl,r2
 	mov	dph,r3
 	mov	b,r4
-	lcall	X14ee
+	lcall	read_byte
 	mov	r5,a
-	jz	X119f
-	mov	0x6d,r5
+	jz	end_of_string
+	mov	CHAR_TO_PRINT,r5
 	push	rb0r2
 	push	rb0r3
 	push	rb0r4
-	lcall	X110c
+	lcall	print_char
 	pop	rb0r4
 	pop	rb0r3
 	pop	rb0r2
 	inc	r2
 	cjne	r2,#0,X119d
 	inc	r3
-X119d:	sjmp	X117b
-;
-X119f:	ret	
-;
-X11a0:	mov	a,0x73
+X119d:
+	sjmp	next_char
+end_of_string:
+	ret	
+
+;TODO
+X11a0:
+	mov	a,variable73
 	swap	a
 	anl	a,#0x0f
 	mov	r2,a
@@ -2621,15 +2782,17 @@ X11a0:	mov	a,0x73
 	add	a,r2
 	mov	r3,a
 	sjmp	X11b9
-;
-X11b5:	mov	a,#0x30
+
+X11b5:
+	mov	a,#0x30
 	add	a,r2
 	mov	r3,a
-X11b9:	mov	0x6d,r3
+X11b9:
+	mov	CHAR_TO_PRINT,r3
 	push	rb0r3
-	lcall	X110c
+	lcall	print_char
 	pop	rb0r3
-	mov	r2,0x73
+	mov	r2,variable73
 	anl	rb0r2,#0x0f
 	clr	c
 	mov	a,#9
@@ -2639,39 +2802,48 @@ X11b9:	mov	0x6d,r3
 	add	a,r2
 	mov	r3,a
 	sjmp	X11d7
-;
-X11d3:	mov	a,#0x30
+
+X11d3:
+	mov	a,#0x30
 	add	a,r2
 	mov	r3,a
-X11d7:	mov	0x6d,r3
-	lcall	X110c
-	ret	
-;
-X11dd:	mov	dptr,#X7dc3
+X11d7:
+	mov	CHAR_TO_PRINT,r3
+	lcall	print_char
+	ret
+
+X11dd:
+	mov	dptr,#X7dc3
 	movx	a,@dptr
 	mov	r2,a
 	jz	X11f3
+
 	mov	dptr,#X7dc1
 	movx	a,@dptr
-	mov	0x6e,a
+	mov	CHAR_COL,a
+
 	mov	dptr,#X7dc2
 	movx	a,@dptr
-	mov	0x6f,a
-	lcall	X1144
-X11f3:	mov	dptr,#X7dff
+	mov	CHAR_ROW,a
+
+	lcall	set_cursor_position
+X11f3:
+	mov	dptr,#X7dff
 	clr	a
 	movx	@dptr,a
-	mov	0x70,#0xc4
-	mov	0x71,#0x7d
-	mov	0x72,#1
-	lcall	X1175
-	ret	
-;
+
+	mov	STRING_ADDR_LOW,	<X7dc4
+	mov	STRING_ADDR_HI,		>X7dc4
+	mov	STRING_ADDRESSING_MODE, EXTERNAL_16BITS
+	lcall	print_string
+	ret
 
 dabusb_fpga_load_bitstream:
 	mov	r2,#4
-X1207:	cjne	r2,#0x40,X120a ; for (index=4; index<64; index++){
-X120a:	jnc	X1242
+loop_bytes:
+	cjne	r2,#0x40,X120a ; for (index=4; index<64; index++){
+X120a:
+	jnc	X1242
 	mov	a,r2
 ;TODO How to declare macros?	add	a,#lo(OUT2BUF)
 	add	a,#(OUT2BUF & 0xff)
@@ -2682,35 +2854,44 @@ X120a:	jnc	X1242
 	movx	a,@dptr
 	mov	r3,a ; r3 = [OUT2BUF+index] ; OUT2BUF is the usb bulk transfer buffer for endpoint out2
 	mov	r4,#0
-X121a:	cjne	r4,#8,X121d
-X121d:	jnc	X123f
+loop_bits:
+	cjne	r4,#8,X121d
+X121d:
+	jnc	next_byte
 	mov	rb0r5,r3
 	mov	a,r5
-	jnb	acc.7,X1230
+	jnb	acc.7,bitstream_0bit
+
+bitstream_1bit:
 	mov	dptr,#OUTA
 	mov	a,#0x42
 	movx	@dptr,a
 	mov	a,#0x0c3
 	movx	@dptr,a
-	sjmp	X1238
-;
-X1230:	mov	dptr,#OUTA
+	sjmp	next_bitstream_bit
+
+bitstream_0bit:
+	mov	dptr,#OUTA
 	clr	a
 	movx	@dptr,a
 	mov	a,#0x81
 	movx	@dptr,a
-X1238:	mov	a,r3
+
+next_bitstream_bit:
+	mov	a,r3
 	add	a,acc
 	mov	r3,a
 	inc	r4
-	sjmp	X121a
-;
-X123f:	inc	r2
-	sjmp	X1207
-;
-X1242:	ret	
-;
-X1243:	mov	r2,#0
+	sjmp	loop_bits
+
+next_byte:
+	inc	r2
+	sjmp	loop_bytes
+X1242:
+	ret
+
+X1243:
+	mov	r2,#0
 	mov	r3,#0x0ef
 X1247:	cjne	r2,#0x10,X124a
 X124a:	jnc	X126c
@@ -2736,10 +2917,11 @@ X124a:	jnc	X126c
 	movx	@dptr,a
 	inc	r2
 	sjmp	X1247
-;
-X126c:	ret	
-;
-X126d:	mov	a,#0x0f8
+X126c:
+	ret	
+
+X126d:
+	mov	a,#0x0f8
 	add	a,#0
 	mov	dpl,a
 	mov	a,#3
@@ -2780,8 +2962,9 @@ X126d:	mov	a,#0x0f8
 	clr	a
 	movx	@dptr,a
 	ret	
-;
-X12b4:	lcall	X03cb
+
+X12b4:
+	lcall	X03cb
 	lcall	X126d
 	mov	r2,#0x0c0
 	mov	r3,#0x87
@@ -2797,7 +2980,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r3
 	mov	b,r4
 	mov	a,#1
-	lcall	X14bf
+	lcall	write_byte
 	add	a,r5
 	mov	r2,a
 	clr	a
@@ -2808,7 +2991,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r6
 	mov	b,r7
 	mov	a,#6
-	lcall	X14bf
+	lcall	write_byte
 	mov	a,#1
 	add	a,r2
 	mov	r5,a
@@ -2820,7 +3003,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r3
 	mov	b,r4
 	clr	a
-	lcall	X14bf
+	lcall	write_byte
 	mov	a,#1
 	add	a,r5
 	mov	r2,a
@@ -2832,7 +3015,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r6
 	mov	b,r7
 	mov	a,#0x0b
-	lcall	X14bf
+	lcall	write_byte
 	mov	a,#1
 	add	a,r2
 	mov	r5,a
@@ -2844,7 +3027,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r3
 	mov	b,r4
 	mov	a,#8
-	lcall	X14bf
+	lcall	write_byte
 	mov	a,#1
 	add	a,r5
 	mov	r2,a
@@ -2856,7 +3039,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r6
 	mov	b,r7
 	mov	a,#1
-	lcall	X14bf
+	lcall	write_byte
 	add	a,r2
 	mov	r5,a
 	clr	a
@@ -2867,7 +3050,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r3
 	mov	b,r4
 	clr	a
-	lcall	X14bf
+	lcall	write_byte
 	mov	a,#1
 	add	a,r5
 	mov	r2,a
@@ -2879,7 +3062,7 @@ X12b4:	lcall	X03cb
 	mov	dph,r6
 	mov	b,r7
 	mov	a,#3
-	lcall	X14bf
+	lcall	write_byte
 	mov	r5,#0
 X135c:	cjne	r5,#6,X135f
 X135f:	jnc	X1373
@@ -2889,16 +3072,18 @@ X135f:	jnc	X1373
 	inc	r2
 	cjne	r2,#0,X136c
 	inc	r3
-X136c:	clr	a
-	lcall	X14bf
+X136c:
+	clr	a
+	lcall	write_byte
 	inc	r5
 	sjmp	X135c
 ;
-X1373:	mov	dpl,r2
+X1373:
+	mov	dpl,r2
 	mov	dph,r3
 	mov	b,r4
-	mov	a,0x74
-	lcall	X14bf
+	mov	a,variable74
+	lcall	write_byte
 	mov	a,#0x0f9
 	add	a,#0
 	mov	dpl,a
@@ -2918,8 +3103,9 @@ X1373:	mov	dpl,r2
 	lcall	X03e1
 	lcall	X04f7
 	ret	
-;
-X13a3:	mov	dptr,#X7dc1
+
+X13a3:
+	mov	dptr,#X7dc1
 	movx	a,@dptr
 	mov	r2,a
 	add	a,#0
@@ -2966,8 +3152,10 @@ X13c4:	jnc	X13ea
 	movx	@dptr,a
 	inc	r3
 	sjmp	X13c1
-;
-X13ea:	mov	a,r2
+
+X13ea:
+; ext[0x1810 + r2] = 0
+	mov	a,r2
 	add	a,#0
 	mov	r2,a
 	clr	a
@@ -2982,60 +3170,68 @@ X13ea:	mov	a,r2
 	clr	a
 	movx	@dptr,a
 	ret	
-;
-X13fe:	mov	a,0x76
+
+X13fe:
+	mov	a,variable76
 	jz	X1404
 	sjmp	X141a
 ;
-X1404:	mov	a,#0x0f
-	anl	a,0x75
+X1404:
+	mov	a,#0x0f
+	anl	a,variable75
 	mov	r2,a
-	mov	0x75,r2
+	mov	variable75,r2
 	add	a,#0
 	mov	dpl,a
 	clr	a
 	addc	a,#0x19
 	mov	dph,a
 	movx	a,@dptr
-	mov	0x74,a
+	mov	variable74,a
 	lcall	X12b4
-X141a:	lcall	X10ca
-	mov	0x6e,#0
-	mov	0x6f,#0
-	lcall	X1144
-	mov	0x70,#0xb9
-	mov	0x71,#0x14
-	mov	0x72,#2
-	lcall	X1175
-	mov	a,0x76
+X141a:
+	lcall	X10ca
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#0
+	lcall	set_cursor_position
+	mov	STRING_ADDR_LOW,	<string_Prog
+	mov	STRING_ADDR_HI,		>string_Prog
+	mov	STRING_ADDRESSING_MODE, INTERNAL_16BITS
+	lcall	print_string
+	mov	a,variable76
 	cjne	a,#2,X143b
 	mov	a,#1
 	sjmp	X143c
 ;
-X143b:	clr	a
-X143c:	mov	r2,a
+X143b:
+	clr	a
+X143c:
+	mov	r2,a
 	jnz	X144e
 	mov	a,#1
-	add	a,0x75
-	mov	0x73,a
+	add	a,variable75
+	mov	variable73,a
 	push	rb0r2
 	lcall	X11a0
 	pop	rb0r2
 	sjmp	X1458
 ;
-X144e:	mov	0x73,0x75
+X144e:
+	mov	variable73,variable75
 	push	rb0r2
 	lcall	X11a0
 	pop	rb0r2
-X1458:	mov	0x6e,#0
-	mov	0x6f,#1
+X1458:
+	mov	CHAR_COL,#0
+	mov	CHAR_ROW,#1
 	push	rb0r2
-	lcall	X1144
+	lcall	set_cursor_position
 	pop	rb0r2
+
 	mov	a,r2
 	jnz	X1482
 	mov	b,#0x11
-	mov	a,0x75
+	mov	a,variable75
 	mul	ab
 	mov	r2,a
 	add	a,#0
@@ -3043,13 +3239,14 @@ X1458:	mov	0x6e,#0
 	clr	a
 	addc	a,#0x18
 	mov	r3,a
-	mov	0x70,r2
-	mov	0x71,r3
-	mov	0x72,#1
-	lcall	X1175
+	mov	STRING_ADDR_LOW,r2
+	mov	STRING_ADDR_HI,r3
+	mov	STRING_ADDRESSING_MODE, EXTERNAL_16BITS
+	lcall	print_string
 	sjmp	X14b8
 ;
-X1482:	mov	r2,#0
+X1482:
+	mov	r2,#0
 X1484:	cjne	r2,#0x10,X1487
 X1487:	jnc	X14b8
 	mov	a,r2
@@ -3060,7 +3257,7 @@ X1487:	jnc	X14b8
 	mov	dph,a
 	movx	a,@dptr
 	mov	r3,a
-	mov	a,0x75
+	mov	a,variable75
 	cjne	a,rb0r3,X14b5
 	mov	b,#0x11
 	mov	a,r2
@@ -3071,83 +3268,98 @@ X1487:	jnc	X14b8
 	clr	a
 	addc	a,#0x18
 	mov	r4,a
-	mov	0x70,r3
-	mov	0x71,r4
-	mov	0x72,#1
+	mov	STRING_ADDR_LOW,r3
+	mov	STRING_ADDR_HI,r4
+	mov	STRING_ADDRESSING_MODE, EXTERNAL_16BITS
 	push	rb0r2
-	lcall	X1175
+	lcall	print_string
 	pop	rb0r2
-X14b5:	inc	r2
+X14b5:
+	inc	r2
 	sjmp	X1484
-;
-X14b8:	ret	
-;
+X14b8:
+	ret
 
+string_Prog:
 .ascii "Prog "
 .db 0
 
-X14bf:
+write_byte:
 	xch a,r0
 	push acc
 	xch	a,r0
 	push acc
 	mov	a,b
-	jz	X14d4
+	jz	to_8bit_internal_address
 	dec	a
-	jz	X14db
+	jz	to_16bit_external_address
 	dec	a
-	jz	X14e0
+	jz	to_16bit_internal_address
 	dec	a
-	jz	X14e4
-	sjmp	X14e9
-;
-X14d4:	pop	acc
+	jz	to_8bit_external_address
+	sjmp	byte_written
+
+to_8bit_internal_address:
+	pop	acc
 	mov	r0,dpl
 	mov	@r0,a
-	sjmp	X14e9
-;
-X14db:	pop	acc
+	sjmp	byte_written
+
+to_16bit_external_address:
+	pop	acc
 	movx	@dptr,a
-	sjmp	X14e9
-;
-X14e0:	pop	acc
-	sjmp	X14e9
-;
-X14e4:	pop	acc
+	sjmp	byte_written
+
+to_16bit_internal_address:
+	pop	acc
+; DO NOTHING?
+	sjmp	byte_written
+
+to_8bit_external_address:
+	pop	acc
 	mov	r0,dpl
 	movx	@r0,a
-X14e9:	xch	a,r0
+
+byte_written:
+	xch	a,r0
 	pop	acc
 	xch	a,r0
 	ret	
-;
-X14ee:	xch	a,r0
+
+read_byte:
+	xch	a,r0
 	push	acc
 	mov	a,b
-	jz	X1502
+	jz	from_8bit_internal_address
 	dec	a
-	jz	X1507
+	jz	from_16bit_external_address
 	dec	a
-	jz	X150a
+	jz	from_16bit_internal_address
 	dec	a
-	jz	X150e
+	jz	from_8bit_external_address
 	mov	a,#0x0ff
-	sjmp	X1511
-;
-X1502:	mov	r0,dpl
+	sjmp	return_byte
+
+from_8bit_internal_address:
+	mov	r0,dpl
 	mov	a,@r0
-	sjmp	X1511
-;
-X1507:	movx	a,@dptr
-	sjmp	X1511
-;
-X150a:	clr	a
+	sjmp	return_byte
+
+from_16bit_external_address:
+	movx	a,@dptr
+	sjmp	return_byte
+
+from_16bit_internal_address:
+	clr	a
 	movc	a,@a+dptr
-	sjmp	X1511
-;
-X150e:	mov	r0,dpl
+	sjmp	return_byte
+
+from_8bit_external_address:
+	mov	r0,dpl
 	movx	a,@r0
-X1511:	mov	r0,a
+
+return_byte:
+	mov	r0,a
 	pop	acc
 	xch	a,r0
 	ret	

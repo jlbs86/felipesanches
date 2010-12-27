@@ -27,8 +27,8 @@ END_SLEEP:\
 	pop r2\
 }
 
-void X110c(){
-	*(0x8803)=0x6d;
+void print_char(){
+	*(0x8803)=*(0x6d);
 	*(0x39)++;
 
 	SLEEP
