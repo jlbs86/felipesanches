@@ -1,9 +1,9 @@
-; * Copyrig0xt (C) 2010 Felipe C. da S. Sanches <juca@members.fsf.;org>
-; * Copyrig0xt (C) 1999 BayCom GmbH
+; * Copyright (C) 2010 Felipe C. da S. Sanches <juca@members.fsf.org>
+; * Copyright (C) 1999 BayCom GmbH
 ; *
-; * Redistribution and use in source and binary forms, wit0x or without
-; * modification, are permitted provided t0xat redistributions of source
-; * code retain t0xe above copyright notice and this comment without
+; * Redistribution and use in source and binary forms, with or without
+; * modification, are permitted provided that redistributions of source
+; * code retain the above copyright notice and this comment without
 ; * modification.
 ;
 ;  D52 V3.4.1 8052 Disassembly of dabusb_fw.bin
@@ -81,6 +81,7 @@ variable7f=0x7f
 
 ;----------
 ;EZ-USB additional SFRs:
+
 DPL1=0x84
 DPH1=0x85
 DPS=0x86 ; dptr selector
@@ -94,24 +95,18 @@ EICON=0xD8
 EIE=0xE8
 EIP=0xF8
 
+;----------
+;EZ-USB registers
 
-;
-;	Miscellaneous equates
-;
-;  These are addresses referenced in the code but
-;  which are in the middle of a multibyte instruction
-;  or are addresses outside the initialized space
-;
-X4000=0x4000
 OUT2BUF=0x7dc0
-X7dc1=0x7dc1
-X7dc2=0x7dc2
-X7dc3=0x7dc3
-X7dff=0x7dff
+OUT2BUF_OFFSET1=0x7dc1
+OUT2BUF_OFFSET2=0x7dc2
+OUT2BUF_OFFSET3=0x7dc3
+OUT2BUF_LASTBYTE=0x7dff
 OUT0BUF=0x7ec0
-X7ec1=0x7ec1
+OUT0BUF_OFFSET1=0x7ec1
 IN0BUF=0x7f00
-X7f01=0x7f01
+IN0BUF_OFFSET1=0x7f01
 IN8DATA=0x7f68
 IN9DATA=0x7f69
 CPUCS=0x7f92
@@ -150,8 +145,24 @@ INISOVAL=0x7fe0
 OUTISOVAL=0x7fe1
 FASTXFR=0x7fe2
 SETUPDAT=0x7fe8
+OUT8ADDR=0x7ff0
+OUT9ADDR=0x7ff1
+OUT10ADDR=0x7ff2
+OUT11ADDR=0x7ff3
+OUT12ADDR=0x7ff4
+OUT13ADDR=0x7ff5
+OUT14ADDR=0x7ff6
+OUT15ADDR=0x7ff7
+IN8ADDR=0x7ff8
+IN9ADDR=0x7ff9
+IN10ADDR=0x7ffa
+IN11ADDR=0x7ffb
+IN12ADDR=0x7ffc
+IN13ADDR=0x7ffd
+IN14ADDR=0x7ffe
+IN15ADDR=0x7fff
 
-;I think these are result of disassembling data as if it was code:
+;There is something mapped to these addresses. I'll have to check it later.
 X7fe9=0x7fe9
 X7fea=0x7fea
 X7feb=0x7feb
@@ -159,31 +170,15 @@ X7fec=0x7fec
 X7fed=0x7fed
 X7fee=0x7fee
 X7fef=0x7fef
-X7ff0=0x7ff0
-X7ff1=0x7ff1
-X7ff2=0x7ff2
-X7ff3=0x7ff3
-X7ff4=0x7ff4
-X7ff5=0x7ff5
-X7ff6=0x7ff6
-X7ff7=0x7ff7
-X7ff8=0x7ff8
-X7ff9=0x7ff9
-X7ffa=0x7ffa
-X7ffb=0x7ffb
-X7ffc=0x7ffc
-X7ffd=0x7ffd
-X7ffe=0x7ffe
-X7fff=0x7fff
+
+;these seem to be the addresses to which the FPGA is memory mapped
 X8800=0x8800
 X8802=0x8802
 X8803=0x8803
 X880b=0x880b
 X880f=0x880f
-Xba00=0x0ba00
-Xffc3=0x0ffc3
 
-.area   INTERRUPT_VECTOR_TABLE   (ABS)   ;ABSOLUTE
+.area   CODE  (ABS)
 
 .org	0x00
 
@@ -245,7 +240,6 @@ INT6:
 .org	0x100
 USBInterruptAutoVector:
 	ljmp	SUDAV
-X0103:
 	.db 0
 	ljmp	SOF
 	.db 0
@@ -289,8 +283,6 @@ X0103:
 	.db 0
 	ljmp	X0000
 
-.area   CODE   (REL)   ;RELOCATABLE
-
 X0000_:
 	mov	sp,#0x7f
 	mov	a,dpl
@@ -300,16 +292,26 @@ FOREVER:	ajmp	FOREVER
 INTERRUPT_NOT_HANDLED:	reti	
 
 INT6_HANDLER:
+	;I guess that the radio receiver sets an interrupt (INT6)
+	; whenever it has more data to send to the PC
 	push	psw
 	push	DPS
 	push	dpl
 	push	dph
 	push	acc
 
+	;set bit 7 in port B.
+	; I suppose it means "give me some radio data"
 	mov	dptr,#OUTB
 	movx	a,@dptr
 	orl	a,#0x80
 	movx	@dptr,a
+
+	;fast transfer 32 bytes from external FIFO to prepare
+	; an isochronous transfer via EP9IN
+	;
+	; Read pages Section 8.6 "Fast Transfers" in the
+	; Cypress EZ-USB (AN21XX) Technical Reference Manual
 	mov	dptr,#IN9DATA
 	movx	@dptr,a
 	movx	@dptr,a
@@ -343,13 +345,18 @@ INT6_HANDLER:
 	movx	@dptr,a
 	movx	@dptr,a
 	movx	@dptr,a
+
 	mov	dptr,#OUTB
 	movx	a,@dptr
-	anl	a,variable7f
+	anl	a,variable7f ;this seems to be the only reference to this variable!
 	movx	@dptr,a
+
 	mov	dptr,#PINSB
 	movx	a,@dptr
 	jnb	acc.4,X01cc
+
+	;fast transfer from external FIFO to EP8IN
+	;maybe this is radio metadata?
 	mov	dptr,#IN8DATA
 	movx	@dptr,a
 	movx	@dptr,a
@@ -397,7 +404,7 @@ X01cc:
 
 sleep_a_bit:
 	mov	DPS,#0
-	mov	dptr,#Xffc3
+	mov	dptr,#0xffc3
 	mov	r4,#5
 sleep_loop:
 	inc	dptr
@@ -418,19 +425,22 @@ SOF:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
 	mov	dptr,#X8800
 	movx	a,@dptr
-	mov	variable41,a
+	mov	variable41,a ;this is the only usage of this variable. Is it useless?
+
 	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#2
 	movx	@dptr,a
+
 	mov	a,variable32
 	jz	X0240
 	mov	r2,#0
@@ -477,7 +487,7 @@ SUTOK:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -511,7 +521,7 @@ SUSPEND:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -559,7 +569,7 @@ USBRES:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -719,7 +729,7 @@ does_this_routine_get_called:;?
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -799,7 +809,7 @@ another_routine_that_I_think_never_gets_called:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear EZUSB I²C interrupt (INT3)
 	clr	acc.5
 	mov	EXIF,a
 
@@ -821,7 +831,7 @@ INT5_HANDLER:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear external INT5 IRQ
 	clr	acc.7
 	mov	EXIF,a
 
@@ -1018,7 +1028,7 @@ X05c8:
 	clr	a
 	addc	a,#0x17
 	mov	r3,a
-	mov	dptr,#X7ec1
+	mov	dptr,#OUT0BUF_OFFSET1
 	movx	a,@dptr
 	mov	r4,a
 	mov	dpl,r2
@@ -1046,7 +1056,7 @@ EP0_OUT:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -1132,7 +1142,7 @@ X064e:
 	mov	dptr,#IN0BUF
 	mov	a,r3
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	mov	a,r6
 	movx	@dptr,a
 X06af:
@@ -1144,7 +1154,7 @@ X06af:
 	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	sjmp	X06d1
@@ -1153,7 +1163,7 @@ X06c6:
 	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	mov	a,#0x0b5
 	movx	@dptr,a
 X06d1:
@@ -1165,7 +1175,7 @@ X06d1:
 	mov	dptr,#IN0BUF
 	mov	a,#1
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	sjmp	X06f4
@@ -1174,7 +1184,7 @@ X06e9:
 	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	mov	a,#0x12
 	movx	@dptr,a
 X06f4:
@@ -1186,7 +1196,7 @@ X06f4:
 	mov	dptr,#IN0BUF
 	mov	a,#1
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	sjmp	X0718
@@ -1195,7 +1205,7 @@ X070c:
 	mov	dptr,#IN0BUF
 	mov	a,#0x80
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	mov	a,#1
 	movx	@dptr,a
 X0718:
@@ -1356,53 +1366,53 @@ X0800:
 	mov	dptr,#OEC
 	mov	a,#0x28
 	movx	@dptr,a
-	mov	dptr,#X7ff0
+	mov	dptr,#OUT8ADDR
 	clr	a
 X0810:
 	movx	@dptr,a
-	mov	dptr,#X7ff1
+	mov	dptr,#OUT9ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff2
+	mov	dptr,#OUT10ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff3
+	mov	dptr,#OUT11ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff4
+	mov	dptr,#OUT12ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff5
+	mov	dptr,#OUT13ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff6
+	mov	dptr,#OUT14ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff7
+	mov	dptr,#OUT15ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff8
+	mov	dptr,#IN8ADDR
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7ff9
+	mov	dptr,#IN9ADDR
 	mov	a,#0x38
 	movx	@dptr,a
-	mov	dptr,#X7ffa
+	mov	dptr,#IN10ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
-	mov	dptr,#X7ffb
+	mov	dptr,#IN11ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
-	mov	dptr,#X7ffc
+	mov	dptr,#IN12ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
-	mov	dptr,#X7ffd
+	mov	dptr,#IN13ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
-	mov	dptr,#X7ffe
+	mov	dptr,#IN14ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
-	mov	dptr,#X7fff
+	mov	dptr,#IN15ADDR
 	mov	a,#0x0a0
 	movx	@dptr,a
 	mov	dptr,#INISOVAL
@@ -1474,41 +1484,53 @@ X08d2:
 	mov	dptr,#USBCS
 	mov	a,#2
 	movx	@dptr,a
+
 	mov	dptr,#USBCS
 	mov	a,#6
 	movx	@dptr,a
+
 	mov	dptr,#IN07VAL
 	mov	a,#5
 	movx	@dptr,a
+
 	mov	dptr,#OUT07VAL
 	mov	a,#5
 	movx	@dptr,a
+
 	mov	dptr,#IN07IEN
 	clr	a
 	movx	@dptr,a
+
 	mov	dptr,#OUT07IEN
 	mov	a,#5
 	movx	@dptr,a
+
 	mov	ie,#0x80
 	mov	i2sta,#0x10
+
 	mov	dptr,#USBIEN
 	mov	a,#0x0b
 	movx	@dptr,a
+
 	mov	dptr,#FASTXFR
 	mov	a,#0x88
 	movx	@dptr,a
+
 	mov	dptr,#USBIRQ
 	mov	a,#8
 	movx	@dptr,a
+
 	mov	csr,#0x11
 	mov	variable32,#1
 	mov	got_EP2OUT_data,#0
 	mov	got_EP2IN_data,#0
+
 	push	rb0r4
 	push	rb0r5
 	lcall	X04f7
 	pop	rb0r5
 	pop	rb0r4
+
 	mov	variable34,#0
 	mov	variable35,#1
 X092a:
@@ -1916,7 +1938,7 @@ X0bc8:
 X0bdd:
 	cjne	r2,#0x13,X0beb
 
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	r3,a
 	mov	dptr,#X8800
@@ -1938,10 +1960,10 @@ X0beb:
 X0bff:
 	cjne	r2,#0x15,X0c1f
 
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	variable75,a
-	mov	dptr,#X7dc2
+	mov	dptr,#OUT2BUF_OFFSET2
 	movx	a,@dptr
 	mov	variable76,a
 	push	rb0r2
@@ -2004,7 +2026,7 @@ SUDAV:
 	push	DPS
 	mov	DPS,#0
 
-	mov	a,EXIF
+	mov	a,EXIF	; clear USB IRQ (INT2)
 	clr	acc.4
 	mov	EXIF,a
 
@@ -2029,7 +2051,7 @@ X0c9a:
 	mov	dptr,#IN0BUF
 	mov	a,#1
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#IN0BC
@@ -2100,7 +2122,7 @@ X0d0a:
 	clr	a
 	movx	@dptr,a
 X0d0f:
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#IN0BC
@@ -2119,7 +2141,7 @@ X0d25:
 	mov	dptr,#IN0BUF
 	clr	a
 	movx	@dptr,a
-	mov	dptr,#X7f01
+	mov	dptr,#IN0BUF_OFFSET1
 	clr	a
 	movx	@dptr,a
 	mov	dptr,#IN0BC
@@ -2515,7 +2537,7 @@ X103c:
 	ret	
 ;
 X103d:
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	r1,a
 	inc	dptr
@@ -2541,14 +2563,14 @@ X104f:
 	inc	r4
 	djnz	r3,X104f
 X1061:
-	mov	dptr,#X7dc3
+	mov	dptr,#OUT2BUF_OFFSET3
 	movx	a,@dptr
 	mov	dptr,#IN2BC
 	movx	@dptr,a
 	ret	
 ;
 X106a:
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	r1,a
 	inc	dptr
@@ -2580,7 +2602,7 @@ X108f:
 	mov	a,#0x80
 	movx	@dptr,a
 	inc	DPS
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	inc	DPS
 	inc	dptr
@@ -2611,22 +2633,24 @@ X10c3:
 	mov	a,#0x40
 	movx	@dptr,a
 	ret	
-;
+
 X10ca:
 	mov	dptr,#X8802
 	mov	a,#1
 	movx	@dptr,a
+
+lots_of_sleep_loops_in_this_code:
 	mov	r2,#0
-X10d2:	cjne	r2,#0x0ff,X10d5
+sleep_sleep:
+	cjne	r2,#0x0ff,X10d5
 X10d5:	jnc	X10e1
 	push	rb0r2
 	lcall	sleep_a_bit
 	pop	rb0r2
 	inc	r2
-	sjmp	X10d2
-;
+	sjmp	sleep_sleep
 X10e1:
-	ret	
+	ret
 
 X10e2:
 	mov	a,variable6b
@@ -2635,7 +2659,7 @@ X10e2:
 	mov	a,variable6c
 	movx	@dptr,a
 	sjmp	X10f5
-;
+
 X10ef:
 	mov	dptr,#X8802
 	mov	a,variable6c
@@ -2813,22 +2837,22 @@ X11d7:
 	ret
 
 X11dd:
-	mov	dptr,#X7dc3
+	mov	dptr,#OUT2BUF_OFFSET3
 	movx	a,@dptr
 	mov	r2,a
 	jz	X11f3
 
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	CHAR_COL,a
 
-	mov	dptr,#X7dc2
+	mov	dptr,#OUT2BUF_OFFSET2
 	movx	a,@dptr
 	mov	CHAR_ROW,a
 
 	lcall	set_cursor_position
 X11f3:
-	mov	dptr,#X7dff
+	mov	dptr,#OUT2BUF_LASTBYTE
 	clr	a
 	movx	@dptr,a
 
@@ -3105,7 +3129,7 @@ X1373:
 	ret	
 
 X13a3:
-	mov	dptr,#X7dc1
+	mov	dptr,#OUT2BUF_OFFSET1
 	movx	a,@dptr
 	mov	r2,a
 	add	a,#0
@@ -3113,7 +3137,7 @@ X13a3:
 	clr	a
 	addc	a,#0x19
 	mov	r4,a
-	mov	dptr,#X7dc2
+	mov	dptr,#OUT2BUF_OFFSET2
 	movx	a,@dptr
 	mov	r5,a
 	mov	dpl,r3
