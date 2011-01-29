@@ -24,12 +24,20 @@ def sanitize(line):
   return newline
 
 last_text = ""
-def send_subtitle(text):
-  global last_text
+last_count = 0
+def send_subtitle(text, counter):
+  print "send_subtitle: ", text, counter
+  global last_count, last_text
+
+#  if counter<=last_count:
+#    return
+
   if text == "" or text == last_text:
     return
 
   last_text = text
+  last_count = counter
+
   if len(text)<=28:
     ser.write(ONE_LINE_VERTICAL_CENTER)
     send_text(sanitize(text),"")
@@ -63,15 +71,17 @@ import urllib
 import string,cgi,time
 from os import curdir, sep
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-#import pri
-
 class MyHandler(BaseHTTPRequestHandler):
 
   def do_GET(self):
     try:
-      if "&" in self.path:
-        text = urllib.unquote(self.path.split("&")[1])
-        send_subtitle(text)
+      if "?" in self.path:
+        params = urllib.unquote(self.path.split("?")[1])
+        if "&" in params:
+          text, counter = params.split("&")
+          send_subtitle(text, counter)
+        else:
+          return
 
       return
             
