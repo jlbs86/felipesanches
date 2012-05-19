@@ -1,0 +1,17 @@
+1 GND
+2 VCC
+3 ????
+4 FF 4Q (D3) RS
+5 FF 5Q (D4) R/W
+6 saída Y5 do 74138 selecionado pelas linhas A1 A2 e A3 do z180
+7 D0
+8 D1
+9 D2
+10 d3
+11 d4
+12 d5
+13 d6
+14 d7
+
+
+FF tem clk ligado à saída Y3 do 74138
