@@ -5,28 +5,39 @@ IntelBras OP4114 driver for MESS
 Licensed under GNU GPL version 2 (or later).
 */
 
+#define EMULATE_LCD 0
+
 #include "emu.h"
 #include "cpu/z180/z180.h"
 #include "cpu/mcs51/mcs51.h"
 #include "machine/ram.h"
 #include "op4114.lh"
-//#include "video/hd44780.h"
 #include "rendlay.h"
+
+#if EMULATE_LCD
+#include "video/hd44780.h"
+#endif
 
 class op4114_state : public driver_device
 {
 public:
 	op4114_state(const machine_config &mconfig, device_type type, const char *tag)
 		: driver_device(mconfig, type, tag),
+#if EMULATE_LCD
+	m_lcdc(*this, "hd44780"),
+#endif
   m_maincpu(*this, "maincpu")
-//	m_lcdc(*this, "hd44780")
   { }
 
 	required_device<cpu_device> m_maincpu;
-//	required_device<hd44780_device> m_lcdc;
+#if EMULATE_LCD
+	required_device<hd44780_device> m_lcdc;
+#endif
 
   DECLARE_READ8_MEMBER(z180_data_r);
-//  DECLARE_WRITE8_MEMBER(z180_data_w);
+#if EMULATE_LCD
+  DECLARE_WRITE8_MEMBER(z180_data_w);
+#endif
 
   DECLARE_WRITE8_MEMBER(sidepanel_data_w);
   DECLARE_READ8_MEMBER(sidepanel_p1_r);
@@ -55,7 +66,7 @@ READ8_MEMBER( op4114_state::z180_data_r )
   return 0xff;
 }
 
-#if 0
+#if EMULATE_LCD
 WRITE8_MEMBER( op4114_state::z180_data_w )
 {
   if (offset !=4 && offset !=5){
@@ -99,6 +110,8 @@ WRITE8_MEMBER( op4114_state::z180_data_w )
 }
 #endif 
 
+//maybe keyboard should be emulated by reading external memory address 0b1000
+// instead of port 1 ?
 READ8_MEMBER( op4114_state::sidepanel_p1_r )
 {
   //read the state of the currently selected block of buttons
@@ -123,17 +136,15 @@ static ADDRESS_MAP_START(op4114_mem, AS_PROGRAM, 8, op4114_state)
  AM_RANGE( 0x20000, 0x20fff ) AM_RAM */
 ADDRESS_MAP_END
 
-//static ADDRESS_MAP_START(op4114_sidepanel_data, AS_IO, 8, op4114_state)
-//    AM_RANGE( 0x0000, 0x7fff ) AM_RAM AM_WRITE( sidepanel_data_w )
-//ADDRESS_MAP_END
-
 static ADDRESS_MAP_START(op4114_sidepanel_io, AS_IO, 8, op4114_state)
     AM_RANGE( MCS51_PORT_P1, MCS51_PORT_P1 ) AM_READ( sidepanel_p1_r )
     AM_RANGE( 0x0, 0x7 ) AM_WRITE( sidepanel_data_w )
 ADDRESS_MAP_END
 
 static ADDRESS_MAP_START(op4114_io, AS_IO, 8, op4114_state)
-//    AM_RANGE( 0x0, 0x1ffff ) AM_WRITE( z180_data_w )
+#if EMULATE_LCD
+    AM_RANGE( 0x0, 0x1ffff ) AM_WRITE( z180_data_w )
+#endif
     AM_RANGE( 0x0, 0x1ffff ) AM_READ( z180_data_r )
 ADDRESS_MAP_END
 
@@ -149,7 +160,7 @@ static MACHINE_RESET( op4114 )
   }
 }
 
-#if 0
+#if EMULATE_LCD
 static PALETTE_INIT( op4114 )
 {
 	palette_set_color(machine, 0, MAKE_RGB(138, 146, 148));
@@ -199,11 +210,8 @@ static MACHINE_CONFIG_START( op4114, op4114_state )
     MCFG_RAM_ADD(RAM_TAG)
     MCFG_RAM_DEFAULT_SIZE("16K")
 
-    /* video hardware */
-    MCFG_DEFAULT_LAYOUT(layout_op4114)
-
   	/* video hardware */
-#if 0
+#if EMULATE_LCD
     MCFG_SCREEN_ADD("screen", LCD)
   	MCFG_SCREEN_REFRESH_RATE(50)
   	MCFG_SCREEN_VBLANK_TIME(ATTOSECONDS_IN_USEC(2500)) /* not accurate */
@@ -216,6 +224,8 @@ static MACHINE_CONFIG_START( op4114, op4114_state )
   	MCFG_GFXDECODE(op4114)
 
   	MCFG_HD44780_ADD("hd44780", op4114_display)
+#else
+    MCFG_DEFAULT_LAYOUT(layout_op4114)
 #endif
 
 MACHINE_CONFIG_END
@@ -228,10 +238,10 @@ ROM_START( op4114 )
     ROM_REGION( 0x8000, "sidepanelcpu", 0 )
     ROM_LOAD( "op4114_sidepanel.bin", 0x0000, 0x8000, CRC(e1b2704e) SHA1(0cfd8e508c63940af86c44fb6bd4b0efdfdf7fa4) )
 
-/*
+#if EMULATE_LCD
 	ROM_REGION( 0x0860, "hd44780", ROMREGION_ERASE )
 	ROM_LOAD( "44780a00.bin",    0x0000, 0x0860,  BAD_DUMP CRC(3a89024c) SHA1(5a87b68422a916d1b37b5be1f7ad0b3fb3af5a8d))
-*/
+#endif
 
 ROM_END
 
