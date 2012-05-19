@@ -1,6 +1,8 @@
 /*
 IntelBras OP4114 driver for MESS
 (c)2012 Felipe C. da S. Sanches <juca@members.fsf.org>
+
+Licensed under GNU GPL version 2 (or later).
 */
 
 #include "emu.h"
