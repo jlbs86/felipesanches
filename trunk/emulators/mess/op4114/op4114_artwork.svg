@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48+devel r11290 custom"
+   sodipodi:docname="Novo documento 1">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.45963542"
+     inkscape:cx="346.74216"
+     inkscape:cy="400.13598"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1024"
+     inkscape:window-height="531"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Camada 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       y="79.852287"
+       x="-71.796028"
+       height="252.37393"
+       width="1666.5382"
+       id="rect4096"
+       style="fill:#a02c2c;fill-opacity:0.43396223;stroke:none" />
+    <rect
+       style="fill:#a02c2c;fill-opacity:0.43396223;stroke:none"
+       id="rect4094"
+       width="1666.5382"
+       height="252.37393"
+       x="-58.74221"
+       y="902.24323" />
+    <image
+       sodipodi:absref="/home/juca/Imagens/op4114/DSC_0625.JPG"
+       y="253.52765"
+       x="84.109634"
+       id="image168"
+       xlink:href="file:///home/juca/Imagens/op4114/DSC_0625.JPG"
+       height="870.38477"
+       width="1310.467"
+       transform="matrix(0.99999599,0.00283186,-0.00283186,0.99999599,0,0)" />
+    <path
+       style="fill:none;fill-opacity:0.43396223;stroke:none"
+       d="m 233.97165,268.2262 1023.99995,0 0,768 -1023.99995,0 z"
+       id="rect171"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>
