@@ -2,13 +2,7 @@
 <mamelayout version="2">
 	<element name="LED" defstate="1">
 		<rect>
-			<color red="1.0" green="0.0" blue="0.0" />
-		</rect>
-	</element>
-
-	<element name="LEDOFF">
-		<rect>
-			<color red="0.3" green="0.3" blue="0.3" />
+			<color red="0.7" green="0.0" blue="0.0" />
 		</rect>
 	</element>
 
@@ -25,776 +19,264 @@
 	<view name="Default Layout">
 		<!-- background -->
 		<backdrop element="background">
-			<bounds left="0" top="0" right="453" bottom="235" />
+			<bounds left="0" top="0" right="1024" bottom="768" />
 		</backdrop>
 
 
-		<bezel name="ledoff0" element="LEDOFF">
-			<bounds left="603" right="610" top="120" bottom="127" />
-		</bezel>
-
 		<bezel name="led0" element="LED">
-			<bounds left="603" right="610" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="button0" element="BUTTON">
-			<bounds left="611" right="626" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="ledoff1" element="LEDOFF">
-			<bounds left="603" right="610" top="145" bottom="152" />
+			<bounds left="603" right="613" top="121" bottom="131" />
 		</bezel>
 
 		<bezel name="led1" element="LED">
-			<bounds left="603" right="610" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="button1" element="BUTTON">
-			<bounds left="611" right="626" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="ledoff2" element="LEDOFF">
-			<bounds left="603" right="610" top="170" bottom="177" />
+			<bounds left="604" right="614" top="149" bottom="159" />
 		</bezel>
 
 		<bezel name="led2" element="LED">
-			<bounds left="603" right="610" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="button2" element="BUTTON">
-			<bounds left="611" right="626" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="ledoff3" element="LEDOFF">
-			<bounds left="603" right="610" top="195" bottom="202" />
+			<bounds left="604" right="614" top="176" bottom="186" />
 		</bezel>
 
 		<bezel name="led3" element="LED">
-			<bounds left="603" right="610" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="button3" element="BUTTON">
-			<bounds left="611" right="626" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="ledoff4" element="LEDOFF">
-			<bounds left="603" right="610" top="220" bottom="227" />
+			<bounds left="604" right="614" top="203" bottom="213" />
 		</bezel>
 
 		<bezel name="led4" element="LED">
-			<bounds left="603" right="610" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="button4" element="BUTTON">
-			<bounds left="611" right="626" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="ledoff5" element="LEDOFF">
-			<bounds left="603" right="610" top="245" bottom="252" />
+			<bounds left="605" right="615" top="230" bottom="240" />
 		</bezel>
 
 		<bezel name="led5" element="LED">
-			<bounds left="603" right="610" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="button5" element="BUTTON">
-			<bounds left="611" right="626" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="ledoff6" element="LEDOFF">
-			<bounds left="603" right="610" top="270" bottom="277" />
+			<bounds left="605" right="615" top="257" bottom="267" />
 		</bezel>
 
 		<bezel name="led6" element="LED">
-			<bounds left="603" right="610" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="button6" element="BUTTON">
-			<bounds left="611" right="626" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="ledoff7" element="LEDOFF">
-			<bounds left="603" right="610" top="295" bottom="302" />
+			<bounds left="605" right="615" top="285" bottom="295" />
 		</bezel>
 
 		<bezel name="led7" element="LED">
-			<bounds left="603" right="610" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="button7" element="BUTTON">
-			<bounds left="611" right="626" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="ledoff8" element="LEDOFF">
-			<bounds left="603" right="610" top="320" bottom="327" />
+			<bounds left="605" right="615" top="312" bottom="322" />
 		</bezel>
 
 		<bezel name="led8" element="LED">
-			<bounds left="603" right="610" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="button8" element="BUTTON">
-			<bounds left="611" right="626" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="ledoff9" element="LEDOFF">
-			<bounds left="603" right="610" top="345" bottom="352" />
+			<bounds left="606" right="616" top="339" bottom="349" />
 		</bezel>
 
 		<bezel name="led9" element="LED">
-			<bounds left="603" right="610" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="button9" element="BUTTON">
-			<bounds left="611" right="626" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="ledoff10" element="LEDOFF">
-			<bounds left="603" right="610" top="370" bottom="377" />
+			<bounds left="606" right="616" top="366" bottom="376" />
 		</bezel>
 
 		<bezel name="led10" element="LED">
-			<bounds left="603" right="610" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="button10" element="BUTTON">
-			<bounds left="611" right="626" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="ledoff11" element="LEDOFF">
-			<bounds left="603" right="610" top="395" bottom="402" />
+			<bounds left="606" right="616" top="394" bottom="404" />
 		</bezel>
 
 		<bezel name="led11" element="LED">
-			<bounds left="603" right="610" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="button11" element="BUTTON">
-			<bounds left="611" right="626" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="ledoff12" element="LEDOFF">
-			<bounds left="603" right="610" top="420" bottom="427" />
+			<bounds left="607" right="617" top="421" bottom="431" />
 		</bezel>
 
 		<bezel name="led12" element="LED">
-			<bounds left="603" right="610" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="button12" element="BUTTON">
-			<bounds left="611" right="626" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="ledoff13" element="LEDOFF">
-			<bounds left="603" right="610" top="445" bottom="452" />
+			<bounds left="607" right="617" top="448" bottom="458" />
 		</bezel>
 
 		<bezel name="led13" element="LED">
-			<bounds left="603" right="610" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="button13" element="BUTTON">
-			<bounds left="611" right="626" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="ledoff14" element="LEDOFF">
-			<bounds left="603" right="610" top="470" bottom="477" />
+			<bounds left="607" right="617" top="475" bottom="485" />
 		</bezel>
 
 		<bezel name="led14" element="LED">
-			<bounds left="603" right="610" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="button14" element="BUTTON">
-			<bounds left="611" right="626" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="ledoff15" element="LEDOFF">
-			<bounds left="603" right="610" top="495" bottom="502" />
+			<bounds left="608" right="618" top="502" bottom="512" />
 		</bezel>
 
 		<bezel name="led15" element="LED">
-			<bounds left="603" right="610" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="button15" element="BUTTON">
-			<bounds left="611" right="626" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="ledoff16" element="LEDOFF">
-			<bounds left="703" right="710" top="120" bottom="127" />
+			<bounds left="608" right="618" top="530" bottom="540" />
 		</bezel>
 
 		<bezel name="led16" element="LED">
-			<bounds left="703" right="710" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="button16" element="BUTTON">
-			<bounds left="711" right="726" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="ledoff17" element="LEDOFF">
-			<bounds left="703" right="710" top="145" bottom="152" />
+			<bounds left="708" right="718" top="121" bottom="131" />
 		</bezel>
 
 		<bezel name="led17" element="LED">
-			<bounds left="703" right="710" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="button17" element="BUTTON">
-			<bounds left="711" right="726" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="ledoff18" element="LEDOFF">
-			<bounds left="703" right="710" top="170" bottom="177" />
+			<bounds left="708" right="718" top="149" bottom="159" />
 		</bezel>
 
 		<bezel name="led18" element="LED">
-			<bounds left="703" right="710" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="button18" element="BUTTON">
-			<bounds left="711" right="726" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="ledoff19" element="LEDOFF">
-			<bounds left="703" right="710" top="195" bottom="202" />
+			<bounds left="709" right="719" top="176" bottom="186" />
 		</bezel>
 
 		<bezel name="led19" element="LED">
-			<bounds left="703" right="710" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="button19" element="BUTTON">
-			<bounds left="711" right="726" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="ledoff20" element="LEDOFF">
-			<bounds left="703" right="710" top="220" bottom="227" />
+			<bounds left="709" right="719" top="203" bottom="213" />
 		</bezel>
 
 		<bezel name="led20" element="LED">
-			<bounds left="703" right="710" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="button20" element="BUTTON">
-			<bounds left="711" right="726" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="ledoff21" element="LEDOFF">
-			<bounds left="703" right="710" top="245" bottom="252" />
+			<bounds left="710" right="720" top="230" bottom="240" />
 		</bezel>
 
 		<bezel name="led21" element="LED">
-			<bounds left="703" right="710" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="button21" element="BUTTON">
-			<bounds left="711" right="726" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="ledoff22" element="LEDOFF">
-			<bounds left="703" right="710" top="270" bottom="277" />
+			<bounds left="711" right="721" top="257" bottom="267" />
 		</bezel>
 
 		<bezel name="led22" element="LED">
-			<bounds left="703" right="710" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="button22" element="BUTTON">
-			<bounds left="711" right="726" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="ledoff23" element="LEDOFF">
-			<bounds left="703" right="710" top="295" bottom="302" />
+			<bounds left="711" right="721" top="285" bottom="295" />
 		</bezel>
 
 		<bezel name="led23" element="LED">
-			<bounds left="703" right="710" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="button23" element="BUTTON">
-			<bounds left="711" right="726" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="ledoff24" element="LEDOFF">
-			<bounds left="703" right="710" top="320" bottom="327" />
+			<bounds left="712" right="722" top="312" bottom="322" />
 		</bezel>
 
 		<bezel name="led24" element="LED">
-			<bounds left="703" right="710" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="button24" element="BUTTON">
-			<bounds left="711" right="726" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="ledoff25" element="LEDOFF">
-			<bounds left="703" right="710" top="345" bottom="352" />
+			<bounds left="712" right="722" top="339" bottom="349" />
 		</bezel>
 
 		<bezel name="led25" element="LED">
-			<bounds left="703" right="710" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="button25" element="BUTTON">
-			<bounds left="711" right="726" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="ledoff26" element="LEDOFF">
-			<bounds left="703" right="710" top="370" bottom="377" />
+			<bounds left="713" right="723" top="366" bottom="376" />
 		</bezel>
 
 		<bezel name="led26" element="LED">
-			<bounds left="703" right="710" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="button26" element="BUTTON">
-			<bounds left="711" right="726" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="ledoff27" element="LEDOFF">
-			<bounds left="703" right="710" top="395" bottom="402" />
+			<bounds left="714" right="724" top="394" bottom="404" />
 		</bezel>
 
 		<bezel name="led27" element="LED">
-			<bounds left="703" right="710" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="button27" element="BUTTON">
-			<bounds left="711" right="726" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="ledoff28" element="LEDOFF">
-			<bounds left="703" right="710" top="420" bottom="427" />
+			<bounds left="714" right="724" top="421" bottom="431" />
 		</bezel>
 
 		<bezel name="led28" element="LED">
-			<bounds left="703" right="710" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="button28" element="BUTTON">
-			<bounds left="711" right="726" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="ledoff29" element="LEDOFF">
-			<bounds left="703" right="710" top="445" bottom="452" />
+			<bounds left="715" right="725" top="448" bottom="458" />
 		</bezel>
 
 		<bezel name="led29" element="LED">
-			<bounds left="703" right="710" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="button29" element="BUTTON">
-			<bounds left="711" right="726" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="ledoff30" element="LEDOFF">
-			<bounds left="703" right="710" top="470" bottom="477" />
+			<bounds left="715" right="725" top="475" bottom="485" />
 		</bezel>
 
 		<bezel name="led30" element="LED">
-			<bounds left="703" right="710" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="button30" element="BUTTON">
-			<bounds left="711" right="726" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="ledoff31" element="LEDOFF">
-			<bounds left="703" right="710" top="495" bottom="502" />
+			<bounds left="716" right="726" top="502" bottom="512" />
 		</bezel>
 
 		<bezel name="led31" element="LED">
-			<bounds left="703" right="710" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="button31" element="BUTTON">
-			<bounds left="711" right="726" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="ledoff32" element="LEDOFF">
-			<bounds left="803" right="810" top="120" bottom="127" />
+			<bounds left="717" right="727" top="530" bottom="540" />
 		</bezel>
 
 		<bezel name="led32" element="LED">
-			<bounds left="803" right="810" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="button32" element="BUTTON">
-			<bounds left="811" right="826" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="ledoff33" element="LEDOFF">
-			<bounds left="803" right="810" top="145" bottom="152" />
+			<bounds left="833" right="843" top="121" bottom="131" />
 		</bezel>
 
 		<bezel name="led33" element="LED">
-			<bounds left="803" right="810" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="button33" element="BUTTON">
-			<bounds left="811" right="826" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="ledoff34" element="LEDOFF">
-			<bounds left="803" right="810" top="170" bottom="177" />
+			<bounds left="835" right="845" top="149" bottom="159" />
 		</bezel>
 
 		<bezel name="led34" element="LED">
-			<bounds left="803" right="810" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="button34" element="BUTTON">
-			<bounds left="811" right="826" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="ledoff35" element="LEDOFF">
-			<bounds left="803" right="810" top="195" bottom="202" />
+			<bounds left="836" right="846" top="176" bottom="186" />
 		</bezel>
 
 		<bezel name="led35" element="LED">
-			<bounds left="803" right="810" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="button35" element="BUTTON">
-			<bounds left="811" right="826" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="ledoff36" element="LEDOFF">
-			<bounds left="803" right="810" top="220" bottom="227" />
+			<bounds left="837" right="847" top="203" bottom="213" />
 		</bezel>
 
 		<bezel name="led36" element="LED">
-			<bounds left="803" right="810" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="button36" element="BUTTON">
-			<bounds left="811" right="826" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="ledoff37" element="LEDOFF">
-			<bounds left="803" right="810" top="245" bottom="252" />
+			<bounds left="838" right="848" top="230" bottom="240" />
 		</bezel>
 
 		<bezel name="led37" element="LED">
-			<bounds left="803" right="810" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="button37" element="BUTTON">
-			<bounds left="811" right="826" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="ledoff38" element="LEDOFF">
-			<bounds left="803" right="810" top="270" bottom="277" />
+			<bounds left="839" right="849" top="257" bottom="267" />
 		</bezel>
 
 		<bezel name="led38" element="LED">
-			<bounds left="803" right="810" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="button38" element="BUTTON">
-			<bounds left="811" right="826" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="ledoff39" element="LEDOFF">
-			<bounds left="803" right="810" top="295" bottom="302" />
+			<bounds left="840" right="850" top="285" bottom="295" />
 		</bezel>
 
 		<bezel name="led39" element="LED">
-			<bounds left="803" right="810" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="button39" element="BUTTON">
-			<bounds left="811" right="826" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="ledoff40" element="LEDOFF">
-			<bounds left="803" right="810" top="320" bottom="327" />
+			<bounds left="841" right="851" top="312" bottom="322" />
 		</bezel>
 
 		<bezel name="led40" element="LED">
-			<bounds left="803" right="810" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="button40" element="BUTTON">
-			<bounds left="811" right="826" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="ledoff41" element="LEDOFF">
-			<bounds left="803" right="810" top="345" bottom="352" />
+			<bounds left="842" right="852" top="339" bottom="349" />
 		</bezel>
 
 		<bezel name="led41" element="LED">
-			<bounds left="803" right="810" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="button41" element="BUTTON">
-			<bounds left="811" right="826" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="ledoff42" element="LEDOFF">
-			<bounds left="803" right="810" top="370" bottom="377" />
+			<bounds left="843" right="853" top="366" bottom="376" />
 		</bezel>
 
 		<bezel name="led42" element="LED">
-			<bounds left="803" right="810" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="button42" element="BUTTON">
-			<bounds left="811" right="826" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="ledoff43" element="LEDOFF">
-			<bounds left="803" right="810" top="395" bottom="402" />
+			<bounds left="844" right="854" top="394" bottom="404" />
 		</bezel>
 
 		<bezel name="led43" element="LED">
-			<bounds left="803" right="810" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="button43" element="BUTTON">
-			<bounds left="811" right="826" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="ledoff44" element="LEDOFF">
-			<bounds left="803" right="810" top="420" bottom="427" />
+			<bounds left="845" right="855" top="421" bottom="431" />
 		</bezel>
 
 		<bezel name="led44" element="LED">
-			<bounds left="803" right="810" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="button44" element="BUTTON">
-			<bounds left="811" right="826" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="ledoff45" element="LEDOFF">
-			<bounds left="803" right="810" top="445" bottom="452" />
+			<bounds left="846" right="856" top="448" bottom="458" />
 		</bezel>
 
 		<bezel name="led45" element="LED">
-			<bounds left="803" right="810" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="button45" element="BUTTON">
-			<bounds left="811" right="826" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="ledoff46" element="LEDOFF">
-			<bounds left="803" right="810" top="470" bottom="477" />
+			<bounds left="847" right="857" top="475" bottom="485" />
 		</bezel>
 
 		<bezel name="led46" element="LED">
-			<bounds left="803" right="810" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="button46" element="BUTTON">
-			<bounds left="811" right="826" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="ledoff47" element="LEDOFF">
-			<bounds left="803" right="810" top="495" bottom="502" />
+			<bounds left="848" right="858" top="502" bottom="512" />
 		</bezel>
 
 		<bezel name="led47" element="LED">
-			<bounds left="803" right="810" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="button47" element="BUTTON">
-			<bounds left="811" right="826" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="ledoff48" element="LEDOFF">
-			<bounds left="903" right="910" top="120" bottom="127" />
+			<bounds left="849" right="859" top="530" bottom="540" />
 		</bezel>
 
 		<bezel name="led48" element="LED">
-			<bounds left="903" right="910" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="button48" element="BUTTON">
-			<bounds left="911" right="926" top="120" bottom="127" />
-		</bezel>
-
-		<bezel name="ledoff49" element="LEDOFF">
-			<bounds left="903" right="910" top="145" bottom="152" />
+			<bounds left="938" right="948" top="121" bottom="131" />
 		</bezel>
 
 		<bezel name="led49" element="LED">
-			<bounds left="903" right="910" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="button49" element="BUTTON">
-			<bounds left="911" right="926" top="145" bottom="152" />
-		</bezel>
-
-		<bezel name="ledoff50" element="LEDOFF">
-			<bounds left="903" right="910" top="170" bottom="177" />
+			<bounds left="939" right="949" top="149" bottom="159" />
 		</bezel>
 
 		<bezel name="led50" element="LED">
-			<bounds left="903" right="910" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="button50" element="BUTTON">
-			<bounds left="911" right="926" top="170" bottom="177" />
-		</bezel>
-
-		<bezel name="ledoff51" element="LEDOFF">
-			<bounds left="903" right="910" top="195" bottom="202" />
+			<bounds left="940" right="950" top="176" bottom="186" />
 		</bezel>
 
 		<bezel name="led51" element="LED">
-			<bounds left="903" right="910" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="button51" element="BUTTON">
-			<bounds left="911" right="926" top="195" bottom="202" />
-		</bezel>
-
-		<bezel name="ledoff52" element="LEDOFF">
-			<bounds left="903" right="910" top="220" bottom="227" />
+			<bounds left="942" right="952" top="203" bottom="213" />
 		</bezel>
 
 		<bezel name="led52" element="LED">
-			<bounds left="903" right="910" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="button52" element="BUTTON">
-			<bounds left="911" right="926" top="220" bottom="227" />
-		</bezel>
-
-		<bezel name="ledoff53" element="LEDOFF">
-			<bounds left="903" right="910" top="245" bottom="252" />
+			<bounds left="943" right="953" top="230" bottom="240" />
 		</bezel>
 
 		<bezel name="led53" element="LED">
-			<bounds left="903" right="910" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="button53" element="BUTTON">
-			<bounds left="911" right="926" top="245" bottom="252" />
-		</bezel>
-
-		<bezel name="ledoff54" element="LEDOFF">
-			<bounds left="903" right="910" top="270" bottom="277" />
+			<bounds left="944" right="954" top="257" bottom="267" />
 		</bezel>
 
 		<bezel name="led54" element="LED">
-			<bounds left="903" right="910" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="button54" element="BUTTON">
-			<bounds left="911" right="926" top="270" bottom="277" />
-		</bezel>
-
-		<bezel name="ledoff55" element="LEDOFF">
-			<bounds left="903" right="910" top="295" bottom="302" />
+			<bounds left="945" right="955" top="285" bottom="295" />
 		</bezel>
 
 		<bezel name="led55" element="LED">
-			<bounds left="903" right="910" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="button55" element="BUTTON">
-			<bounds left="911" right="926" top="295" bottom="302" />
-		</bezel>
-
-		<bezel name="ledoff56" element="LEDOFF">
-			<bounds left="903" right="910" top="320" bottom="327" />
+			<bounds left="947" right="957" top="312" bottom="322" />
 		</bezel>
 
 		<bezel name="led56" element="LED">
-			<bounds left="903" right="910" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="button56" element="BUTTON">
-			<bounds left="911" right="926" top="320" bottom="327" />
-		</bezel>
-
-		<bezel name="ledoff57" element="LEDOFF">
-			<bounds left="903" right="910" top="345" bottom="352" />
+			<bounds left="948" right="958" top="339" bottom="349" />
 		</bezel>
 
 		<bezel name="led57" element="LED">
-			<bounds left="903" right="910" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="button57" element="BUTTON">
-			<bounds left="911" right="926" top="345" bottom="352" />
-		</bezel>
-
-		<bezel name="ledoff58" element="LEDOFF">
-			<bounds left="903" right="910" top="370" bottom="377" />
+			<bounds left="949" right="959" top="366" bottom="376" />
 		</bezel>
 
 		<bezel name="led58" element="LED">
-			<bounds left="903" right="910" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="button58" element="BUTTON">
-			<bounds left="911" right="926" top="370" bottom="377" />
-		</bezel>
-
-		<bezel name="ledoff59" element="LEDOFF">
-			<bounds left="903" right="910" top="395" bottom="402" />
+			<bounds left="951" right="961" top="394" bottom="404" />
 		</bezel>
 
 		<bezel name="led59" element="LED">
-			<bounds left="903" right="910" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="button59" element="BUTTON">
-			<bounds left="911" right="926" top="395" bottom="402" />
-		</bezel>
-
-		<bezel name="ledoff60" element="LEDOFF">
-			<bounds left="903" right="910" top="420" bottom="427" />
+			<bounds left="952" right="962" top="421" bottom="431" />
 		</bezel>
 
 		<bezel name="led60" element="LED">
-			<bounds left="903" right="910" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="button60" element="BUTTON">
-			<bounds left="911" right="926" top="420" bottom="427" />
-		</bezel>
-
-		<bezel name="ledoff61" element="LEDOFF">
-			<bounds left="903" right="910" top="445" bottom="452" />
+			<bounds left="953" right="963" top="448" bottom="458" />
 		</bezel>
 
 		<bezel name="led61" element="LED">
-			<bounds left="903" right="910" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="button61" element="BUTTON">
-			<bounds left="911" right="926" top="445" bottom="452" />
-		</bezel>
-
-		<bezel name="ledoff62" element="LEDOFF">
-			<bounds left="903" right="910" top="470" bottom="477" />
+			<bounds left="954" right="964" top="475" bottom="485" />
 		</bezel>
 
 		<bezel name="led62" element="LED">
-			<bounds left="903" right="910" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="button62" element="BUTTON">
-			<bounds left="911" right="926" top="470" bottom="477" />
-		</bezel>
-
-		<bezel name="ledoff63" element="LEDOFF">
-			<bounds left="903" right="910" top="495" bottom="502" />
+			<bounds left="956" right="966" top="502" bottom="512" />
 		</bezel>
 
 		<bezel name="led63" element="LED">
-			<bounds left="903" right="910" top="495" bottom="502" />
-		</bezel>
-
-		<bezel name="button63" element="BUTTON">
-			<bounds left="911" right="926" top="495" bottom="502" />
+			<bounds left="957" right="967" top="530" bottom="540" />
 		</bezel>
 
 	</view>
