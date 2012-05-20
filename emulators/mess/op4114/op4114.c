@@ -5,7 +5,7 @@ IntelBras OP4114 driver for MESS
 Licensed under GNU GPL version 2 (or later).
 */
 
-#define EMULATE_LCD 0
+#define EMULATE_LCD 1
 
 #include "emu.h"
 #include "cpu/z180/z180.h"
@@ -29,10 +29,10 @@ public:
   m_maincpu(*this, "maincpu")
   { }
 
-	required_device<cpu_device> m_maincpu;
 #if EMULATE_LCD
 	required_device<hd44780_device> m_lcdc;
 #endif
+	required_device<cpu_device> m_maincpu;
 
   DECLARE_READ8_MEMBER(z180_data_r);
 #if EMULATE_LCD
@@ -69,9 +69,9 @@ READ8_MEMBER( op4114_state::z180_data_r )
 #if EMULATE_LCD
 WRITE8_MEMBER( op4114_state::z180_data_w )
 {
-  if (offset !=4 && offset !=5){
-  	//printf("z180 main memory write: %.5x data=%.2x (%c)\n", offset, data, data);
-  }
+  //if (offset !=4 && offset !=5){
+  	printf("z180 main memory write: %.5x data=%.2x (%c)\n", offset, data, data);
+  //}
 
   switch ((offset >> 1) & 0b111){
     case 3:
@@ -110,35 +110,23 @@ WRITE8_MEMBER( op4114_state::z180_data_w )
 }
 #endif 
 
-//maybe keyboard should be emulated by reading external memory address 0b1000
-// instead of port 1 ?
 READ8_MEMBER( op4114_state::sidepanel_p1_r )
 {
   //read the state of the currently selected block of buttons
-  static int count=0;
-	char ledname[8];
+  int result=0;
 
   register int i;
 	for (i = 0; i < 8; i++)
 	{
-		sprintf(ledname,"led%d",i);
-		//output_set_value(ledname, BIT(count/100, i));
+    //TODO: read button states from the layout system
 	}
 
-	//printf("sidepanel P1 read: %.5x\n",(int) count);
-  return count++;
+  return result;
 }
 
-/* Address maps */
+/* MAIN PANEL - Z180 */
 static ADDRESS_MAP_START(op4114_mem, AS_PROGRAM, 8, op4114_state)
     AM_RANGE( 0x0000, 0x1ffff ) AM_ROM AM_REGION("maincpu", 0)
-    /* TODO: chute
- AM_RANGE( 0x20000, 0x20fff ) AM_RAM */
-ADDRESS_MAP_END
-
-static ADDRESS_MAP_START(op4114_sidepanel_io, AS_IO, 8, op4114_state)
-    AM_RANGE( MCS51_PORT_P1, MCS51_PORT_P1 ) AM_READ( sidepanel_p1_r )
-    AM_RANGE( 0x0, 0x7 ) AM_WRITE( sidepanel_data_w )
 ADDRESS_MAP_END
 
 static ADDRESS_MAP_START(op4114_io, AS_IO, 8, op4114_state)
@@ -148,16 +136,16 @@ static ADDRESS_MAP_START(op4114_io, AS_IO, 8, op4114_state)
     AM_RANGE( 0x0, 0x1ffff ) AM_READ( z180_data_r )
 ADDRESS_MAP_END
 
+/* SIDE PANEL - 8051 */
+static ADDRESS_MAP_START(op4114_sidepanel_io, AS_IO, 8, op4114_state)
+    AM_RANGE( MCS51_PORT_P1, MCS51_PORT_P1 ) AM_READ( sidepanel_p1_r )
+    AM_RANGE( 0x0, 0x7 ) AM_WRITE( sidepanel_data_w )
+ADDRESS_MAP_END
+
+
 static MACHINE_RESET( op4114 )
 {
 	memset(machine.device<ram_device>(RAM_TAG)->pointer(),0,16*1024);
-
-  for (register char i=0; i<8; i++){
-    char ledname[8];
-    sprintf(ledname,"led%d",i);
-    output_set_value(ledname, 1);
-    printf("RESET: %.1x\n", i);
-  }
 }
 
 #if EMULATE_LCD
